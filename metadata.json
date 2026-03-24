@@ -1,0 +1,5 @@
+{
+  "name": "US Stock Valuation Platform",
+  "description": "A professional valuation platform for top 100 US companies and indices, featuring historical PE trends and percentile analysis.",
+  "requestFramePermissions": []
+}
