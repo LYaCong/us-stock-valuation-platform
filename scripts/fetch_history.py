@@ -35,24 +35,73 @@ def fetch_history(ticker, period_years=20):
     try:
         t = yf.Ticker(ticker)
         period1 = datetime.now().replace(year=datetime.now().year - period_years)
-        hist = t.history(start=period1, interval='1mo')
+        
+        # 获取历史价格和拆股事件
+        hist = t.history(start=period1, interval='1mo', actions=True)
         
         if hist.empty:
-            return []
+            return {'history': [], 'splits': [], 'shares': None}
         
+        # 获取当前流通股数
+        try:
+            info = t.info
+            shares = info.get('sharesOutstanding')
+        except:
+            shares = None
+        
+        # 获取拆股事件
+        splits = []
+        if 'Stock Splits' in hist.columns:
+            split_events = hist[hist['Stock Splits'] > 0]
+            for date, row in split_events.iterrows():
+                ratio = row['Stock Splits']
+                if ratio > 0:
+                    splits.append({
+                        'date': date.strftime('%Y-%m-%d'),
+                        'ratio': ratio,
+                        'label': f"{int(ratio)}:1" if ratio >= 1 else f"1:{int(1/ratio)}"
+                    })
+        
+        # 计算调整后的市值
+        # 拆股调整系数：从最早到现在累积的拆股倍数
+        cumulative_ratio = 1
+        for split in reversed(splits):
+            cumulative_ratio *= split['ratio']
+        
+        # 为每个数据点计算当时的调整系数
         data = []
+        current_ratio = 1
+        split_index = len(splits) - 1
+        
         for date, row in hist.iterrows():
             if row['Close'] and row['Close'] > 0:
+                date_str = date.strftime('%Y-%m-%d')
+                
+                # 检查是否需要更新调整系数
+                while split_index >= 0 and splits[split_index]['date'] >= date_str:
+                    current_ratio *= splits[split_index]['ratio']
+                    split_index -= 1
+                
+                # 计算市值（调整后）
+                market_cap = None
+                if shares:
+                    market_cap = round(row['Close'] * shares * current_ratio / 1e9, 2)  # 单位：B
+                
                 data.append({
-                    'date': date.strftime('%Y-%m-%d'),
+                    'date': date_str,
                     'price': round(row['Close'], 2),
-                    'volume': int(row['Volume']) if row['Volume'] else 0
+                    'volume': int(row['Volume']) if row['Volume'] else 0,
+                    'marketCap': market_cap
                 })
         
-        return data
+        return {
+            'history': data,
+            'splits': splits,
+            'shares': shares
+        }
     except Exception as e:
         print(f"  ⚠️ {ticker}: {e}")
-        return []
+        return {'history': [], 'splits': [], 'shares': None}
 
 def main():
     print(f"📈 开始抓取历史数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
@@ -67,9 +116,11 @@ def main():
     for i, ticker in enumerate(all_tickers, 1):
         print(f"[{i}/{len(all_tickers)}] {ticker}...", end=' ')
         data = fetch_history(ticker)
-        if data:
+        if data['history']:
             result[ticker] = data
-            print(f"✅ {len(data)} 条")
+            split_count = len(data['splits'])
+            split_info = f" ({split_count}次拆股)" if split_count > 0 else ""
+            print(f"✅ {len(data['history'])} 条{split_info}")
             success += 1
         else:
             print("❌")

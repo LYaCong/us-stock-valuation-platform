@@ -192,8 +192,12 @@ async function startServer() {
       }
       
       const ticker = symbol.toUpperCase();
-      const history = cacheData.data?.[ticker] || [];
-      res.json({ history });
+      const tickerData = cacheData.data?.[ticker] || { history: [], splits: [], shares: null };
+      res.json({ 
+        history: tickerData.history || [],
+        splits: tickerData.splits || [],
+        shares: tickerData.shares || null
+      });
     } catch (error: any) {
       console.error("Error fetching historical:", error.message || error);
       res.status(500).json({ error: "Failed to fetch historical data", details: error.message });

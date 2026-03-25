@@ -366,13 +366,16 @@ export default function App() {
   }, [selectedCompanyId, companies]);
 
   const [historicalData, setHistoricalData] = useState<any[]>([]);
+  const [historicalSplits, setHistoricalSplits] = useState<any[]>([]);
   const [indexHistoricalData, setIndexHistoricalData] = useState<any[]>([]);
+  const [indexSplits, setIndexSplits] = useState<any[]>([]);
 
   useEffect(() => {
     if (!selectedCompany) return;
     async function loadHistorical() {
-      const data = await fetchHistorical(selectedCompany.ticker);
-      setHistoricalData(data);
+      const result = await fetchHistorical(selectedCompany.ticker);
+      setHistoricalData(result.history);
+      setHistoricalSplits(result.splits);
     }
     loadHistorical();
   }, [selectedCompany]);
@@ -380,8 +383,9 @@ export default function App() {
   useEffect(() => {
     async function loadIndexHistorical() {
       const selectedIndex = INDICES.find(i => i.id === selectedIndexId) || INDICES[0];
-      const data = await fetchHistorical(selectedIndex.ticker);
-      setIndexHistoricalData(data);
+      const result = await fetchHistorical(selectedIndex.ticker);
+      setIndexHistoricalData(result.history);
+      setIndexSplits(result.splits);
     }
     loadIndexHistorical();
   }, [selectedIndexId]);
@@ -548,7 +552,8 @@ export default function App() {
         {activeTab === 'details' && (
           <DetailsView 
             company={selectedCompany} 
-            historicalData={historicalData} 
+            historicalData={historicalData}
+            historicalSplits={historicalSplits}
             theme={theme}
             onGoToDcf={() => setActiveTab('dcf')}
             t={t}
@@ -584,7 +589,8 @@ export default function App() {
         {activeTab === 'indexDetails' && (
           <IndexDetailsView 
             index={INDICES.find(i => i.id === selectedIndexId) || INDICES[0]} 
-            historicalData={indexHistoricalData} 
+            historicalData={indexHistoricalData}
+            historicalSplits={indexSplits}
             theme={theme}
             t={t}
             lang={lang}
@@ -828,7 +834,7 @@ function Metric({ labelKey, value, color, theme, t, lang }: { labelKey: string, 
   );
 }
 
-function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { company: CompanyValuation, historicalData: any[], theme: Theme, onGoToDcf: () => void, t: any, lang: Lang }) {
+function DetailsView({ company, historicalData, historicalSplits, theme, onGoToDcf, t, lang }: { company: CompanyValuation, historicalData: any[], historicalSplits: any[], theme: Theme, onGoToDcf: () => void, t: any, lang: Lang }) {
   const [timeRange, setTimeRange] = useState('10Y');
   const [chartType, setChartType] = useState<'pe' | 'price' | 'marketCap'>('pe');
 
@@ -938,6 +944,15 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
                   itemStyle={{ color: chartConfig.color }}
                   formatter={(value: number) => [chartConfig.format(value), chartConfig.label]}
                 />
+                {chartType === 'marketCap' && historicalSplits.map((split, i) => (
+                  <ReferenceLine 
+                    key={i}
+                    x={split.date} 
+                    stroke="#ef4444" 
+                    strokeDasharray="3 3"
+                    label={{ value: `Split ${split.label}`, position: 'top', fill: '#ef4444', fontSize: 10 }}
+                  />
+                ))}
                 <Line 
                   type="monotone" 
                   dataKey={chartConfig.key} 
@@ -1040,7 +1055,7 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
   );
 }
 
-function IndexDetailsView({ index, historicalData, theme, t, lang }: { index: IndexValuation, historicalData: any[], theme: Theme, t: any, lang: Lang }) {
+function IndexDetailsView({ index, historicalData, historicalSplits, theme, t, lang }: { index: IndexValuation, historicalData: any[], historicalSplits: any[], theme: Theme, t: any, lang: Lang }) {
   const [timeRange, setTimeRange] = useState('10Y');
   const [chartType, setChartType] = useState<'pe' | 'price'>('pe');
 

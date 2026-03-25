@@ -25,21 +25,24 @@ export async function fetchFundamentals(symbol: string): Promise<any> {
   }
 }
 
-export async function fetchHistorical(symbol: string): Promise<any[]> {
+export async function fetchHistorical(symbol: string): Promise<{ history: any[], splits: any[] }> {
   try {
     const response = await fetch(`/api/historical?symbol=${symbol}`);
     if (!response.ok) throw new Error('Failed to fetch historical');
     const data = await response.json();
-    const history = data.history || [];
     
-    return history.map((item: any) => ({
-      date: item.date,
-      price: item.price,
-      volume: item.volume || 0
-    }));
+    return {
+      history: (data.history || []).map((item: any) => ({
+        date: item.date,
+        price: item.price,
+        volume: item.volume || 0,
+        marketCap: item.marketCap || null
+      })),
+      splits: data.splits || []
+    };
   } catch (error) {
     console.error('Error fetching historical:', error);
-    return [];
+    return { history: [], splits: [] };
   }
 }
 
