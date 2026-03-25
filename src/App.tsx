@@ -862,7 +862,16 @@ function DetailsView({ company, historicalData, historicalSplits, theme, onGoToD
       case 'price':
         return { key: 'price', label: lang === 'zh' ? '股价' : 'Price', color: '#10b981', format: (v: number) => `$${v.toFixed(2)}` };
       case 'marketCap':
-        return { key: 'marketCap', label: lang === 'zh' ? '市值' : 'Market Cap', color: '#f59e0b', format: (v: number) => v >= 1e12 ? `$${(v/1e12).toFixed(2)}T` : `$${(v/1e9).toFixed(2)}B` };
+        return { 
+          key: 'marketCap', 
+          label: lang === 'zh' ? '市值' : 'Market Cap', 
+          color: '#f59e0b', 
+          format: (v: number) => {
+            if (v == null) return 'N/A';
+            if (v >= 1000) return `$${(v/1000).toFixed(2)}T`;
+            return `$${v.toFixed(2)}B`;
+          }
+        };
     }
   }, [chartType, lang]);
 
@@ -942,15 +951,26 @@ function DetailsView({ company, historicalData, historicalSplits, theme, onGoToD
                 <Tooltip 
                   contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
                   itemStyle={{ color: chartConfig.color }}
-                  formatter={(value: number) => [chartConfig.format(value), chartConfig.label]}
+                  formatter={(value: any) => {
+                    if (value == null) return ['N/A', chartConfig.label];
+                    return [chartConfig.format(value), chartConfig.label];
+                  }}
                 />
                 {chartType === 'marketCap' && historicalSplits.map((split, i) => (
                   <ReferenceLine 
                     key={i}
                     x={split.date} 
                     stroke="#ef4444" 
-                    strokeDasharray="3 3"
-                    label={{ value: `Split ${split.label}`, position: 'top', fill: '#ef4444', fontSize: 10 }}
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    label={{ 
+                      value: `Split ${split.label}`, 
+                      position: 'insideTopRight', 
+                      fill: '#ef4444', 
+                      fontSize: 11,
+                      fontWeight: 'bold',
+                      offset: 10
+                    }}
                   />
                 ))}
                 <Line 
