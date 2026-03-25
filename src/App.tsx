@@ -830,11 +830,11 @@ function Metric({ labelKey, value, color, theme, t, lang }: { labelKey: string, 
 
 function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { company: CompanyValuation, historicalData: any[], theme: Theme, onGoToDcf: () => void, t: any, lang: Lang }) {
   const [timeRange, setTimeRange] = useState('10Y');
+  const [chartType, setChartType] = useState<'pe' | 'price' | 'marketCap'>('pe');
 
   const filteredData = useMemo(() => {
     if (!historicalData || historicalData.length === 0) return [];
     
-    const now = new Date('2026-03-03');
     let monthsToKeep = historicalData.length;
     
     switch (timeRange) {
@@ -849,8 +849,19 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
     return historicalData.slice(-monthsToKeep);
   }, [historicalData, timeRange]);
 
-  const startDateStr = filteredData.length > 0 ? filteredData[0].date : '2016-03-03';
-  const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : '2026-03-03';
+  const chartConfig = useMemo(() => {
+    switch (chartType) {
+      case 'pe':
+        return { key: 'peTtm', label: lang === 'zh' ? '市盈率 (TTM)' : 'P/E (TTM)', color: '#3b82f6', format: (v: number) => v.toFixed(2) };
+      case 'price':
+        return { key: 'price', label: lang === 'zh' ? '股价' : 'Price', color: '#10b981', format: (v: number) => `$${v.toFixed(2)}` };
+      case 'marketCap':
+        return { key: 'marketCap', label: lang === 'zh' ? '市值' : 'Market Cap', color: '#f59e0b', format: (v: number) => v >= 1e12 ? `$${(v/1e12).toFixed(2)}T` : `$${(v/1e9).toFixed(2)}B` };
+    }
+  }, [chartType, lang]);
+
+  const startDateStr = filteredData.length > 0 ? filteredData[0].date : 'N/A';
+  const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : 'N/A';
 
   return (
     <div className="space-y-6">
@@ -864,17 +875,28 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
             <Calculator size={16} />
             {t.dcf}
           </button>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">{t.refreshChart}</button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className={cn("lg:col-span-2 border rounded-2xl p-6", theme === 'dark' ? "bg-white/[0.03] border-white/5" : "bg-white border-slate-200")}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className={cn("text-lg font-bold flex items-center gap-2", theme === 'dark' ? "text-white" : "text-slate-900")}>
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              {t.peTtm}
-            </h3>
+            <div className="flex gap-2">
+              {(['pe', 'price', 'marketCap'] as const).map(type => (
+                <button 
+                  key={type}
+                  onClick={() => setChartType(type)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                    type === chartType 
+                      ? "bg-blue-500 text-white" 
+                      : theme === 'dark' ? "bg-white/5 text-slate-400 hover:text-white" : "bg-slate-100 text-slate-500 hover:text-slate-900"
+                  )}
+                >
+                  {type === 'pe' ? (lang === 'zh' ? '市盈率' : 'P/E') : type === 'price' ? (lang === 'zh' ? '股价' : 'Price') : (lang === 'zh' ? '市值' : 'Mkt Cap')}
+                </button>
+              ))}
+            </div>
             <div className={cn("flex gap-1 p-1 rounded-lg", theme === 'dark' ? "bg-white/5" : "bg-slate-100")}>
               {['MAX', '20Y', '10Y', '5Y', '3Y', '1Y'].map(range => (
                 <button 
@@ -913,17 +935,17 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
                 />
                 <Tooltip 
                   contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                  itemStyle={{ color: '#60a5fa' }}
+                  itemStyle={{ color: chartConfig.color }}
+                  formatter={(value: number) => [chartConfig.format(value), chartConfig.label]}
                 />
                 <Line 
                   type="monotone" 
-                  dataKey="peTtm" 
-                  stroke="#3b82f6" 
+                  dataKey={chartConfig.key} 
+                  stroke={chartConfig.color}
                   strokeWidth={2} 
                   dot={false} 
                   activeDot={{ r: 4, strokeWidth: 0 }}
                 />
-                <Brush dataKey="date" height={1} opacity={0} stroke="none" fill="none" tickFormatter={() => ''} style={{ pointerEvents: 'none' }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -1020,11 +1042,11 @@ function DetailsView({ company, historicalData, theme, onGoToDcf, t, lang }: { c
 
 function IndexDetailsView({ index, historicalData, theme, t, lang }: { index: IndexValuation, historicalData: any[], theme: Theme, t: any, lang: Lang }) {
   const [timeRange, setTimeRange] = useState('10Y');
+  const [chartType, setChartType] = useState<'pe' | 'price'>('pe');
 
   const filteredData = useMemo(() => {
     if (!historicalData || historicalData.length === 0) return [];
     
-    const now = new Date('2026-03-03');
     let monthsToKeep = historicalData.length;
     
     switch (timeRange) {
@@ -1039,8 +1061,17 @@ function IndexDetailsView({ index, historicalData, theme, t, lang }: { index: In
     return historicalData.slice(-monthsToKeep);
   }, [historicalData, timeRange]);
 
-  const startDateStr = filteredData.length > 0 ? filteredData[0].date : '2016-03-03';
-  const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : '2026-03-03';
+  const chartConfig = useMemo(() => {
+    switch (chartType) {
+      case 'pe':
+        return { key: 'peTtm', label: lang === 'zh' ? '市盈率 (TTM)' : 'P/E (TTM)', color: '#3b82f6', format: (v: number) => v.toFixed(2) };
+      case 'price':
+        return { key: 'price', label: lang === 'zh' ? '指数价格' : 'Index Price', color: '#10b981', format: (v: number) => `$${v.toFixed(2)}` };
+    }
+  }, [chartType, lang]);
+
+  const startDateStr = filteredData.length > 0 ? filteredData[0].date : 'N/A';
+  const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : 'N/A';
 
   return (
     <div className="space-y-6">
@@ -1049,18 +1080,27 @@ function IndexDetailsView({ index, historicalData, theme, t, lang }: { index: In
           <h2 className={cn("text-2xl font-bold", theme === 'dark' ? "text-white" : "text-slate-900")}>{t.indexDetails}</h2>
           <p className="text-sm text-slate-500">{lang === 'zh' ? index.nameZh : index.name} · {index.ticker} · {startDateStr} ~ {endDateStr}</p>
         </div>
-        <div className="flex gap-2">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">{t.refreshChart}</button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className={cn("lg:col-span-2 border rounded-2xl p-6", theme === 'dark' ? "bg-white/[0.03] border-white/5" : "bg-white border-slate-200")}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className={cn("text-lg font-bold flex items-center gap-2", theme === 'dark' ? "text-white" : "text-slate-900")}>
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              {t.peTtm}
-            </h3>
+            <div className="flex gap-2">
+              {(['pe', 'price'] as const).map(type => (
+                <button 
+                  key={type}
+                  onClick={() => setChartType(type)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                    type === chartType 
+                      ? "bg-blue-500 text-white" 
+                      : theme === 'dark' ? "bg-white/5 text-slate-400 hover:text-white" : "bg-slate-100 text-slate-500 hover:text-slate-900"
+                  )}
+                >
+                  {type === 'pe' ? (lang === 'zh' ? '市盈率' : 'P/E') : (lang === 'zh' ? '价格' : 'Price')}
+                </button>
+              ))}
+            </div>
             <div className={cn("flex gap-1 p-1 rounded-lg", theme === 'dark' ? "bg-white/5" : "bg-slate-100")}>
               {['MAX', '20Y', '10Y', '5Y', '3Y', '1Y'].map(range => (
                 <button 
@@ -1099,17 +1139,17 @@ function IndexDetailsView({ index, historicalData, theme, t, lang }: { index: In
                 />
                 <Tooltip 
                   contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                  itemStyle={{ color: '#60a5fa' }}
+                  itemStyle={{ color: chartConfig.color }}
+                  formatter={(value: number) => [chartConfig.format(value), chartConfig.label]}
                 />
                 <Line 
                   type="monotone" 
-                  dataKey="peTtm" 
-                  stroke="#3b82f6" 
+                  dataKey={chartConfig.key}
+                  stroke={chartConfig.color}
                   strokeWidth={2} 
                   dot={false} 
                   activeDot={{ r: 4, strokeWidth: 0 }}
                 />
-                <Brush dataKey="date" height={1} opacity={0} stroke="none" fill="none" tickFormatter={() => ''} style={{ pointerEvents: 'none' }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

@@ -30,16 +30,13 @@ export async function fetchHistorical(symbol: string): Promise<any[]> {
     const response = await fetch(`/api/historical?symbol=${symbol}`);
     if (!response.ok) throw new Error('Failed to fetch historical');
     const data = await response.json();
-    const result = data.chart?.result?.[0];
-    if (!result) return [];
+    const history = data.history || [];
     
-    const timestamps = result.timestamp || [];
-    const closePrices = result.indicators?.quote?.[0]?.close || [];
-    
-    return timestamps.map((t: number, i: number) => ({
-      date: new Date(t * 1000).toISOString().split('T')[0],
-      price: closePrices[i]
-    })).filter((d: any) => d.price != null);
+    return history.map((item: any) => ({
+      date: item.date,
+      price: item.price,
+      volume: item.volume || 0
+    }));
   } catch (error) {
     console.error('Error fetching historical:', error);
     return [];

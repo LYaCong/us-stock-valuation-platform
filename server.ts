@@ -181,24 +181,19 @@ async function startServer() {
     try {
       const symbol = req.query.symbol as string;
       if (!symbol) return res.status(400).json({ error: "Missing symbol parameter" });
-      const period1 = new Date();
-      period1.setFullYear(period1.getFullYear() - 20);
-      const chart = await yahooFinance.chart(symbol, {
-        period1,
-        interval: '1mo'
-      });
-      const timestamps = chart.quotes.map(q => new Date(q.date).getTime() / 1000);
-      const closePrices = chart.quotes.map(q => q.close);
-      res.json({
-        chart: {
-          result: [{
-            timestamp: timestamps,
-            indicators: {
-              quote: [{ close: closePrices }]
-            }
-          }]
-        }
-      });
+      
+      const HIST_CACHE_FILE = path.join(__dirname, 'stock_cache', 'historical.json');
+      let cacheData: any = null;
+      try {
+        const fileContent = fs.readFileSync(HIST_CACHE_FILE, 'utf-8');
+        cacheData = JSON.parse(fileContent);
+      } catch (e: any) {
+        return res.status(500).json({ error: 'Historical cache not found. Run scripts/fetch_history.py first.' });
+      }
+      
+      const ticker = symbol.toUpperCase();
+      const history = cacheData.data?.[ticker] || [];
+      res.json({ history });
     } catch (error: any) {
       console.error("Error fetching historical:", error.message || error);
       res.status(500).json({ error: "Failed to fetch historical data", details: error.message });
