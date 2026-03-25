@@ -22,7 +22,8 @@ TICKERS = [
     'NOW', 'MDLZ', 'VRTX', 'REGN', 'GILD', 'ISRG', 'LRCX', 'MMC', 'AMAT', 'KLAC',
     'SNPS', 'CDNS', 'PANW', 'BSX', 'BMY', 'SYK', 'CB', 'ZTS', 'CI', 'AOGO',
     'A', 'APD', 'BSY', 'VRSK', 'CDW', 'MCHP', 'PAYX', 'MSI', 'TEL', 'NOC',
-    'ROP', 'FDX', 'PH', 'CMG', 'EL', 'GPN', 'TTD', 'WDAY', 'OTIS', 'TT'
+    'ROP', 'FDX', 'PH', 'CMG', 'EL', 'GPN', 'TTD', 'WDAY', 'OTIS', 'TT',
+    'BABA', 'PDD', 'HSBC', 'NVS'
 ]
 
 # 指数基金（与 server.ts 的 INDEX_TICKERS 保持一致）
@@ -119,10 +120,10 @@ def fetch_quote(ticker):
         
         result = {
             'ticker': ticker.upper(),
-            'price': round(price, 2),
-            'peTtm': round(info.get('trailingPE', 0) or 0, 2),
-            'peFwd': round(info.get('forwardPE', 0) or 0, 2),
-            'pb': round(info.get('priceToBook', 0) or 0, 2),
+            'price': round(price, 2) if price is not None else None,
+            'peTtm': round(info.get('trailingPE'), 2) if info.get('trailingPE') is not None else None,
+            'peFwd': round(info.get('forwardPE'), 2) if info.get('forwardPE') is not None else None,
+            'pb': round(info.get('priceToBook'), 2) if info.get('priceToBook') is not None else None,
             'marketCap': info.get('marketCap'),
             'marketCapStr': format_market_cap(info.get('marketCap')),
             'name': info.get('shortName') or info.get('longName') or ticker,

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-25T16:19:09.556946",
+  "timestamp": "2026-03-25T19:54:29.349768",
   "companies": [
     {
       "ticker": "NVDA",
@@ -1148,15 +1148,15 @@
     {
       "ticker": "AOGO",
       "price": 2.0,
-      "peTtm": 0,
-      "peFwd": 0,
+      "peTtm": null,
+      "peFwd": null,
       "pb": -0.63,
       "marketCap": 6167840,
       "marketCapStr": "$6.17M",
       "name": "Arogo Capital Acquisition Corp.",
       "pePercentile": 6,
       "status": "Low",
-      "timestamp": "2026-03-25T16:17:51.070675"
+      "timestamp": "2026-03-25T19:54:26.310221"
     },
     {
       "ticker": "A",
@@ -1174,7 +1174,7 @@
     {
       "ticker": "APD",
       "price": 286.25,
-      "peTtm": 0,
+      "peTtm": null,
       "peFwd": 20.4,
       "pb": 4.14,
       "marketCap": 63735279616,
@@ -1182,7 +1182,7 @@
       "name": "Air Products and Chemicals, Inc",
       "pePercentile": 86,
       "status": "High",
-      "timestamp": "2026-03-25T16:17:54.666827"
+      "timestamp": "2026-03-25T19:54:27.332440"
     },
     {
       "ticker": "BSY",
@@ -1226,7 +1226,7 @@
     {
       "ticker": "MCHP",
       "price": 65.63,
-      "peTtm": 0,
+      "peTtm": null,
       "peFwd": 24.67,
       "pb": 5.41,
       "marketCap": 35514720256,
@@ -1234,7 +1234,7 @@
       "name": "Microchip Technology Incorporat",
       "pePercentile": 36,
       "status": "Neutral",
-      "timestamp": "2026-03-25T16:18:00.310510"
+      "timestamp": "2026-03-25T19:54:28.459618"
     },
     {
       "ticker": "PAYX",
@@ -1343,7 +1343,7 @@
     {
       "ticker": "EL",
       "price": 71.48,
-      "peTtm": 0,
+      "peTtm": null,
       "peFwd": 23.54,
       "pb": 6.41,
       "marketCap": 25856249856,
@@ -1351,7 +1351,7 @@
       "name": "Estee Lauder Companies, Inc. (T",
       "pePercentile": 9,
       "status": "Low",
-      "timestamp": "2026-03-25T16:18:14.198035"
+      "timestamp": "2026-03-25T19:54:29.349742"
     },
     {
       "ticker": "GPN",
@@ -1417,6 +1417,58 @@
       "pePercentile": 95,
       "status": "High",
       "timestamp": "2026-03-25T16:18:21.723680"
+    },
+    {
+      "ticker": "BABA",
+      "price": 125.48,
+      "peTtm": 22.33,
+      "peFwd": 15.91,
+      "pb": 1.93,
+      "marketCap": 299572559872,
+      "marketCapStr": "$299.57B",
+      "name": "Alibaba Group Holding Limited",
+      "pePercentile": 72,
+      "status": "High",
+      "timestamp": "2026-03-25T20:38:17.355618"
+    },
+    {
+      "ticker": "PDD",
+      "price": 98.09,
+      "peTtm": 9.8,
+      "peFwd": 6.66,
+      "pb": 2.41,
+      "marketCap": 139253121024,
+      "marketCapStr": "$139.25B",
+      "name": "PDD Holdings Inc.",
+      "pePercentile": 44,
+      "status": "Neutral",
+      "timestamp": "2026-03-25T20:38:18.851204"
+    },
+    {
+      "ticker": "HSBC",
+      "price": 79.27,
+      "peTtm": 13.21,
+      "peFwd": 8.36,
+      "pb": 7.65,
+      "marketCap": 272495558656,
+      "marketCapStr": "$272.50B",
+      "name": "HSBC Holdings, plc.",
+      "pePercentile": 96,
+      "status": "High",
+      "timestamp": "2026-03-25T20:38:20.464758"
+    },
+    {
+      "ticker": "NVS",
+      "price": 148.61,
+      "peTtm": 20.78,
+      "peFwd": 14.86,
+      "pb": 6.15,
+      "marketCap": 287273582592,
+      "marketCapStr": "$287.27B",
+      "name": "Novartis AG",
+      "pePercentile": 98,
+      "status": "High",
+      "timestamp": "2026-03-25T20:38:21.883390"
     }
   ],
   "indices": [

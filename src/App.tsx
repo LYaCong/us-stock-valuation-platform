@@ -783,9 +783,9 @@ function CompanyCard({ company, onClick, theme, lang, t }: { company: CompanyVal
 
       <div className="grid grid-cols-3 gap-x-2 gap-y-3 mb-4 relative z-10">
         <Metric labelKey="marketCap" value={company.marketCap} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="peTtm" value={company.peTtm.toFixed(2)} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="peFwd" value={company.peFwd.toFixed(2)} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="pb" value={company.pb.toFixed(2)} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="peTtm" value={(company.peTtm != null && company.peTtm !== 0) ? company.peTtm.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="peFwd" value={(company.peFwd != null && company.peFwd !== 0) ? company.peFwd.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="pb" value={(company.pb != null && company.pb !== 0) ? company.pb.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric labelKey="price" value={company.price ? `$${company.price.toFixed(2)}` : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric 
           labelKey="oneYearPeChange" 
@@ -1062,7 +1062,7 @@ function DetailsView({ company, historicalData, historicalSplits, theme, onGoToD
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <StatCard label={t.currentValue} value={company.peTtm.toFixed(2)} theme={theme} lang={lang} />
+        <StatCard label={t.currentValue} value={(company.peTtm != null && company.peTtm !== 0) ? company.peTtm.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.percentileCurrentRange} value={`${company.pePercentile10y}%`} theme={theme} lang={lang} />
         <StatCard label={t.percentileAllHistory} value="46.0%" theme={theme} lang={lang} />
         <StatCard label={t.rollingPercentile5Y} value="1.6%" theme={theme} lang={lang} />
@@ -1266,7 +1266,7 @@ function IndexDetailsView({ index, historicalData, historicalSplits, theme, t, l
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <StatCard label={t.currentValue} value={index.peTtm.toFixed(2)} theme={theme} lang={lang} />
+        <StatCard label={t.currentValue} value={(index.peTtm != null && index.peTtm !== 0) ? index.peTtm.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.percentileCurrentRange} value={`${index.pePercentile}%`} theme={theme} lang={lang} />
         <StatCard label={t.percentileAllHistory} value="46.0%" theme={theme} lang={lang} />
         <StatCard label={t.rollingPercentile5Y} value="1.6%" theme={theme} lang={lang} />
@@ -1408,7 +1408,7 @@ function ComparisonView({ companies, selectedIds, setSelectedIds, theme, t, lang
                 <ComparisonRow 
                   key={id}
                   name={lang === 'zh' ? company.nameZh : company.name} 
-                  value={company.peTtm.toFixed(2)} 
+                  value={(company.peTtm != null && company.peTtm !== 0) ? company.peTtm.toFixed(2) : 'N/A'} 
                   pct={`${company.pePercentile10y}%`} 
                   status={company.status === 'Low' ? t.low : company.status === 'High' ? t.high : t.neutral} 
                   color={colors[index % colors.length]} 
@@ -1594,9 +1594,9 @@ function IndexCard({ index, theme, onClick, lang, t }: { index: IndexValuation, 
       </div>
 
       <div className="grid grid-cols-3 gap-x-2 gap-y-3 mb-4 relative z-10">
-        <Metric labelKey="peTtm" value={index.peTtm.toFixed(2)} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="peFwd" value={index.peFwd.toFixed(2)} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="pb" value={index.pb.toFixed(2)} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="peTtm" value={(index.peTtm != null && index.peTtm !== 0) ? index.peTtm.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="peFwd" value={(index.peFwd != null && index.peFwd !== 0) ? index.peFwd.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
+        <Metric labelKey="pb" value={(index.pb != null && index.pb !== 0) ? index.pb.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric labelKey="price" value={index.price ? `$${index.price.toFixed(2)}` : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric 
           labelKey="oneYearPeChange" 
