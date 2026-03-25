@@ -269,9 +269,9 @@ export default function App() {
   const [selectedIndexId, setSelectedIndexId] = useState('spx');
   const [theme, setTheme] = useState<Theme>('light');
   const [lang, setLang] = useState<Lang>('zh');
-  const [companies, setCompanies] = useState<CompanyValuation[]>(TOP_COMPANIES);
-  const [indices, setIndices] = useState<IndexValuation[]>(INDICES);
-  const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
+  const [companies, setCompanies] = useState<CompanyValuation[]>([]);
+  const [indices, setIndices] = useState<IndexValuation[]>([]);
+  const [isLoadingQuotes, setIsLoadingQuotes] = useState(true);
 
   const [lastUpdated, setLastUpdated] = useState<string>(new Date().toISOString().split('T')[0]);
 
@@ -286,6 +286,9 @@ export default function App() {
           fetchValuations(tickers),
           fetchIndexValuations(),
         ]);
+        console.log('[App] 获取到公司数据:', realCompanies.length, '条');
+        console.log('[App] 第一条公司数据:', JSON.stringify(realCompanies[0]));
+        console.log('[App] 获取到指数数据:', realIndices.length, '条');
         setCompanies(realCompanies);
         setIndices(realIndices);
         setLastUpdated(new Date().toISOString().split('T')[0]);
@@ -339,10 +342,10 @@ export default function App() {
     }
 
     return result;
-  }, [searchQuery, overviewScope, overviewSort]);
+  }, [companies, searchQuery, overviewScope, overviewSort]);
 
   const filteredIndices = useMemo(() => {
-    let result = [...INDICES];
+    let result = [...indices];
     if (indicesGroup === 'core') {
       result = result.filter(i => i.type === 'Core');
     } else if (indicesGroup === 'industry') {
@@ -355,9 +358,10 @@ export default function App() {
       result.sort((a, b) => b.peTtm - a.peTtm);
     }
     return result;
-  }, [indicesGroup, indicesSort]);
+  }, [indices, indicesGroup, indicesSort]);
 
   const selectedCompany = useMemo(() => {
+    if (companies.length === 0) return null;
     return companies.find(c => c.id === selectedCompanyId) || companies[0];
   }, [selectedCompanyId, companies]);
 
@@ -365,6 +369,7 @@ export default function App() {
   const [indexHistoricalData, setIndexHistoricalData] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!selectedCompany) return;
     async function loadHistorical() {
       const data = await fetchHistorical(selectedCompany.ticker);
       setHistoricalData(data);
@@ -501,7 +506,30 @@ export default function App() {
       </header>
 
       <main className="max-w-[1600px] mx-auto p-6">
-        {activeTab === 'overview' && (
+        {isLoadingQuotes ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className={cn(
+              "w-16 h-16 border-4 rounded-full animate-spin mb-6",
+              theme === 'dark' 
+                ? "border-blue-500/30 border-t-blue-500" 
+                : "border-blue-200 border-t-blue-600"
+            )} />
+            <h2 className={cn(
+              "text-xl font-semibold mb-2",
+              theme === 'dark' ? "text-white" : "text-slate-900"
+            )}>
+              {lang === 'zh' ? '加载数据中...' : 'Loading data...'}
+            </h2>
+            <p className={cn(
+              "text-sm",
+              theme === 'dark' ? "text-slate-400" : "text-slate-500"
+            )}>
+              {lang === 'zh' ? '正在获取最新市场数据' : 'Fetching latest market data'}
+            </p>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'overview' && (
           <OverviewView 
             companies={filteredCompanies} 
             onSelectCompany={(id) => {
@@ -567,6 +595,8 @@ export default function App() {
         )}
         {activeTab === 'settings' && (
           <SettingsView theme={theme} setTheme={setTheme} t={t} />
+        )}
+          </>
         )}
       </main>
     </div>

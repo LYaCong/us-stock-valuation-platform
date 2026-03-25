@@ -25,12 +25,19 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
 
   try {
     const tickersParam = tickers.join(',');
-    const resp = await fetch(`${API_BASE}/api/valuation?tickers=${encodeURIComponent(tickersParam)}`);
+    const url = `${API_BASE}/api/valuation?tickers=${encodeURIComponent(tickersParam)}`;
+    console.log('[fetchValuations] 请求URL:', url);
+    const resp = await fetch(url);
+    console.log('[fetchValuations] 响应状态:', resp.status, resp.statusText);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
+    console.log('[fetchValuations] 返回数据条数:', data.companies?.length);
     const companies: YahooValuation[] = data.companies || [];
 
-    if (companies.length === 0) return TOP_COMPANIES;
+    if (companies.length === 0) {
+      console.warn('[fetchValuations] 无数据，回退到mock');
+      return TOP_COMPANIES;
+    }
 
     // Build nameZh lookup from TOP_COMPANIES
     const nameZhMap: Record<string, string> = {};
@@ -54,7 +61,7 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
       status: yc.status || 'Neutral',
     })) as CompanyValuation[];
   } catch (err) {
-    console.error('fetchValuations failed, falling back to mock:', err);
+    console.error('[fetchValuations] 失败，回退到mock:', err);
     return TOP_COMPANIES;
   }
 }
@@ -77,12 +84,19 @@ interface YahooIndexValuation {
 
 export async function fetchIndexValuations(): Promise<IndexValuation[]> {
   try {
-    const resp = await fetch(`${API_BASE}/api/index-valuations`);
+    const url = `${API_BASE}/api/index-valuations`;
+    console.log('[fetchIndexValuations] 请求URL:', url);
+    const resp = await fetch(url);
+    console.log('[fetchIndexValuations] 响应状态:', resp.status, resp.statusText);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
+    console.log('[fetchIndexValuations] 返回数据条数:', data.indices?.length);
     const indices: YahooIndexValuation[] = data.indices || [];
 
-    if (indices.length === 0) return INDICES;
+    if (indices.length === 0) {
+      console.warn('[fetchIndexValuations] 无数据，回退到mock');
+      return INDICES;
+    }
 
     // Build nameZh lookup from INDICES
     const nameZhMap: Record<string, string> = {};
@@ -108,8 +122,11 @@ export async function fetchIndexValuations(): Promise<IndexValuation[]> {
       price: yi.price ?? 0,
     })) as IndexValuation[];
   } catch (err) {
-    console.error('fetchIndexValuations failed, falling back to mock:', err);
+    console.error('[fetchIndexValuations] 失败，回退到mock:', err);
     return INDICES;
   }
 }
 
+
+// DEBUG: expose to window for testing
+(window as any).debugFetchValuations = fetchValuations;

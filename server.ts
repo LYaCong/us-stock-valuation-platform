@@ -1,7 +1,12 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import YahooFinance from 'yahoo-finance2';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
 
@@ -44,6 +49,9 @@ async function startServer() {
   // Index tickers (ETF proxies for indices)
   const INDEX_TICKERS = ['SPY', 'QQQ', 'DIA', 'IWM', 'VTI', 'XLK', 'XLF', 'XLV', 'XLY', 'XLP', 'XLE', 'XLI', 'XLB', 'XLRE', 'XLU', 'XLC', 'SOXX', 'KRE', 'IBB', 'XRT', 'VNQ', 'VIG', 'SCHD', 'ARKK', 'KWEB', 'GDX'];
 
+  // 读取每日缓存的数据（由 Python 脚本抓取）
+  const CACHE_FILE = path.join(__dirname, 'stock_cache', 'daily_quotes.json');
+
   app.get("/api/valuation", async (req, res) => {
     try {
       const tickersParam = req.query.tickers as string;
@@ -52,80 +60,65 @@ async function startServer() {
       }
       const tickers = tickersParam.split(',').map(t => t.trim().toUpperCase()).filter(Boolean);
 
-      // Fetch in batches of 10 to avoid Yahoo rate limits
-      const BATCH = 10;
+      // 读取缓存文件
+      let cacheData: any = null;
+      try {
+        const fileContent = fs.readFileSync(CACHE_FILE, 'utf-8');
+        cacheData = JSON.parse(fileContent);
+      } catch (e: any) {
+        console.error('Failed to read cache file:', e.message);
+        return res.status(500).json({ error: 'Cache file not found or invalid. Run scripts/fetch_quotes.py first.' });
+      }
+
+      const cacheMap = new Map<string, any>();
+      for (const c of cacheData.companies || []) {
+        cacheMap.set(c.ticker, c);
+      }
+
       const results: any[] = [];
-
-      for (let i = 0; i < tickers.length; i += BATCH) {
-        const batch = tickers.slice(i, i + BATCH);
-        try {
-          const quotes = await yahooFinance.quote(batch, { fields: ['shortName', 'regularMarketPrice', 'marketCap', 'trailingPE', 'forwardPE', 'priceToBook', 'earningsPerShare'] });
-
-          const quoteArray = Array.isArray(quotes) ? quotes : [quotes];
-
-          for (const q of quoteArray) {
-            if (!q || !q.symbol) continue;
-            const sym = q.symbol;
-            const peTtm = q.trailingPE ?? null;
-            const peFwd = q.forwardPE ?? null;
-            const pb = q.priceToBook ?? null;
-            const eps = q.earningsPerShare?.trailing ?? null;
-            // PEG: forwardPE / growthRate - simplified estimate
-            const price = q.regularMarketPrice ?? null;
-            const marketCap = q.marketCap ?? null;
-
-            // Compute 1Y PE change (approximate from current vs 1Y ago)
-            let oneYearPeChange = 0;
-            try {
-              const oneYearAgo = new Date();
-              oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-              const oldChart = await yahooFinance.chart(sym, {
-                period1: oneYearAgo,
-                interval: '1d',
-              });
-              const oldQuotes = oldChart.quotes.filter(q2 => q2.close != null);
-              if (oldQuotes.length > 0 && peTtm && price) {
-                const oldPrice = oldQuotes[0].close!;
-                const oldPeEst = oldPrice > 0 && eps ? oldPrice / eps : null;
-                if (oldPeEst && peTtm > 0) {
-                  oneYearPeChange = parseFloat(((peTtm - oldPeEst) / oldPeEst * 100).toFixed(1));
-                }
-              }
-            } catch { /* skip */ }
-
-            // Compute PE percentile
-            const pePercentile10y = await computePePercentile(sym, peTtm ?? 20);
-
-            // Determine status
-            let status: 'Low' | 'Neutral' | 'High' = 'Neutral';
-            if (pePercentile10y !== null) {
-              if (pePercentile10y < 30) status = 'Low';
-              else if (pePercentile10y > 70) status = 'High';
-              else status = 'Neutral';
-            }
-
-            results.push({
-              id: sym.toLowerCase(),
-              name: q.shortName || sym,
-              nameZh: q.shortName || sym,  // backend doesn't know Chinese, frontend will use nameZh from mockData
-              ticker: sym,
-              type: sym.includes('.') ? 'ADR' : 'US',
-              marketCap: marketCap ? formatMarketCap(marketCap) : 'N/A',
-              price: price ?? 0,
-              peTtm: peTtm ? parseFloat(peTtm.toFixed(2)) : null,
-              peFwd: peFwd ? parseFloat(peFwd.toFixed(2)) : null,
-              pb: pb ? parseFloat(pb.toFixed(2)) : null,
-              peg: 0,
-              oneYearPeChange,
-              pePercentile10y,
-              status,
-            });
-          }
-        } catch (err: any) {
-          console.error(`Batch error for ${batch.join(',')}:`, err.message);
+      for (const ticker of tickers) {
+        const cached = cacheMap.get(ticker);
+        if (!cached) {
+          // Ticker not in cache, return minimal data
+          results.push({
+            id: ticker.toLowerCase(),
+            name: ticker,
+            nameZh: ticker,
+            ticker,
+            type: ticker.includes('.') ? 'ADR' : 'US',
+            marketCap: 'N/A',
+            price: 0,
+            peTtm: null,
+            peFwd: null,
+            pb: null,
+            peg: 0,
+            oneYearPeChange: 0,
+            pePercentile10y: null,
+            status: 'Neutral',
+          });
+          continue;
         }
-        // Small delay between batches to avoid rate limit
-        if (i + BATCH < tickers.length) await new Promise(r => setTimeout(r, 500));
+
+        // 使用Python脚本预先计算的百分位数据
+        const pePercentile10y = cached.pePercentile ?? 50;
+        const status = cached.status || 'Neutral';
+
+        results.push({
+          id: cached.ticker.toLowerCase(),
+          name: cached.name || cached.ticker,
+          nameZh: cached.name || cached.ticker,
+          ticker: cached.ticker,
+          type: cached.ticker.includes('.') ? 'ADR' : 'US',
+          marketCap: cached.marketCapStr || 'N/A',
+          price: cached.price ?? 0,
+          peTtm: cached.peTtm || null,
+          peFwd: cached.peFwd || null,
+          pb: cached.pb || null,
+          peg: 0,
+          oneYearPeChange: 0,
+          pePercentile10y,
+          status,
+        });
       }
 
       res.json({ companies: results });
@@ -137,60 +130,18 @@ async function startServer() {
 
   app.get("/api/index-valuations", async (req, res) => {
     try {
-      const BATCH = 5;
-      const results: any[] = [];
-
-      for (let i = 0; i < INDEX_TICKERS.length; i += BATCH) {
-        const batch = INDEX_TICKERS.slice(i, i + BATCH);
-        try {
-          const quotes = await yahooFinance.quote(batch);
-          const quoteArray = Array.isArray(quotes) ? quotes : [quotes];
-          for (const q of quoteArray) {
-            if (!q || !q.symbol) continue;
-            const peTtm = q.trailingPE ?? null;
-            const peFwd = q.forwardPE ?? null;
-            const pb = q.priceToBook ?? null;
-            const price = q.regularMarketPrice ?? null;
-
-            let oneYearPeChange = 0;
-            try {
-              const oneYearAgo = new Date();
-              oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-              const oldChart = await yahooFinance.chart(q.symbol, { period1: oneYearAgo, interval: '1mo' });
-              const oldClose = oldChart.quotes[0]?.close;
-              if (oldClose && peTtm && price && oldClose > 0) {
-                const oldPe = peTtm * (oldClose / price);
-                oneYearPeChange = parseFloat(((peTtm - oldPe) / oldPe * 100).toFixed(1));
-              }
-            } catch { /* skip */ }
-
-            const pePercentile = await computePePercentile(q.symbol, peTtm ?? 20);
-            let status: 'Low' | 'Neutral' | 'High' = 'Neutral';
-            if (pePercentile < 30) status = 'Low';
-            else if (pePercentile > 70) status = 'High';
-
-            results.push({
-              id: q.symbol.toLowerCase(),
-              name: q.shortName || q.symbol,
-              nameZh: q.shortName || q.symbol,
-              ticker: q.symbol,
-              type: 'Core',
-              peTtm: peTtm ? parseFloat(peTtm.toFixed(2)) : null,
-              peFwd: peFwd ? parseFloat(peFwd.toFixed(2)) : null,
-              pb: pb ? parseFloat(pb.toFixed(2)) : null,
-              oneYearPeChange,
-              pePercentile,
-              price: price ?? 0,
-              status,
-            });
-          }
-        } catch (err: any) {
-          console.error(`Index batch error ${batch.join(',')}:`, err.message);
-        }
-        if (i + BATCH < INDEX_TICKERS.length) await new Promise(r => setTimeout(r, 500));
+      // 读取缓存文件
+      let cacheData: any = null;
+      try {
+        const fileContent = fs.readFileSync(CACHE_FILE, 'utf-8');
+        cacheData = JSON.parse(fileContent);
+      } catch (e: any) {
+        console.error('Failed to read cache file:', e.message);
+        return res.status(500).json({ error: 'Cache file not found or invalid. Run scripts/fetch_quotes.py first.' });
       }
 
-      res.json({ indices: results });
+      const indices = cacheData.indices || [];
+      res.json({ indices });
     } catch (error: any) {
       console.error("Error in /api/index-valuations:", error.message || error);
       res.status(500).json({ error: "Failed to fetch index valuations", details: error.message });
