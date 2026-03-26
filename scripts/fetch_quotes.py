@@ -70,6 +70,86 @@ INDICES = [
 
 CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
 
+def load_cache(filepath: str) -> Dict:
+    """加载旧缓存文件，如果不存在或格式错误返回空结构"""
+    if not os.path.exists(filepath):
+        return {'companies': [], 'indices': []}
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return {
+                'companies': data.get('companies', []),
+                'indices': data.get('indices', [])
+            }
+    except (json.JSONDecodeError, IOError) as e:
+        print(f"  ⚠️ 加载旧缓存失败: {e}, 将使用空缓存")
+        return {'companies': [], 'indices': []}
+
+def merge_and_save(
+    new_companies: List[Dict],
+    new_indices: List[Dict],
+    filepath: str,
+    success_rate: float,
+    is_final: bool = False
+) -> bool:
+    """
+    合并旧缓存与新数据后写入。
+    
+    逻辑:
+    1. 加载旧缓存
+    2. 按 ticker 合并：新数据有就用新的，没有就保留旧的
+    3. 非最终写入：始终合并（增量保存，不丢数据）
+    4. 最终写入：仅当成功率 > 50% 时写入，否则保留旧数据
+    
+    Returns: True 如果实际写入了新数据
+    """
+    old_cache = load_cache(filepath)
+
+    # 合并逻辑：新数据优先，旧数据补充
+    merged_companies = []
+    merged_indices = []
+    seen_companies = set()
+    seen_indices = set()
+    
+    # 先加入所有新数据
+    for c in new_companies:
+        merged_companies.append(c)
+        seen_companies.add(c['ticker'])
+    
+    for i in new_indices:
+        merged_indices.append(i)
+        seen_indices.add(i['ticker'])
+    
+    # 再补充旧数据中没有被新数据覆盖的条目
+    for c in old_cache.get('companies', []):
+        if c['ticker'] not in seen_companies:
+            merged_companies.append(c)
+            seen_companies.add(c['ticker'])
+    
+    for i in old_cache.get('indices', []):
+        if i['ticker'] not in seen_indices:
+            merged_indices.append(i)
+            seen_indices.add(i['ticker'])
+    
+    # 最终写入时检查成功率
+    if is_final:
+        if success_rate < 0.5:
+            print(f"  ⚠️ 成功率 {success_rate:.1%} < 50%, 保留旧缓存不写入")
+            return False
+    
+    # 写入合并后的数据
+    cache_dir = os.path.dirname(filepath)
+    os.makedirs(cache_dir, exist_ok=True)
+    output = {
+        'timestamp': datetime.now().isoformat(),
+        'companies': merged_companies,
+        'indices': merged_indices
+    }
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+    
+    return True
+
 def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
     """带指数退避重试的请求封装"""
     for attempt in range(max_retries):
@@ -94,18 +174,6 @@ def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) ->
             else:
                 raise
     return None
-
-def save_progress(companies: List[Dict], indices: List[Dict], filepath: str):
-    """增量保存进度"""
-    cache_dir = os.path.dirname(filepath)
-    os.makedirs(cache_dir, exist_ok=True)
-    output = {
-        'timestamp': datetime.now().isoformat(),
-        'companies': companies,
-        'indices': indices
-    }
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
 
 FIELDS = [
     'currentPrice', 'regularMarketPrice', 'trailingPE', 'forwardPE',
@@ -193,10 +261,13 @@ def main():
     indices = []
     success_companies = 0
     failed_companies = 0
-    total = len(TICKERS)
+    total_companies = len(TICKERS)
+    total_indices = len(INDICES)
+    total_tickers = total_companies + total_indices
+    incremental_counter = 0
     
     for i, ticker in enumerate(TICKERS, 1):
-        print(f"[{i}/{total}] 抓取 {ticker}...", end=' ')
+        print(f"[{i}/{total_companies}] 抓取 {ticker}...", end=' ')
         quote = fetch_with_retry(ticker, fetch_quote)
         if quote:
             print(f"✅ ${quote['price']}")
@@ -206,13 +277,17 @@ def main():
             print("❌ 失败")
             failed_companies += 1
         
-        if len(companies) >= INCREMENTAL_WRITE_INTERVAL:
-            save_progress(companies, indices, CACHE_FILE)
-            print(f"  💾 增量保存: {len(companies)} 公司")
+        incremental_counter += 1
+        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
+            current_success = success_companies
+            current_rate = current_success / total_tickers if total_tickers > 0 else 0
+            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
+            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
+            incremental_counter = 0
         
         time.sleep(REQUEST_DELAY)
     
-    print(f"\n📊 公司完成: {success_companies} 成功, {failed_companies} 失败")
+    print(f"\n📊 公司完成: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
     print("📊 处理指数基金...")
     
     success_indices = 0
@@ -230,17 +305,27 @@ def main():
             print("❌ 失败")
             failed_indices += 1
         
-        if len(indices) % INCREMENTAL_WRITE_INTERVAL == 0:
-            save_progress(companies, indices, CACHE_FILE)
-            print(f"  💾 增量保存")
+        incremental_counter += 1
+        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
+            current_success = success_companies + success_indices
+            current_rate = current_success / total_tickers if total_tickers > 0 else 0
+            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
+            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
+            incremental_counter = 0
         
         time.sleep(REQUEST_DELAY)
     
-    save_progress(companies, indices, CACHE_FILE)
+    total_success = success_companies + success_indices
+    final_rate = total_success / total_tickers if total_tickers > 0 else 0
+    wrote = merge_and_save(companies, indices, CACHE_FILE, final_rate, is_final=True)
     
-    print(f"\n✅ 完成！已保存 {len(companies)} 家公司 + {len(indices)} 个指数到 {CACHE_FILE}")
-    print(f"   公司: {success_companies}/{total} 成功, {failed_companies} 失败")
-    print(f"   指数: {success_indices}/{len(INDICES)} 成功, {failed_indices} 失败")
+    if wrote:
+        print(f"\n✅ 完成！已保存 {len(companies)} 家公司 + {len(indices)} 个指数到 {CACHE_FILE}")
+    else:
+        print(f"\n⚠️ 完成！成功率不足，保留旧缓存")
+    print(f"   公司: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
+    print(f"   指数: {success_indices}/{total_indices} 成功, {failed_indices} 失败")
+    print(f"   总成功率: {final_rate:.1%}")
 
 if __name__ == '__main__':
     main()
