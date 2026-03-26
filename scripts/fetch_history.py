@@ -22,6 +22,7 @@ BATCH_DELAY = 3
 MAX_RETRIES = 3
 RETRY_BASE_DELAY = 3
 RETRY_MAX_DELAY = 120
+INCREMENTAL_WRITE_INTERVAL = 10
 
 TICKERS = [
     'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
@@ -54,17 +55,48 @@ def load_existing_data() -> Dict:
             pass
     return {'timestamp': None, 'count': 0, 'data': {}}
 
-def save_data(data: Dict):
-    """保存数据到文件"""
-    cache_dir = os.path.dirname(CACHE_FILE)
+def merge_and_save(
+    new_data: Dict,
+    filepath: str,
+    success_rate: float,
+    is_final: bool = False
+) -> bool:
+    """
+    合并旧缓存与新数据后写入。
+
+    逻辑:
+    1. 加载旧缓存
+    2. 按 ticker 合并：新数据有就用新的，没有就保留旧的
+    3. 非最终写入：始终合并（增量保存，不丢数据）
+    4. 最终写入：仅当成功率 > 50% 时写入，否则保留旧数据
+
+    Returns: True 如果实际写入了新数据
+    """
+    old_cache = load_existing_data()
+    old_data = old_cache.get('data', {})
+
+    merged_data = {}
+    for ticker, val in old_data.items():
+        merged_data[ticker] = val
+    for ticker, val in new_data.items():
+        merged_data[ticker] = val
+
+    if is_final:
+        if success_rate < 0.5:
+            print(f"  ⚠️ 成功率 {success_rate:.1%} < 50%, 保留旧缓存不写入")
+            return False
+
+    cache_dir = os.path.dirname(filepath)
     os.makedirs(cache_dir, exist_ok=True)
     output = {
         'timestamp': datetime.now().isoformat(),
-        'count': len(data),
-        'data': data
+        'count': len(merged_data),
+        'data': merged_data
     }
-    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+
+    return True
 
 def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
     """带指数退避重试的请求封装"""
@@ -168,53 +200,66 @@ def main():
     print(f"   配置: 延迟={REQUEST_DELAY}s, 批延迟={BATCH_DELAY}s, 重试={MAX_RETRIES}次")
     print(f"   股票: {len(TICKERS)} 只")
     print(f"   指数: {len(INDICES)} 个")
-    
+
     existing = load_existing_data()
-    result = existing.get('data', {})
-    existing_count = len(result)
-    
+    old_data = existing.get('data', {})
+    new_data = {}
+    existing_count = len(old_data)
+
     if existing_count > 0:
         print(f"   已有: {existing_count} 个标的,将继续增量抓取...")
-    
+
     all_tickers = TICKERS + INDICES
     success = 0
     failed = 0
     skipped = 0
-    
+    incremental_counter = 0
+
     for i, ticker in enumerate(all_tickers, 1):
-        if ticker in result:
+        if ticker in old_data:
             print(f"[{i}/{len(all_tickers)}] {ticker}... ⏭️ 已存在,跳过")
             skipped += 1
             continue
-            
+
         print(f"[{i}/{len(all_tickers)}] {ticker}...", end=' ')
         data = fetch_with_retry(ticker, lambda t: fetch_history(t))
-        
+
         if data and data['history']:
-            result[ticker] = data
+            new_data[ticker] = data
             split_count = len(data['splits'])
             split_info = f" ({split_count}次拆股)" if split_count > 0 else ""
             print(f"✅ {len(data['history'])} 条{split_info}")
             success += 1
-            
-            save_data(result)
-            print(f"  💾 已保存 ({len(result)}/{len(all_tickers)})")
         else:
             print("❌ 失败")
             failed += 1
-        
+
+        incremental_counter += 1
+        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
+            current_total = success + skipped
+            current_rate = current_total / len(all_tickers) if all_tickers else 0
+            merge_and_save(new_data, CACHE_FILE, current_rate, is_final=False)
+            print(f"  💾 增量保存: {success} 新增 + {skipped} 已有 = {len(old_data) + len(new_data)} 总计")
+            incremental_counter = 0
+
         time.sleep(REQUEST_DELAY)
-        
+
         if (i + skipped) % 10 == 0:
             print(f"  ⏸️ 批处理休息 {BATCH_DELAY}s...")
             time.sleep(BATCH_DELAY)
-    
-    save_data(result)
-    
-    print(f"\n✅ 完成！已保存 {len(result)} 个标的的历史数据到 {CACHE_FILE}")
-    print(f"   成功: {success}")
+
+    total_count = len(old_data) + len(new_data)
+    final_rate = total_count / len(all_tickers) if all_tickers else 0
+    wrote = merge_and_save(new_data, CACHE_FILE, final_rate, is_final=True)
+
+    if wrote:
+        print(f"\n✅ 完成！已保存 {total_count} 个标的的历史数据到 {CACHE_FILE}")
+    else:
+        print(f"\n⚠️ 完成！成功率不足，保留旧缓存")
+    print(f"   新增: {success}")
     print(f"   失败: {failed}")
-    print(f"   跳过: {skipped} (已存在)")
+    print(f"   已有跳过: {skipped}")
+    print(f"   总成功率: {final_rate:.1%}")
 
 if __name__ == '__main__':
     main()
