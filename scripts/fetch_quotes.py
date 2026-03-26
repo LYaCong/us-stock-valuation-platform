@@ -2,28 +2,40 @@
 """
 美股数据每日抓取脚本
 每天早上8点自动运行，抓取所有股票实时数据并写入缓存文件
+
+优化说明:
+- 添加请求延迟避免限速
+- 添加限速重试逻辑(指数退避)
+- 成功请求立即写入文件(增量写入)
+- 汇总成功/失败数量
 """
 
 import yfinance as yf
 import json
 import time
 import os
+import sys
 from datetime import datetime
+from typing import Optional, Dict, Any, List
 
-# 股票列表（与 mockData.ts 保持一致）
+REQUEST_DELAY = 0.3
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 2
+RETRY_MAX_DELAY = 60
+INCREMENTAL_WRITE_INTERVAL = 10
+
+# 股票列表（与前端 src/config/tickers.ts 保持一致）
 TICKERS = [
     'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
     'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
     'COST', 'ABBV', 'CRM', 'ORCL', 'AMD', 'NFLX', 'CVX', 'MRK', 'BAC', 'PEP',
     'KO', 'TMO', 'LIN', 'ADI', 'CSCO', 'MCD', 'ABT', 'DIS', 'INTU', 'QCOM',
-    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'DHR', 'PM', 'NEE', 'ACN',
-    'UPS', 'ADBE', 'TXN', 'AMGN', 'HON', 'MS', 'GS', 'BLK', 'SCHW', 'AXP',
-    'C', 'PNC', 'TFC', 'USB', 'COF', 'RTX', 'LOW', 'SPGI', 'DE', 'CAT',
-    'NOW', 'MDLZ', 'VRTX', 'REGN', 'GILD', 'ISRG', 'LRCX', 'MMC', 'AMAT', 'KLAC',
-    'SNPS', 'CDNS', 'PANW', 'BSX', 'BMY', 'SYK', 'CB', 'ZTS', 'CI', 'AOGO',
-    'A', 'APD', 'BSY', 'VRSK', 'CDW', 'MCHP', 'PAYX', 'MSI', 'TEL', 'NOC',
-    'ROP', 'FDX', 'PH', 'CMG', 'EL', 'GPN', 'TTD', 'WDAY', 'OTIS', 'TT',
-    'BABA', 'PDD', 'HSBC', 'NVS'
+    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'NVS', 'BABA', 'PDD', 'HSBC',
+    'CAT', 'GE', 'IBM', 'AMAT', 'TXN', 'NOW', 'ISRG', 'BKNG', 'GS', 'MS',
+    'RTX', 'HON', 'PFE', 'AMGN', 'T', 'VZ', 'CMCSA', 'NEE', 'PM', 'UNP',
+    'LOW', 'SPGI', 'INTC', 'COP', 'SYK', 'UPS', 'ELV', 'BA', 'MDT', 'LMT',
+    'TJX', 'AXP', 'DE', 'C', 'PLD', 'CB', 'ABNB', 'MDLZ', 'CI', 'ZTS',
+    'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
 ]
 
 # 指数基金（与 server.ts 的 INDEX_TICKERS 保持一致）
@@ -57,6 +69,43 @@ INDICES = [
 ]
 
 CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
+
+def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
+    """带指数退避重试的请求封装"""
+    for attempt in range(max_retries):
+        try:
+            result = fetch_func(ticker)
+            if result is not None:
+                return result
+            if attempt < max_retries - 1:
+                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
+                print(f"  ⏳ {ticker} 无数据, {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+        except Exception as e:
+            error_msg = str(e).lower()
+            if '429' in error_msg or 'too many requests' in error_msg or 'rate limit' in error_msg:
+                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
+                print(f"  ⚠️ {ticker} 限速(429), {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+            elif attempt < max_retries - 1:
+                wait_time = RETRY_BASE_DELAY * (attempt + 1)
+                print(f"  ⚠️ {ticker} 错误: {e}, {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+            else:
+                raise
+    return None
+
+def save_progress(companies: List[Dict], indices: List[Dict], filepath: str):
+    """增量保存进度"""
+    cache_dir = os.path.dirname(filepath)
+    os.makedirs(cache_dir, exist_ok=True)
+    output = {
+        'timestamp': datetime.now().isoformat(),
+        'companies': companies,
+        'indices': indices
+    }
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
 
 FIELDS = [
     'currentPrice', 'regularMarketPrice', 'trailingPE', 'forwardPE',
@@ -138,56 +187,60 @@ def fetch_quote(ticker):
 
 def main():
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
+    print(f"   配置: 延迟={REQUEST_DELAY}s, 重试={MAX_RETRIES}次, 增量写入={INCREMENTAL_WRITE_INTERVAL}")
     
     companies = []
     indices = []
+    success_companies = 0
+    failed_companies = 0
     total = len(TICKERS)
     
     for i, ticker in enumerate(TICKERS, 1):
         print(f"[{i}/{total}] 抓取 {ticker}...", end=' ')
-        quote = fetch_quote(ticker)
+        quote = fetch_with_retry(ticker, fetch_quote)
         if quote:
             print(f"✅ ${quote['price']}")
             companies.append(quote)
+            success_companies += 1
         else:
             print("❌ 失败")
-        # Be nice to Yahoo
-        if i % 10 == 0:
-            time.sleep(0.5)
+            failed_companies += 1
+        
+        if len(companies) >= INCREMENTAL_WRITE_INTERVAL:
+            save_progress(companies, indices, CACHE_FILE)
+            print(f"  💾 增量保存: {len(companies)} 公司")
+        
+        time.sleep(REQUEST_DELAY)
     
-    # 处理指数
-    print("\n📊 处理指数基金...")
+    print(f"\n📊 公司完成: {success_companies} 成功, {failed_companies} 失败")
+    print("📊 处理指数基金...")
+    
+    success_indices = 0
+    failed_indices = 0
     for idx in INDICES:
         ticker = idx['ticker']
         print(f"  {ticker}...", end=' ')
-        quote = fetch_quote(ticker)
+        quote = fetch_with_retry(ticker, fetch_quote)
         if quote:
             idx_data = {**idx, **quote}
             indices.append(idx_data)
             print(f"✅ ${quote['price']}")
+            success_indices += 1
         else:
             print("❌ 失败")
+            failed_indices += 1
+        
+        if len(indices) % INCREMENTAL_WRITE_INTERVAL == 0:
+            save_progress(companies, indices, CACHE_FILE)
+            print(f"  💾 增量保存")
+        
+        time.sleep(REQUEST_DELAY)
     
-    # 保存
-    cache_dir = os.path.dirname(CACHE_FILE)
-    os.makedirs(cache_dir, exist_ok=True)
-    
-    output = {
-        'timestamp': datetime.now().isoformat(),
-        'companies': companies,
-        'indices': indices
-    }
-    
-    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    save_progress(companies, indices, CACHE_FILE)
     
     print(f"\n✅ 完成！已保存 {len(companies)} 家公司 + {len(indices)} 个指数到 {CACHE_FILE}")
-    
-    # 打印摘要
-    success_companies = [r for r in companies if r.get('price')]
-    success_indices = [r for r in indices if r.get('price')]
-    print(f"   公司: {len(success_companies)}/{total} 成功")
-    print(f"   指数: {len(success_indices)}/{len(INDICES)} 成功")
+    print(f"   公司: {success_companies}/{total} 成功, {failed_companies} 失败")
+    print(f"   指数: {success_indices}/{len(INDICES)} 成功, {failed_indices} 失败")
 
 if __name__ == '__main__':
     main()

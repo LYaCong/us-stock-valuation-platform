@@ -2,25 +2,38 @@
 """
 美股历史数据抓取脚本
 每月运行一次，抓取20年历史数据并追加到缓存文件
+
+优化说明:
+- 添加请求延迟和重试逻辑(指数退避)
+- 分批处理,每标的完成后短暂休息
+- 增量追加:支持部分成功后下次继续
+- 限速时等待后继续,不立即放弃
 """
 
 import yfinance as yf
 import json
 import os
+import time
 from datetime import datetime
+from typing import Optional, Dict, Any
+
+REQUEST_DELAY = 0.5
+BATCH_DELAY = 3
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 3
+RETRY_MAX_DELAY = 120
 
 TICKERS = [
     'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
     'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
     'COST', 'ABBV', 'CRM', 'ORCL', 'AMD', 'NFLX', 'CVX', 'MRK', 'BAC', 'PEP',
     'KO', 'TMO', 'LIN', 'ADI', 'CSCO', 'MCD', 'ABT', 'DIS', 'INTU', 'QCOM',
-    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'DHR', 'PM', 'NEE', 'ACN',
-    'UPS', 'ADBE', 'TXN', 'AMGN', 'HON', 'MS', 'GS', 'BLK', 'SCHW', 'AXP',
-    'C', 'PNC', 'TFC', 'USB', 'COF', 'RTX', 'LOW', 'SPGI', 'DE', 'CAT',
-    'NOW', 'MDLZ', 'VRTX', 'REGN', 'GILD', 'ISRG', 'LRCX', 'MMC', 'AMAT', 'KLAC',
-    'SNPS', 'CDNS', 'PANW', 'BSX', 'BMY', 'SYK', 'CB', 'ZTS', 'CI', 'AOGO',
-    'A', 'APD', 'BSY', 'VRSK', 'CDW', 'MCHP', 'PAYX', 'MSI', 'TEL', 'NOC',
-    'ROP', 'FDX', 'PH', 'CMG', 'EL', 'GPN', 'TTD', 'WDAY', 'OTIS', 'TT'
+    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'NVS', 'BABA', 'PDD', 'HSBC',
+    'CAT', 'GE', 'IBM', 'AMAT', 'TXN', 'NOW', 'ISRG', 'BKNG', 'GS', 'MS',
+    'RTX', 'HON', 'PFE', 'AMGN', 'T', 'VZ', 'CMCSA', 'NEE', 'PM', 'UNP',
+    'LOW', 'SPGI', 'INTC', 'COP', 'SYK', 'UPS', 'ELV', 'BA', 'MDT', 'LMT',
+    'TJX', 'AXP', 'DE', 'C', 'PLD', 'CB', 'ABNB', 'MDLZ', 'CI', 'ZTS',
+    'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
 ]
 
 INDICES = [
@@ -30,6 +43,53 @@ INDICES = [
 ]
 
 CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'historical.json')
+
+def load_existing_data() -> Dict:
+    """加载已存在的数据,支持增量追加"""
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            pass
+    return {'timestamp': None, 'count': 0, 'data': {}}
+
+def save_data(data: Dict):
+    """保存数据到文件"""
+    cache_dir = os.path.dirname(CACHE_FILE)
+    os.makedirs(cache_dir, exist_ok=True)
+    output = {
+        'timestamp': datetime.now().isoformat(),
+        'count': len(data),
+        'data': data
+    }
+    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False)
+
+def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
+    """带指数退避重试的请求封装"""
+    for attempt in range(max_retries):
+        try:
+            result = fetch_func(ticker)
+            if result is not None:
+                return result
+            if attempt < max_retries - 1:
+                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
+                print(f"  ⏳ {ticker} 无数据, {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+        except Exception as e:
+            error_msg = str(e).lower()
+            if '429' in error_msg or 'too many requests' in error_msg or 'rate limit' in error_msg:
+                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
+                print(f"  ⚠️ {ticker} 限速(429), {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+            elif attempt < max_retries - 1:
+                wait_time = RETRY_BASE_DELAY * (attempt + 1)
+                print(f"  ⚠️ {ticker} 错误: {e}, {wait_time}s后重试({attempt + 1}/{max_retries})...")
+                time.sleep(wait_time)
+            else:
+                raise
+    return None
 
 def fetch_history(ticker, period_years=20):
     try:
@@ -105,42 +165,56 @@ def fetch_history(ticker, period_years=20):
 
 def main():
     print(f"📈 开始抓取历史数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
+    print(f"   配置: 延迟={REQUEST_DELAY}s, 批延迟={BATCH_DELAY}s, 重试={MAX_RETRIES}次")
     print(f"   股票: {len(TICKERS)} 只")
     print(f"   指数: {len(INDICES)} 个")
     
+    existing = load_existing_data()
+    result = existing.get('data', {})
+    existing_count = len(result)
+    
+    if existing_count > 0:
+        print(f"   已有: {existing_count} 个标的,将继续增量抓取...")
+    
     all_tickers = TICKERS + INDICES
-    result = {}
     success = 0
     failed = 0
+    skipped = 0
     
     for i, ticker in enumerate(all_tickers, 1):
+        if ticker in result:
+            print(f"[{i}/{len(all_tickers)}] {ticker}... ⏭️ 已存在,跳过")
+            skipped += 1
+            continue
+            
         print(f"[{i}/{len(all_tickers)}] {ticker}...", end=' ')
-        data = fetch_history(ticker)
-        if data['history']:
+        data = fetch_with_retry(ticker, lambda t: fetch_history(t))
+        
+        if data and data['history']:
             result[ticker] = data
             split_count = len(data['splits'])
             split_info = f" ({split_count}次拆股)" if split_count > 0 else ""
             print(f"✅ {len(data['history'])} 条{split_info}")
             success += 1
+            
+            save_data(result)
+            print(f"  💾 已保存 ({len(result)}/{len(all_tickers)})")
         else:
-            print("❌")
+            print("❌ 失败")
             failed += 1
+        
+        time.sleep(REQUEST_DELAY)
+        
+        if (i + skipped) % 10 == 0:
+            print(f"  ⏸️ 批处理休息 {BATCH_DELAY}s...")
+            time.sleep(BATCH_DELAY)
     
-    cache_dir = os.path.dirname(CACHE_FILE)
-    os.makedirs(cache_dir, exist_ok=True)
+    save_data(result)
     
-    output = {
-        'timestamp': datetime.now().isoformat(),
-        'count': len(result),
-        'data': result
-    }
-    
-    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False)
-    
-    print(f"\n✅ 完成！已保存 {success} 个标的的历史数据到 {CACHE_FILE}")
+    print(f"\n✅ 完成！已保存 {len(result)} 个标的的历史数据到 {CACHE_FILE}")
     print(f"   成功: {success}")
     print(f"   失败: {failed}")
+    print(f"   跳过: {skipped} (已存在)")
 
 if __name__ == '__main__':
     main()
