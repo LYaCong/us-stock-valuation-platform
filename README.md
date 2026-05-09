@@ -30,6 +30,7 @@
 | Data Source | Yahoo Finance API (`yahoo-finance2`) |
 | AI | Google Gemini API (`@google/genai`) |
 | Build | Vite 6, tsx |
+| Testing | Node.js built-in test runner |
 
 ## Quick Start
 
@@ -56,7 +57,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173` with the API server on port 3000.
+The app will be available at `http://localhost:3000`.
 
 ### Build for Production
 
@@ -65,36 +66,85 @@ npm run build
 npm run preview
 ```
 
+### Run Tests
+
+```bash
+npm run test
+```
+
 ## Project Structure
 
 ```
 us-stock-valuation-platform/
-├── server.ts              # Express API server (Yahoo Finance proxy + PE percentile calc)
-├── src/
-│   ├── App.tsx            # Main application component
-│   ├── types.ts           # TypeScript type definitions
-│   ├── config/
-│   │   └── tickers.ts     # Stock & index ticker lists
+├── server.ts                        # Express API server entry
+├── server/
 │   ├── services/
-│   │   ├── financeService.ts    # Market data fetching
-│   │   └── valuationService.ts  # Valuation calculation
-│   ├── utils/
-│   │   └── generateHistoricalData.ts
-│   ├── data/              # Static data
-│   ├── index.css          # Global styles
-│   └── main.tsx           # Entry point
-├── scripts/               # Utility scripts
-├── vite.config.ts         # Vite configuration
-└── tsconfig.json          # TypeScript configuration
+│   │   ├── marketDataService.ts     # Market data fetching & caching
+│   │   └── cacheService.ts          # Cache file I/O
+│   └── mappers/
+│       └── valuationMappers.ts      # Data transformation & mapping
+├── src/
+│   ├── App.tsx                      # Main application component
+│   ├── types.ts                     # TypeScript type definitions
+│   ├── config/
+│   │   └── tickers.ts               # Stock & index ticker lists
+│   ├── components/
+│   │   ├── common/                  # Reusable UI components
+│   │   │   ├── FilterDropdown.tsx
+│   │   │   ├── Metric.tsx
+│   │   │   ├── NavButton.tsx
+│   │   │   └── StatCard.tsx
+│   │   └── views/                   # Page-level views
+│   │       ├── OverviewView.tsx
+│   │       ├── DetailsView.tsx
+│   │       ├── ComparisonView.tsx
+│   │       ├── IndexView.tsx
+│   │       ├── IndexDetailsView.tsx
+│   │       ├── DcfView.tsx
+│   │       └── SettingsView.tsx
+│   ├── hooks/                       # Custom React hooks
+│   │   ├── useMarketData.ts
+│   │   ├── useHistoricalData.ts
+│   │   └── useComparisonHistory.ts
+│   ├── services/                    # API client services
+│   │   ├── financeService.ts
+│   │   └── valuationService.ts
+│   ├── utils/                       # Utility functions
+│   │   ├── dcfCalculator.ts
+│   │   └── cn.ts
+│   ├── data/                        # Static data & mappings
+│   │   └── tickerMappings.ts
+│   └── __tests__/                   # Unit tests
+│       ├── dcfCalculator.test.ts
+│       └── valuationMappers.test.ts
+├── scripts/                         # Data fetching scripts
+│   ├── fetch_quotes.py              # Daily quotes fetcher
+│   └── fetch_history.py             # Historical data fetcher
+├── stock_cache/                     # Cached data files
+│   ├── daily_quotes.json
+│   └── historical.json
+├── vite.config.ts
+└── tsconfig.json
 ```
 
 ## How It Works
 
-1. **Data Fetching** — Fetches real-time quotes and fundamentals from Yahoo Finance API
-2. **PE Percentile Calculation** — Computes 10-year historical PE percentile by analyzing monthly data
-3. **Valuation Classification** — Classifies stocks as Low/Neutral/High based on their current PE relative to historical range
-4. **Visualization** — Renders interactive charts showing PE trends, percentile bands, and comparison data
-5. **AI Insights** — (Optional) Uses Gemini API to provide AI-generated analysis and commentary
+1. **Data Fetching** — Python scripts (`scripts/fetch_quotes.py`, `scripts/fetch_history.py`) fetch data from Yahoo Finance API and cache locally
+2. **API Server** — Express.js serves cached data via REST endpoints (`/api/valuation`, `/api/quotes`, `/api/fundamentals`, `/api/historical`)
+3. **PE Percentile Calculation** — Computes 10-year historical PE percentile by analyzing monthly data
+4. **Valuation Classification** — Classifies stocks as Low/Neutral/High based on their current PE relative to historical range
+5. **Visualization** — Renders interactive charts showing PE trends, percentile bands, and comparison data
+6. **AI Insights** — (Optional) Uses Gemini API to provide AI-generated analysis and commentary
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/valuation?tickers=AAPL,NVDA` | GET | Company valuations with PE/PB/PEG |
+| `/api/index-valuations` | GET | Index & ETF valuations |
+| `/api/quotes?symbols=AAPL` | GET | Real-time quotes (from cache) |
+| `/api/fundamentals?symbol=AAPL` | GET | Company fundamentals (from cache) |
+| `/api/historical?symbol=AAPL` | GET | Historical price & PE data |
 
 ## Environment Variables
 
@@ -136,15 +186,49 @@ cp .env.example .env.local   # 编辑 .env.local 添加你的 GEMINI_API_KEY
 npm run dev
 ```
 
-应用将在 `http://localhost:5173` 启动，API 服务运行在 3000 端口。
+应用将在 `http://localhost:3000` 启动。
+
+### 运行测试
+
+```bash
+npm run test
+```
+
+### 项目架构
+
+```
+├── server/              # 后端服务
+│   ├── services/        # 数据服务
+│   └── mappers/         # 数据映射
+├── src/
+│   ├── components/      # UI 组件
+│   │   ├── common/      # 通用组件
+│   │   └── views/       # 页面视图
+│   ├── hooks/           # React Hooks
+│   ├── services/        # API 客户端
+│   └── utils/           # 工具函数
+├── scripts/             # 数据抓取脚本
+└── stock_cache/         # 缓存数据
+```
+
+### API 接口
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/valuation?tickers=AAPL` | GET | 公司估值数据 |
+| `/api/index-valuations` | GET | 指数估值数据 |
+| `/api/quotes?symbols=AAPL` | GET | 实时报价（缓存） |
+| `/api/fundamentals?symbol=AAPL` | GET | 基本面数据（缓存） |
+| `/api/historical?symbol=AAPL` | GET | 历史数据 |
 
 ### 工作原理
 
-1. **数据获取** — 从雅虎财经 API 获取实时行情和基本面数据
-2. **PE 百分位计算** — 通过分析 10 年月度数据计算历史 PE 百分位
-3. **估值分类** — 根据当前 PE 在历史区间中的位置，划分为低估/中性/高估
-4. **可视化** — 渲染交互式图表，展示 PE 趋势、百分位带和对比数据
-5. **AI 洞察** — （可选）使用 Gemini API 提供 AI 生成的分析和评论
+1. **数据获取** — Python 脚本从雅虎财经 API 获取数据并缓存到本地
+2. **API 服务** — Express.js 通过 REST 接口提供缓存数据
+3. **PE 百分位计算** — 通过分析 10 年月度数据计算历史 PE 百分位
+4. **估值分类** — 根据当前 PE 在历史区间中的位置，划分为低估/中性/高估
+5. **可视化** — 渲染交互式图表，展示 PE 趋势、百分位带和对比数据
+6. **AI 洞察** — （可选）使用 Gemini API 提供 AI 生成的分析和评论
 
 ### 开源协议
 
