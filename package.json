@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/__tests__/dcfCalculator.test.ts src/__tests__/valuationMappers.test.ts",
     "start": "node server.ts"
   },
   "dependencies": {

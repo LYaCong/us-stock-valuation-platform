@@ -1,4 +1,10 @@
-import { CompanyValuation } from '../data/mockData';
+import { type ApiMetadata, type HistoricalDataPoint } from '../types';
+
+export interface HistoricalResponse {
+  history: HistoricalDataPoint[];
+  splits: any[];
+  metadata: ApiMetadata;
+}
 
 export async function fetchQuotes(symbols: string[]): Promise<any[]> {
   if (symbols.length === 0) return [];
@@ -25,24 +31,27 @@ export async function fetchFundamentals(symbol: string): Promise<any> {
   }
 }
 
-export async function fetchHistorical(symbol: string): Promise<{ history: any[], splits: any[] }> {
+export async function fetchHistorical(symbol: string): Promise<HistoricalResponse> {
   try {
     const response = await fetch(`/api/historical?symbol=${symbol}`);
     if (!response.ok) throw new Error('Failed to fetch historical');
     const data = await response.json();
     
     return {
-      history: (data.history || []).map((item: any) => ({
+      history: (data.history || []).map((item: any): HistoricalDataPoint => ({
         date: item.date,
-        price: item.price,
-        volume: item.volume || 0,
-        marketCap: item.marketCap || null
+        price: item.price ?? null,
+        volume: item.volume ?? null,
+        marketCap: item.marketCap ?? null,
+        peTtm: item.peTtm ?? null,
+        percentile: item.percentile ?? null
       })),
-      splits: data.splits || []
+      splits: data.splits || [],
+      metadata: data.metadata || { availableFields: [] }
     };
   } catch (error) {
     console.error('Error fetching historical:', error);
-    return { history: [], splits: [] };
+    return { history: [], splits: [], metadata: { availableFields: [] } };
   }
 }
 
