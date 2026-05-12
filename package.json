@@ -10,7 +10,8 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "test": "node --experimental-strip-types --test src/__tests__/dcfCalculator.test.ts src/__tests__/valuationMappers.test.ts",
-    "start": "node server.ts"
+    "start": "node server.ts",
+    "vercel-build": "bash scripts/prebuild-api-data.sh && vite build"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
