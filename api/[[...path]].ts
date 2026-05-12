@@ -1,10 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import path from 'path';
-import fs from 'fs';
-import {
-  loadDailyQuoteCache,
-  loadHistoricalCache,
-} from '../server/services/cacheService';
+import dailyQuotesRaw from '../stock_cache/daily_quotes.json';
+import historicalRaw from '../stock_cache/historical.json';
 import {
   buildMetadata,
   createFallbackCompanyValuation,
@@ -13,7 +9,11 @@ import {
   mapHistoricalPayload,
 } from '../server/mappers/valuationMappers';
 
-// --- PE Percentile Computation (from marketDataService, no heavy deps) ---
+// Pre-loaded cache data (bundled at build time)
+const dailyQuotes: any = dailyQuotesRaw;
+const historicalCache: any = historicalRaw;
+
+// --- PE Percentile Computation ---
 
 function computePePercentile(currentPe: number | null): {
   percentile: number | null;
@@ -84,25 +84,19 @@ function computeIndexPePercentile(currentPe: number | null): {
 
 // --- Route Handlers ---
 
-const BASE_DIR = process.cwd();
+function json(res: ServerResponse, data: any, status = 200) {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+}
 
 function handleValuation(req: IncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url || '', `https://${req.headers.host}`);
+  const url = new URL(req.url || '/', `https://${req.headers.host}`);
   const tickersParam = url.searchParams.get('tickers');
-  if (!tickersParam) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Missing tickers parameter' }));
-    return;
-  }
+  if (!tickersParam) return json(res, { error: 'Missing tickers parameter' }, 400);
 
-  const tickers = tickersParam
-    .split(',')
-    .map((t) => t.trim().toUpperCase())
-    .filter(Boolean);
-
-  const cacheData = loadDailyQuoteCache(BASE_DIR);
+  const tickers = tickersParam.split(',').map((t) => t.trim().toUpperCase()).filter(Boolean);
   const cacheMap = new Map<string, any>();
-  for (const company of cacheData.companies || []) {
+  for (const company of dailyQuotes.companies || []) {
     cacheMap.set(company.ticker, company);
   }
 
@@ -117,22 +111,14 @@ function handleValuation(req: IncomingMessage, res: ServerResponse) {
     };
   });
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(
-    JSON.stringify({
-      metadata: buildMetadata(
-        cacheData.timestamp,
-        ['price', 'peTtm', 'peFwd', 'pb', 'pePercentile', 'marketCap'],
-        companies,
-      ),
-      companies,
-    }),
-  );
+  json(res, {
+    metadata: buildMetadata(dailyQuotes.timestamp, ['price', 'peTtm', 'peFwd', 'pb', 'pePercentile', 'marketCap'], companies),
+    companies,
+  });
 }
 
 function handleIndexValuations(_req: IncomingMessage, res: ServerResponse) {
-  const cacheData = loadDailyQuoteCache(BASE_DIR);
-  const indices = (cacheData.indices || []).map((idx: any) => {
+  const indices = (dailyQuotes.indices || []).map((idx: any) => {
     const peResult = computeIndexPePercentile(idx.peTtm);
     return {
       ...mapCachedIndexToValuation(idx),
@@ -141,32 +127,20 @@ function handleIndexValuations(_req: IncomingMessage, res: ServerResponse) {
     };
   });
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(
-    JSON.stringify({
-      metadata: buildMetadata(
-        cacheData.timestamp,
-        ['price', 'peTtm', 'peFwd', 'pb', 'pePercentile'],
-        indices,
-      ),
-      indices,
-    }),
-  );
+  json(res, {
+    metadata: buildMetadata(dailyQuotes.timestamp, ['price', 'peTtm', 'peFwd', 'pb', 'pePercentile'], indices),
+    indices,
+  });
 }
 
 function handleQuotes(req: IncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url || '', `https://${req.headers.host}`);
+  const url = new URL(req.url || '/', `https://${req.headers.host}`);
   const symbols = url.searchParams.get('symbols');
-  if (!symbols) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Missing symbols parameter' }));
-    return;
-  }
+  if (!symbols) return json(res, { error: 'Missing symbols parameter' }, 400);
 
-  const cacheData = loadDailyQuoteCache(BASE_DIR);
   const cacheMap = new Map<string, any>();
-  for (const company of cacheData.companies || []) cacheMap.set(company.ticker, company);
-  for (const index of cacheData.indices || []) cacheMap.set(index.ticker, index);
+  for (const company of dailyQuotes.companies || []) cacheMap.set(company.ticker, company);
+  for (const index of dailyQuotes.indices || []) cacheMap.set(index.ticker, index);
 
   const results = symbols.split(',').map((symbol) => {
     const ticker = symbol.trim().toUpperCase();
@@ -189,85 +163,46 @@ function handleQuotes(req: IncomingMessage, res: ServerResponse) {
     return { symbol: ticker, shortName: ticker };
   });
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ quoteResponse: { result: results } }));
+  json(res, { quoteResponse: { result: results } });
 }
 
 function handleFundamentals(req: IncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url || '', `https://${req.headers.host}`);
+  const url = new URL(req.url || '/', `https://${req.headers.host}`);
   const symbol = url.searchParams.get('symbol');
-  if (!symbol) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Missing symbol parameter' }));
-    return;
-  }
+  if (!symbol) return json(res, { error: 'Missing symbol parameter' }, 400);
 
-  const cacheData = loadDailyQuoteCache(BASE_DIR);
   const ticker = symbol.trim().toUpperCase();
   const cached =
-    (cacheData.companies || []).find((c: any) => c.ticker === ticker) ||
-    (cacheData.indices || []).find((i: any) => i.ticker === ticker);
+    (dailyQuotes.companies || []).find((c: any) => c.ticker === ticker) ||
+    (dailyQuotes.indices || []).find((i: any) => i.ticker === ticker);
 
-  if (!cached) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ quoteSummary: { result: [{}] } }));
-    return;
-  }
+  if (!cached) return json(res, { quoteSummary: { result: [{}] } });
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(
-    JSON.stringify({
-      quoteSummary: {
-        result: [
-          {
-            price: {
-              regularMarketPrice: cached.price || null,
-              marketCap: cached.marketCap || null,
-              shortName: cached.name || ticker,
-            },
-            defaultKeyStatistics: {
-              trailingPE: { raw: cached.peTtm },
-              forwardPE: { raw: cached.peFwd },
-              priceToBook: { raw: cached.pb },
-              pegRatio: { raw: cached.peg || null },
-            },
-            summaryDetail: {
-              trailingPE: { raw: cached.peTtm },
-              forwardPE: { raw: cached.peFwd },
-              priceToBook: { raw: cached.pb },
-            },
-          },
-        ],
-      },
-    }),
-  );
+  json(res, {
+    quoteSummary: {
+      result: [{
+        price: { regularMarketPrice: cached.price || null, marketCap: cached.marketCap || null, shortName: cached.name || ticker },
+        defaultKeyStatistics: { trailingPE: { raw: cached.peTtm }, forwardPE: { raw: cached.peFwd }, priceToBook: { raw: cached.pb }, pegRatio: { raw: cached.peg || null } },
+        summaryDetail: { trailingPE: { raw: cached.peTtm }, forwardPE: { raw: cached.peFwd }, priceToBook: { raw: cached.pb } },
+      }],
+    },
+  });
 }
 
 function handleHistorical(req: IncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url || '', `https://${req.headers.host}`);
+  const url = new URL(req.url || '/', `https://${req.headers.host}`);
   const symbol = url.searchParams.get('symbol');
-  if (!symbol) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Missing symbol parameter' }));
-    return;
-  }
+  if (!symbol) return json(res, { error: 'Missing symbol parameter' }, 400);
 
-  const cacheData = loadHistoricalCache(BASE_DIR);
   const ticker = symbol.toUpperCase();
-  const tickerData = cacheData.data?.[ticker] || {
-    history: [],
-    splits: [],
-    shares: null,
-  };
-
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(mapHistoricalPayload(tickerData, cacheData.timestamp)));
+  const tickerData = historicalCache.data?.[ticker] || { history: [], splits: [], shares: null };
+  json(res, mapHistoricalPayload(tickerData, historicalCache.timestamp));
 }
 
 // --- Main Handler ---
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  const urlPath = req.url || '';
+  const urlPath = (req.url || '').split('?')[0];
 
   try {
     if (urlPath.startsWith('/api/valuation')) return handleValuation(req, res);
@@ -276,11 +211,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     if (urlPath.startsWith('/api/fundamentals')) return handleFundamentals(req, res);
     if (urlPath.startsWith('/api/historical')) return handleHistorical(req, res);
 
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'API endpoint not found' }));
+    json(res, { error: 'API endpoint not found' }, 404);
   } catch (error: any) {
     console.error('API Error:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Internal server error', details: error.message }));
+    json(res, { error: 'Internal server error', details: error.message }, 500);
   }
 }
