@@ -177,7 +177,7 @@ def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) ->
 
 FIELDS = [
     'currentPrice', 'regularMarketPrice', 'trailingPE', 'forwardPE',
-    'marketCap', 'priceToBook', 'shortName', 'longName'
+    'marketCap', 'priceToBook', 'shortName', 'longName', 'returnOnEquity'
 ]
 
 def format_market_cap(market_cap):
@@ -194,26 +194,8 @@ def format_market_cap(market_cap):
         return f"${market_cap:.0f}"
 
 def compute_pe_percentile(ticker):
-    """计算PE百分位 - 基于5年历史价格"""
-    try:
-        t = yf.Ticker(ticker)
-        # 获取5年历史数据
-        hist = t.history(period="5y")
-        if hist.empty or len(hist) < 50:
-            return 50
-        
-        # 使用价格百分位作为PE百分位的代理
-        current_price = hist['Close'].iloc[-1]
-        prices = hist['Close'].dropna()
-        
-        # 计算当前价格在历史中的百分位
-        below = (prices <= current_price).sum()
-        percentile = round((below / len(prices)) * 100)
-        
-        return percentile
-    except Exception as e:
-        print(f"  ⚠️ 计算百分位失败 {ticker}: {e}")
-        return 50
+    """PE百分位将在服务端基于历史数据计算，此处跳过"""
+    return None
 
 def fetch_quote(ticker):
     """Fetch quote for a single ticker"""
@@ -235,17 +217,22 @@ def fetch_quote(ticker):
         elif pe_percentile > 70:
             status = 'High'
         
+        # ROE: yfinance returns decimal (e.g., 1.4147 = 141.47%)
+        roe_raw = info.get('returnOnEquity')
+        roe = round(roe_raw * 100, 2) if roe_raw is not None else None
+
         result = {
             'ticker': ticker.upper(),
             'price': round(price, 2) if price is not None else None,
             'peTtm': round(info.get('trailingPE'), 2) if info.get('trailingPE') is not None else None,
             'peFwd': round(info.get('forwardPE'), 2) if info.get('forwardPE') is not None else None,
             'pb': round(info.get('priceToBook'), 2) if info.get('priceToBook') is not None else None,
+            'roe': roe,
             'marketCap': info.get('marketCap'),
             'marketCapStr': format_market_cap(info.get('marketCap')),
             'name': info.get('shortName') or info.get('longName') or ticker,
-            'pePercentile': pe_percentile,
-            'status': status,
+            'pePercentile': None,  # 服务端计算
+            'status': 'Neutral',  # 服务端计算
             'timestamp': datetime.now().isoformat()
         }
         return result

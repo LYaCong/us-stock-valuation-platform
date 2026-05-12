@@ -29,7 +29,7 @@ export function createFallbackCompanyValuation(ticker: string) {
     peFwd: null,
     pb: null,
     peg: null,
-    oneYearPeChange: null,
+    roe: null,
     pePercentile10y: null,
     status: 'Neutral' as const,
   };
@@ -48,7 +48,7 @@ export function mapCachedCompanyToValuation(cached: any) {
     peFwd: cached.peFwd ?? null,
     pb: cached.pb ?? null,
     peg: cached.peg ?? null,
-    oneYearPeChange: cached.oneYearPeChange ?? null,
+    roe: cached.roe ?? null,
     pePercentile10y: cached.pePercentile ?? null,
     status: cached.status || 'Neutral',
   };
@@ -64,7 +64,7 @@ export function mapCachedIndexToValuation(cached: any) {
     peTtm: cached.peTtm ?? null,
     peFwd: cached.peFwd ?? null,
     pb: cached.pb ?? null,
-    oneYearPeChange: cached.oneYearPeChange ?? null,
+    roe: cached.roe ?? null,
     pePercentile: cached.pePercentile ?? null,
     dataRange: cached.dataRange || '',
     status: cached.status || 'Neutral',

@@ -15,7 +15,7 @@ interface YahooValuation {
   peFwd: number | null;
   pb: number | null;
   peg: number;
-  oneYearPeChange: number;
+  roe: number;
   pePercentile10y: number;
   status: 'Low' | 'Neutral' | 'High';
 }
@@ -54,7 +54,7 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
       peFwd: yc.peFwd ?? null,
       pb: yc.pb ?? null,
       peg: yc.peg ?? null,
-      oneYearPeChange: yc.oneYearPeChange ?? null,
+      roe: yc.roe ?? null,
       pePercentile10y: yc.pePercentile10y ?? null,
       status: yc.status || 'Neutral',
     })) as CompanyValuation[];
@@ -73,7 +73,7 @@ interface YahooIndexValuation {
   peTtm: number | null;
   peFwd: number | null;
   pb: number | null;
-  oneYearPeChange: number;
+  roe: number;
   pePercentile: number;
   dataRange: string;
   status: 'Low' | 'Neutral' | 'High';
@@ -108,7 +108,7 @@ export async function fetchIndexValuations(): Promise<IndexValuation[]> {
       peTtm: yi.peTtm ?? null,
       peFwd: yi.peFwd ?? null,
       pb: yi.pb ?? null,
-      oneYearPeChange: yi.oneYearPeChange ?? null,
+      roe: yi.roe ?? null,
       pePercentile: yi.pePercentile ?? null,
       dataRange: yi.dataRange || '',
       status: yi.status || 'Neutral',

@@ -9,7 +9,7 @@ export interface CompanyValuation {
   peFwd: number | null;
   pb: number | null;
   peg: number | null;
-  oneYearPeChange: number | null;
+  roe: number | null;
   pePercentile10y: number | null;
   status: 'Low' | 'Neutral' | 'High';
   logo?: string;
@@ -25,7 +25,7 @@ export interface IndexValuation {
   peTtm: number | null;
   peFwd: number | null;
   pb: number | null;
-  oneYearPeChange: number | null;
+  roe: number | null;
   pePercentile: number | null;
   dataRange: string;
   status: 'Low' | 'Neutral' | 'High';

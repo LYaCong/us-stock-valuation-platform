@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "functions": {
+    "api/[[...path]].ts": {
+      "includeFiles": "stock_cache/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

@@ -95,9 +95,9 @@ function CompanyCard({ company, onClick, theme, lang, t }: CompanyCardProps) {
     High: t.high,
   }[company.status];
 
-  const oneYearChange =
-    company.oneYearPeChange != null
-      ? `${company.oneYearPeChange > 0 ? '+' : ''}${company.oneYearPeChange}%`
+  const roeDisplay =
+    company.roe != null
+      ? `${company.roe.toFixed(1)}%`
       : 'N/A';
 
   const percentileText = company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A';
@@ -136,9 +136,9 @@ function CompanyCard({ company, onClick, theme, lang, t }: CompanyCardProps) {
         <Metric labelKey="pb" value={(company.pb != null && company.pb !== 0) ? company.pb.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric labelKey="price" value={company.price != null ? `$${company.price.toFixed(2)}` : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric
-          labelKey="oneYearPeChange"
-          value={oneYearChange}
-          color={company.oneYearPeChange != null ? (company.oneYearPeChange > 0 ? 'text-red-400' : 'text-green-400') : undefined}
+          labelKey="roe"
+          value={roeDisplay}
+          color={company.roe != null ? (company.roe >= 15 ? 'text-green-400' : company.roe < 5 ? 'text-red-400' : undefined) : undefined}
           theme={theme}
           t={t}
           lang={lang}

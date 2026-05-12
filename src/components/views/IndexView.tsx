@@ -77,9 +77,9 @@ function IndexCard({ index, theme, onClick, lang, t }: IndexCardProps) {
     High: t.high,
   }[index.status];
 
-  const oneYearChange =
-    index.oneYearPeChange != null
-      ? `${index.oneYearPeChange > 0 ? '+' : ''}${index.oneYearPeChange}%`
+  const roeDisplay =
+    index.roe != null
+      ? `${index.roe.toFixed(1)}%`
       : 'N/A';
 
   const percentileText = index.pePercentile != null ? `${index.pePercentile}%` : 'N/A';
@@ -117,9 +117,9 @@ function IndexCard({ index, theme, onClick, lang, t }: IndexCardProps) {
         <Metric labelKey="pb" value={(index.pb != null && index.pb !== 0) ? index.pb.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric labelKey="price" value={index.price != null ? `$${index.price.toFixed(2)}` : 'N/A'} theme={theme} t={t} lang={lang} />
         <Metric
-          labelKey="oneYearPeChange"
-          value={oneYearChange}
-          color={index.oneYearPeChange != null ? (index.oneYearPeChange > 0 ? 'text-red-400' : 'text-green-400') : undefined}
+          labelKey="roe"
+          value={roeDisplay}
+          color={index.roe != null ? (index.roe >= 15 ? 'text-green-400' : index.roe < 5 ? 'text-red-400' : undefined) : undefined}
           theme={theme}
           t={t}
           lang={lang}
