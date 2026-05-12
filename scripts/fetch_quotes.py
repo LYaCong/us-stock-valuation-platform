@@ -1,30 +1,35 @@
 #!/usr/bin/env python3
 """
 美股数据每日抓取脚本
-每天早上8点自动运行，抓取所有股票实时数据并写入缓存文件
+主数据源：新浪财经 API（国内直连、免费无限制）
+补充数据源：Yahoo Finance（可选，补充新浪缺失字段 forwardPE/PB/ROE）
 
-优化说明:
-- 添加请求延迟避免限速
-- 添加限速重试逻辑(指数退避)
-- 成功请求立即写入文件(增量写入)
-- 汇总成功/失败数量
+新浪财经 API 字段映射（gb_{ticker}）：
+  [0]  名称        [1]  当前价       [2]  涨跌幅(%)    [3]  时间
+  [4]  涨跌额      [5]  开盘价       [6]  最高价        [7]  最低价
+  [8]  昨收        [9]  成交量       [10] 成交额        [11] ?
+  [12] 市值(美元)  [13] ?           [14] PE(TTM)
 """
 
-import yfinance as yf
 import json
 import time
 import os
 import sys
+import requests
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 
-REQUEST_DELAY = 0.3
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 2
-RETRY_MAX_DELAY = 60
-INCREMENTAL_WRITE_INTERVAL = 10
+# --- 配置 ---
+SINA_DELAY = 0.2
+YAHOO_DELAY = 0.5
+YAHOO_ENABLED = os.environ.get('YAHOO_ENABLED', 'true').lower() == 'true'
+CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
 
-# 股票列表（与前端 src/config/tickers.ts 保持一致）
+HEADERS = {
+    'Referer': 'https://finance.sina.com.cn/',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+}
+
 TICKERS = [
     'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
     'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
@@ -38,7 +43,6 @@ TICKERS = [
     'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
 ]
 
-# 指数基金（与 server.ts 的 INDEX_TICKERS 保持一致）
 INDICES = [
     {'id': 'spy', 'name': 'S&P 500', 'nameZh': '标普500指数', 'ticker': 'SPY', 'type': 'Core'},
     {'id': 'qqq', 'name': 'Nasdaq 100', 'nameZh': '纳斯达克100指数', 'ticker': 'QQQ', 'type': 'Core'},
@@ -60,7 +64,7 @@ INDICES = [
     {'id': 'kre', 'name': 'Regional Banks', 'nameZh': '区域银行指数', 'ticker': 'KRE', 'type': 'Sector'},
     {'id': 'ibb', 'name': 'Biotechnology', 'nameZh': '生物技术指数', 'ticker': 'IBB', 'type': 'Sector'},
     {'id': 'xrt', 'name': 'Retail', 'nameZh': '零售指数', 'ticker': 'XRT', 'type': 'Sector'},
-    {'id': 'vnq', 'name': 'Vanguard Real Estate', 'nameZh': '先锋房地产指数', 'ticker': 'VNQ', 'type': 'Sector'},
+    {'id': 'vnq', 'name': 'Vanguard Real Estate', 'nameZh': '先锋房地产指数', 'ticker': 'VNQ', 'type': 'Core'},
     {'id': 'vig', 'name': 'Dividend Appreciation', 'nameZh': '股息增长指数', 'ticker': 'VIG', 'type': 'Core'},
     {'id': 'schd', 'name': 'US Dividend Equity', 'nameZh': '美股股息指数', 'ticker': 'SCHD', 'type': 'Core'},
     {'id': 'arkk', 'name': 'Innovation', 'nameZh': '创新指数', 'ticker': 'ARKK', 'type': 'Sector'},
@@ -68,251 +72,258 @@ INDICES = [
     {'id': 'gdx', 'name': 'Gold Miners', 'nameZh': '黄金矿业指数', 'ticker': 'GDX', 'type': 'Sector'},
 ]
 
-CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
+
+# ========== 新浪财经 API ==========
+
+def sina_ticker(ticker: str) -> str:
+    return ticker.lower().replace('-', '')
+
+
+def fetch_sina_batch(tickers: List[str]) -> Dict[str, Dict]:
+    """批量从新浪财经获取行情（支持一次请求多个 ticker）"""
+    codes = ','.join(f'gb_{sina_ticker(t)}' for t in tickers)
+    url = f'https://hq.sinajs.cn/list={codes}'
+    results = {}
+
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.encoding = 'gbk'
+        lines = resp.text.strip().split('\n')
+
+        for i, line in enumerate(lines):
+            if i >= len(tickers):
+                break
+            ticker = tickers[i]
+            try:
+                data_str = line.split('="', 1)[1].rstrip('"; \r')
+                if not data_str:
+                    continue
+                f = data_str.split(',')
+                if len(f) < 2:
+                    continue
+
+                results[ticker] = {
+                    'name': f[0],
+                    'price': safe_float(f[1]),
+                    'change_pct': safe_float(f[2]),
+                    'change_time': f[3] if len(f) > 3 else None,
+                    'change_amount': safe_float(f[4]),
+                    'open': safe_float(f[5]),
+                    'high': safe_float(f[6]),
+                    'low': safe_float(f[7]),
+                    'prev_close': safe_float(f[8]),
+                    'volume': safe_float(f[9]),       # 成交量
+                    'turnover': safe_float(f[10]),     # 成交额
+                    'market_cap': safe_float(f[12]),   # 市值（美元）
+                    'pe_ttm': safe_float(f[14]),       # PE(TTM)
+                }
+            except (IndexError, ValueError) as e:
+                print(f"    ⚠️ {ticker} 新浪解析失败: {e}")
+    except Exception as e:
+        print(f"    ❌ 新浪请求失败: {e}")
+
+    return results
+
+
+# ========== Yahoo Finance（补充数据源） ==========
+
+def fetch_yahoo_supplement(tickers: List[str]) -> Dict[str, Dict]:
+    if not YAHOO_ENABLED:
+        return {}
+    try:
+        import yfinance as yf
+    except ImportError:
+        print("    ⚠️ yfinance 未安装，跳过 Yahoo 补充")
+        return {}
+
+    results = {}
+    for ticker in tickers:
+        try:
+            info = yf.Ticker(ticker).info
+            results[ticker] = {
+                'peFwd': safe_round(info.get('forwardPE')),
+                'pb': safe_round(info.get('priceToBook')),
+                'roe_raw': info.get('returnOnEquity'),
+                'marketCap': info.get('marketCap'),
+                'shortName': info.get('shortName') or info.get('longName'),
+            }
+        except Exception as e:
+            print(f"    ⚠️ {ticker} Yahoo 失败: {e}")
+        time.sleep(YAHOO_DELAY)
+    return results
+
+
+# ========== 工具函数 ==========
+
+def safe_float(val) -> Optional[float]:
+    if val is None: return None
+    try:
+        v = str(val).strip()
+        if v in ('--', '', 'N/A', 'NA', 'null', 'NaN'): return None
+        return float(v)
+    except (ValueError, TypeError):
+        return None
+
+def safe_round(val, digits=2) -> Optional[float]:
+    v = safe_float(val)
+    return round(v, digits) if v is not None else None
+
+def format_market_cap(mc) -> Optional[str]:
+    if mc is None: return None
+    if mc >= 1e12: return f"${mc/1e12:.2f}T"
+    if mc >= 1e9:  return f"${mc/1e9:.2f}B"
+    if mc >= 1e6:  return f"${mc/1e6:.2f}M"
+    return f"${mc:.0f}"
 
 def load_cache(filepath: str) -> Dict:
-    """加载旧缓存文件，如果不存在或格式错误返回空结构"""
-    if not os.path.exists(filepath):
-        return {'companies': [], 'indices': []}
+    if not os.path.exists(filepath): return {'companies': [], 'indices': []}
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return {
-                'companies': data.get('companies', []),
-                'indices': data.get('indices', [])
-            }
-    except (json.JSONDecodeError, IOError) as e:
-        print(f"  ⚠️ 加载旧缓存失败: {e}, 将使用空缓存")
-        return {'companies': [], 'indices': []}
+            d = json.load(f)
+            return {'companies': d.get('companies', []), 'indices': d.get('indices', [])}
+    except: return {'companies': [], 'indices': []}
 
-def merge_and_save(
-    new_companies: List[Dict],
-    new_indices: List[Dict],
-    filepath: str,
-    success_rate: float,
-    is_final: bool = False
-) -> bool:
-    """
-    合并旧缓存与新数据后写入。
-    
-    逻辑:
-    1. 加载旧缓存
-    2. 按 ticker 合并：新数据有就用新的，没有就保留旧的
-    3. 非最终写入：始终合并（增量保存，不丢数据）
-    4. 最终写入：仅当成功率 > 50% 时写入，否则保留旧数据
-    
-    Returns: True 如果实际写入了新数据
-    """
-    old_cache = load_cache(filepath)
-
-    # 合并逻辑：新数据优先，旧数据补充
-    merged_companies = []
-    merged_indices = []
-    seen_companies = set()
-    seen_indices = set()
-    
-    # 先加入所有新数据
-    for c in new_companies:
-        merged_companies.append(c)
-        seen_companies.add(c['ticker'])
-    
-    for i in new_indices:
-        merged_indices.append(i)
-        seen_indices.add(i['ticker'])
-    
-    # 再补充旧数据中没有被新数据覆盖的条目
-    for c in old_cache.get('companies', []):
-        if c['ticker'] not in seen_companies:
-            merged_companies.append(c)
-            seen_companies.add(c['ticker'])
-    
-    for i in old_cache.get('indices', []):
-        if i['ticker'] not in seen_indices:
-            merged_indices.append(i)
-            seen_indices.add(i['ticker'])
-    
-    # 最终写入时检查成功率
-    if is_final:
-        if success_rate < 0.5:
-            print(f"  ⚠️ 成功率 {success_rate:.1%} < 50%, 保留旧缓存不写入")
-            return False
-    
-    # 写入合并后的数据
-    cache_dir = os.path.dirname(filepath)
-    os.makedirs(cache_dir, exist_ok=True)
-    output = {
-        'timestamp': datetime.now().isoformat(),
-        'companies': merged_companies,
-        'indices': merged_indices
-    }
+def merge_and_save(new_c, new_i, filepath, rate, is_final=False):
+    old = load_cache(filepath)
+    mc, mi, sc, si = [], [], set(), set()
+    for c in new_c: mc.append(c); sc.add(c['ticker'])
+    for i in new_i: mi.append(i); si.add(i['ticker'])
+    for c in old.get('companies', []):
+        if c['ticker'] not in sc: mc.append(c); sc.add(c['ticker'])
+    for i in old.get('indices', []):
+        if i['ticker'] not in si: mi.append(i); si.add(i['ticker'])
+    if is_final and rate < 0.3:
+        print(f"  ⚠️ 成功率 {rate:.1%} < 30%, 保留旧缓存")
+        return False
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
-    
+        json.dump({'timestamp': datetime.now().isoformat(), 'companies': mc, 'indices': mi}, f, ensure_ascii=False, indent=2)
     return True
 
-def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
-    """带指数退避重试的请求封装"""
-    for attempt in range(max_retries):
-        try:
-            result = fetch_func(ticker)
-            if result is not None:
-                return result
-            if attempt < max_retries - 1:
-                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
-                print(f"  ⏳ {ticker} 无数据, {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-        except Exception as e:
-            error_msg = str(e).lower()
-            if '429' in error_msg or 'too many requests' in error_msg or 'rate limit' in error_msg:
-                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
-                print(f"  ⚠️ {ticker} 限速(429), {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-            elif attempt < max_retries - 1:
-                wait_time = RETRY_BASE_DELAY * (attempt + 1)
-                print(f"  ⚠️ {ticker} 错误: {e}, {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-            else:
-                raise
-    return None
 
-FIELDS = [
-    'currentPrice', 'regularMarketPrice', 'trailingPE', 'forwardPE',
-    'marketCap', 'priceToBook', 'shortName', 'longName', 'returnOnEquity'
-]
-
-def format_market_cap(market_cap):
-    """Format market cap to string like $1.23T or $456.78B"""
-    if market_cap is None:
-        return None
-    if market_cap >= 1e12:
-        return f"${market_cap/1e12:.2f}T"
-    elif market_cap >= 1e9:
-        return f"${market_cap/1e9:.2f}B"
-    elif market_cap >= 1e6:
-        return f"${market_cap/1e6:.2f}M"
-    else:
-        return f"${market_cap:.0f}"
-
-def compute_pe_percentile(ticker):
-    """PE百分位将在服务端基于历史数据计算，此处跳过"""
-    return None
-
-def fetch_quote(ticker):
-    """Fetch quote for a single ticker"""
-    try:
-        t = yf.Ticker(ticker)
-        info = t.info
-        
-        price = info.get('currentPrice') or info.get('regularMarketPrice')
-        if price is None:
-            return None
-        
-        # 计算PE百分位
-        pe_percentile = compute_pe_percentile(ticker)
-        
-        # 根据百分位判断状态
-        status = 'Neutral'
-        if pe_percentile < 30:
-            status = 'Low'
-        elif pe_percentile > 70:
-            status = 'High'
-        
-        # ROE: yfinance returns decimal (e.g., 1.4147 = 141.47%)
-        roe_raw = info.get('returnOnEquity')
-        roe = round(roe_raw * 100, 2) if roe_raw is not None else None
-
-        result = {
-            'ticker': ticker.upper(),
-            'price': round(price, 2) if price is not None else None,
-            'peTtm': round(info.get('trailingPE'), 2) if info.get('trailingPE') is not None else None,
-            'peFwd': round(info.get('forwardPE'), 2) if info.get('forwardPE') is not None else None,
-            'pb': round(info.get('priceToBook'), 2) if info.get('priceToBook') is not None else None,
-            'roe': roe,
-            'marketCap': info.get('marketCap'),
-            'marketCapStr': format_market_cap(info.get('marketCap')),
-            'name': info.get('shortName') or info.get('longName') or ticker,
-            'pePercentile': None,  # 服务端计算
-            'status': 'Neutral',  # 服务端计算
-            'timestamp': datetime.now().isoformat()
-        }
-        return result
-    except Exception as e:
-        print(f"  ⚠️ {ticker}: {e}")
-        return None
+# ========== 主流程 ==========
 
 def main():
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
-    print(f"   配置: 延迟={REQUEST_DELAY}s, 重试={MAX_RETRIES}次, 增量写入={INCREMENTAL_WRITE_INTERVAL}")
-    
+    print(f"   主数据源: 新浪财经 | 补充: {'Yahoo' if YAHOO_ENABLED else '禁用'}")
+
+    # --- 公司：新浪批量 ---
+    print(f"\n📊 新浪抓取 {len(TICKERS)} 家公司...")
+    sina_data = fetch_sina_batch(TICKERS)
+
     companies = []
+    c_ok, c_fail = 0, 0
+    for t in TICKERS:
+        sd = sina_data.get(t)
+        if sd and sd.get('price') is not None:
+            companies.append({
+                'ticker': t.upper(),
+                'name': sd.get('name', t),
+                'price': sd.get('price'),
+                'peTtm': sd.get('pe_ttm'),
+                'peFwd': None,
+                'pb': None,
+                'roe': None,
+                'marketCap': sd.get('market_cap'),
+                'marketCapStr': format_market_cap(sd.get('market_cap')),
+                'pePercentile': None,
+                'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            c_ok += 1
+            print(f"  ✅ {t}: ${sd['price']} PE={sd.get('pe_ttm') or 'N/A'} Cap={format_market_cap(sd.get('market_cap'))}")
+        else:
+            companies.append({
+                'ticker': t.upper(), 'name': t, 'price': None,
+                'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None,
+                'marketCap': None, 'marketCapStr': None,
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            c_fail += 1
+            print(f"  ❌ {t}: 无数据")
+    print(f"  公司: {c_ok}/{len(TICKERS)} 成功")
+
+    # --- 指数：新浪批量 ---
+    print(f"\n📊 新浪抓取 {len(INDICES)} 个指数...")
+    idx_tickers = [idx['ticker'] for idx in INDICES]
+    sina_idx = fetch_sina_batch(idx_tickers)
+
     indices = []
-    success_companies = 0
-    failed_companies = 0
-    total_companies = len(TICKERS)
-    total_indices = len(INDICES)
-    total_tickers = total_companies + total_indices
-    incremental_counter = 0
-    
-    for i, ticker in enumerate(TICKERS, 1):
-        print(f"[{i}/{total_companies}] 抓取 {ticker}...", end=' ')
-        quote = fetch_with_retry(ticker, fetch_quote)
-        if quote:
-            print(f"✅ ${quote['price']}")
-            companies.append(quote)
-            success_companies += 1
-        else:
-            print("❌ 失败")
-            failed_companies += 1
-        
-        incremental_counter += 1
-        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
-            current_success = success_companies
-            current_rate = current_success / total_tickers if total_tickers > 0 else 0
-            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
-            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
-            incremental_counter = 0
-        
-        time.sleep(REQUEST_DELAY)
-    
-    print(f"\n📊 公司完成: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
-    print("📊 处理指数基金...")
-    
-    success_indices = 0
-    failed_indices = 0
+    i_ok, i_fail = 0, 0
     for idx in INDICES:
-        ticker = idx['ticker']
-        print(f"  {ticker}...", end=' ')
-        quote = fetch_with_retry(ticker, fetch_quote)
-        if quote:
-            idx_data = {**idx, **quote}
-            indices.append(idx_data)
-            print(f"✅ ${quote['price']}")
-            success_indices += 1
+        t = idx['ticker']
+        sd = sina_idx.get(t)
+        if sd and sd.get('price') is not None:
+            indices.append({
+                **idx,
+                'price': sd.get('price'),
+                'peTtm': sd.get('pe_ttm'),
+                'peFwd': None, 'pb': None, 'roe': None,
+                'marketCap': sd.get('market_cap'),
+                'marketCapStr': format_market_cap(sd.get('market_cap')),
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            i_ok += 1
+            print(f"  ✅ {t}: ${sd['price']}")
         else:
-            print("❌ 失败")
-            failed_indices += 1
-        
-        incremental_counter += 1
-        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
-            current_success = success_companies + success_indices
-            current_rate = current_success / total_tickers if total_tickers > 0 else 0
-            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
-            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
-            incremental_counter = 0
-        
-        time.sleep(REQUEST_DELAY)
-    
-    total_success = success_companies + success_indices
-    final_rate = total_success / total_tickers if total_tickers > 0 else 0
-    wrote = merge_and_save(companies, indices, CACHE_FILE, final_rate, is_final=True)
-    
+            indices.append({**idx, 'price': None,
+                'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None,
+                'marketCap': None, 'marketCapStr': None,
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            i_fail += 1
+            print(f"  ❌ {t}: 无数据")
+    print(f"  指数: {i_ok}/{len(INDICES)} 成功")
+
+    # --- Yahoo 补充 ---
+    yahoo_ok_tickers = [c['ticker'] for c in companies if c['price'] is not None]
+    yahoo_ok_tickers += [idx['ticker'] for idx in indices if idx.get('price') is not None]
+
+    if yahoo_ok_tickers and YAHOO_ENABLED:
+        print(f"\n📊 Yahoo 补充 {len(yahoo_ok_tickers)} 个 ticker (forwardPE/PB/ROE)...")
+        yahoo_data = fetch_yahoo_supplement(yahoo_ok_tickers)
+        yahoo_hit = 0
+        for c in companies:
+            yd = yahoo_data.get(c['ticker'])
+            if yd:
+                if yd.get('peFwd') is not None: c['peFwd'] = yd['peFwd']
+                if yd.get('pb') is not None: c['pb'] = yd['pb']
+                if yd.get('roe_raw') is not None:
+                    roe = yd['roe_raw']
+                    c['roe'] = round(roe * 100, 2) if roe < 1 else round(roe, 2)
+                if not c.get('marketCap') and yd.get('marketCap'):
+                    c['marketCap'] = yd['marketCap']
+                    c['marketCapStr'] = format_market_cap(yd['marketCap'])
+                yahoo_hit += 1
+        for idx in indices:
+            yd = yahoo_data.get(idx['ticker'])
+            if yd:
+                if yd.get('peFwd') is not None: idx['peFwd'] = yd['peFwd']
+                if yd.get('pb') is not None: idx['pb'] = yd['pb']
+                if yd.get('roe_raw') is not None:
+                    roe = yd['roe_raw']
+                    idx['roe'] = round(roe * 100, 2) if roe < 1 else round(roe, 2)
+                yahoo_hit += 1
+        print(f"  Yahoo 补充: {yahoo_hit}/{len(yahoo_ok_tickers)} 成功")
+    elif not YAHOO_ENABLED:
+        print("\n  ⏭️ Yahoo 补充已禁用（设置 YAHOO_ENABLED=true 启用）")
+
+    # --- 保存 ---
+    total = len(TICKERS) + len(INDICES)
+    total_ok = c_ok + i_ok
+    rate = total_ok / total if total > 0 else 0
+
+    wrote = merge_and_save(companies, indices, CACHE_FILE, rate, is_final=True)
     if wrote:
-        print(f"\n✅ 完成！已保存 {len(companies)} 家公司 + {len(indices)} 个指数到 {CACHE_FILE}")
+        print(f"\n✅ 完成！{len(companies)} 公司 + {len(indices)} 指数 | 成功率 {rate:.1%}")
     else:
-        print(f"\n⚠️ 完成！成功率不足，保留旧缓存")
-    print(f"   公司: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
-    print(f"   指数: {success_indices}/{total_indices} 成功, {failed_indices} 失败")
-    print(f"   总成功率: {final_rate:.1%}")
+        print(f"\n⚠️ 成功率不足，保留旧缓存")
+
+    return 0 if rate > 0.3 else 1
+
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
