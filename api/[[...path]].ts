@@ -1,90 +1,63 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import dailyQuotesData from './_data/daily_quotes.json';
-import historicalData from './_data/historical.json';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const dailyQuotes: any = dailyQuotesData;
-const historicalCache: any = historicalData;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// --- Inlined helpers ---
+// Read JSON data at module load time
+const dailyQuotes = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'daily_quotes.json'), 'utf-8'));
+const historicalCache = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'historical.json'), 'utf-8'));
 
-interface CoverageItem { peTtm?: number | null; }
+// --- Helpers ---
 
-function buildMetadata(timestamp: string | undefined, availableFields: string[], items: CoverageItem[]) {
+function buildMetadata(timestamp: string | undefined, fields: string[], items: any[]) {
   return {
     lastUpdated: timestamp || new Date().toISOString(),
-    availableFields,
-    coverage: items.length > 0 ? items.filter(item => item.peTtm != null).length / items.length : 0,
+    availableFields: fields,
+    coverage: items.length > 0 ? items.filter((i: any) => i.peTtm != null).length / items.length : 0,
   };
 }
 
-function createFallbackCompanyValuation(ticker: string) {
-  return {
-    id: ticker.toLowerCase(), name: ticker, nameZh: ticker, ticker,
-    type: ticker.includes('.') ? 'ADR' : 'US', marketCap: 'N/A',
-    price: null, peTtm: null, peFwd: null, pb: null, peg: null, roe: null,
-    pePercentile10y: null, status: 'Neutral' as const,
-  };
+function fallback(ticker: string) {
+  return { id: ticker.toLowerCase(), name: ticker, nameZh: ticker, ticker, type: ticker.includes('.') ? 'ADR' : 'US', marketCap: 'N/A', price: null, peTtm: null, peFwd: null, pb: null, peg: null, roe: null, pePercentile10y: null, status: 'Neutral' as const };
 }
 
-function mapCachedCompanyToValuation(c: any) {
-  return {
-    id: c.ticker.toLowerCase(), name: c.name || c.ticker,
-    nameZh: c.name || c.ticker, ticker: c.ticker,
-    type: c.ticker.includes('.') ? 'ADR' : 'US',
-    marketCap: c.marketCapStr || 'N/A',
-    price: c.price ?? null, peTtm: c.peTtm ?? null,
-    peFwd: c.peFwd ?? null, pb: c.pb ?? null,
-    peg: c.peg ?? null, roe: c.roe ?? null,
-    pePercentile10y: c.pePercentile ?? null, status: c.status || 'Neutral',
-  };
+function mapCompany(c: any) {
+  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, status: c.status||'Neutral' };
 }
 
-function mapCachedIndexToValuation(c: any) {
-  return {
-    id: c.id || c.ticker.toLowerCase(), name: c.name || c.ticker,
-    nameZh: c.nameZh || c.name || c.ticker, ticker: c.ticker,
-    type: c.type || 'Core', peTtm: c.peTtm ?? null,
-    peFwd: c.peFwd ?? null, pb: c.pb ?? null,
-    roe: c.roe ?? null, pePercentile: c.pePercentile ?? null,
-    dataRange: c.dataRange || '', status: c.status || 'Neutral',
-    price: c.price ?? null,
-  };
+function mapIndex(c: any) {
+  return { id: c.id||c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.nameZh||c.name||c.ticker, ticker: c.ticker, type: c.type||'Core', peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, roe: c.roe??null, pePercentile: c.pePercentile??null, dataRange: c.dataRange||'', status: c.status||'Neutral', price: c.price??null };
 }
 
-function mapHistoricalPayload(d: any, ts?: string) {
-  const h = d.history || [];
-  const f = new Set<string>();
-  if (h.length > 0) Object.keys(h[0]).forEach(k => f.add(k));
-  return { metadata: { lastUpdated: ts || new Date().toISOString(), availableFields: Array.from(f) }, history: h, splits: d.splits || [], shares: d.shares || null };
-}
-
-function computePePercentile(pe: number | null) {
+function pePercentile(pe: number | null) {
   if (!pe || pe <= 0) return { percentile: null, status: 'Neutral' as const };
   let p: number, s: 'Low' | 'Neutral' | 'High';
-  if (pe < 12)       { p = Math.round(10 + (pe / 12) * 15); s = 'Low'; }
-  else if (pe < 15)  { p = Math.round(25 + ((pe - 12) / 3) * 10); s = 'Low'; }
-  else if (pe < 20)  { p = Math.round(35 + ((pe - 15) / 5) * 15); s = 'Neutral'; }
-  else if (pe < 25)  { p = Math.round(50 + ((pe - 20) / 5) * 20); s = 'Neutral'; }
-  else if (pe < 30)  { p = Math.round(70 + ((pe - 25) / 5) * 10); s = 'High'; }
-  else if (pe < 40)  { p = Math.round(80 + ((pe - 30) / 10) * 10); s = 'High'; }
-  else               { p = Math.min(99, Math.round(90 + ((pe - 40) / 20) * 9)); s = 'High'; }
+  if (pe < 12)      { p = Math.round(10 + pe/12*15); s = 'Low'; }
+  else if (pe < 15) { p = Math.round(25 + (pe-12)/3*10); s = 'Low'; }
+  else if (pe < 20) { p = Math.round(35 + (pe-15)/5*15); s = 'Neutral'; }
+  else if (pe < 25) { p = Math.round(50 + (pe-20)/5*20); s = 'Neutral'; }
+  else if (pe < 30) { p = Math.round(70 + (pe-25)/5*10); s = 'High'; }
+  else if (pe < 40) { p = Math.round(80 + (pe-30)/10*10); s = 'High'; }
+  else              { p = Math.min(99, Math.round(90 + (pe-40)/20*9)); s = 'High'; }
   return { percentile: p, status: s };
 }
 
-function computeIndexPePercentile(pe: number | null) {
+function idxPePercentile(pe: number | null) {
   if (!pe || pe <= 0) return { percentile: null, status: 'Neutral' as const };
   let p: number, s: 'Low' | 'Neutral' | 'High';
-  if (pe < 14)       { p = Math.round(10 + (pe / 14) * 20); s = 'Low'; }
-  else if (pe < 18)  { p = Math.round(30 + ((pe - 14) / 4) * 20); s = 'Neutral'; }
-  else if (pe < 22)  { p = Math.round(50 + ((pe - 18) / 4) * 15); s = 'Neutral'; }
-  else if (pe < 28)  { p = Math.round(65 + ((pe - 22) / 6) * 15); s = 'High'; }
-  else if (pe < 35)  { p = Math.round(80 + ((pe - 28) / 7) * 10); s = 'High'; }
-  else               { p = Math.min(99, Math.round(90 + ((pe - 35) / 15) * 9)); s = 'High'; }
+  if (pe < 14)      { p = Math.round(10 + pe/14*20); s = 'Low'; }
+  else if (pe < 18) { p = Math.round(30 + (pe-14)/4*20); s = 'Neutral'; }
+  else if (pe < 22) { p = Math.round(50 + (pe-18)/4*15); s = 'Neutral'; }
+  else if (pe < 28) { p = Math.round(65 + (pe-22)/6*15); s = 'High'; }
+  else if (pe < 35) { p = Math.round(80 + (pe-28)/7*10); s = 'High'; }
+  else              { p = Math.min(99, Math.round(90 + (pe-35)/15*9)); s = 'High'; }
   return { percentile: p, status: s };
 }
 
-function send(res: ServerResponse, data: any, status = 200) {
-  res.writeHead(status, { 'Content-Type': 'application/json' });
+function send(res: ServerResponse, data: any, code = 200) {
+  res.writeHead(code, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(data));
 }
 
@@ -97,22 +70,22 @@ function qp(req: IncomingMessage) {
 function handleValuation(req: IncomingMessage, res: ServerResponse) {
   const tp = qp(req).get('tickers');
   if (!tp) return send(res, { error: 'Missing tickers' }, 400);
-  const tickers = tp.split(',').map(t => t.trim().toUpperCase()).filter(Boolean);
+  const tickers = tp.split(',').map((t: string) => t.trim().toUpperCase()).filter(Boolean);
   const m = new Map<string, any>();
   for (const c of dailyQuotes.companies || []) m.set(c.ticker, c);
   const companies = tickers.map(t => {
     const c = m.get(t);
-    if (!c) return createFallbackCompanyValuation(t);
-    const pe = computePePercentile(c.peTtm);
-    return { ...mapCachedCompanyToValuation(c), pePercentile10y: pe.percentile, status: pe.status };
+    if (!c) return fallback(t);
+    const pe = pePercentile(c.peTtm);
+    return { ...mapCompany(c), pePercentile10y: pe.percentile, status: pe.status };
   });
   send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile','marketCap'], companies), companies });
 }
 
 function handleIndexValuations(_req: IncomingMessage, res: ServerResponse) {
   const indices = (dailyQuotes.indices || []).map((i: any) => {
-    const pe = computeIndexPePercentile(i.peTtm);
-    return { ...mapCachedIndexToValuation(i), pePercentile: pe.percentile, status: pe.status };
+    const pe = idxPePercentile(i.peTtm);
+    return { ...mapIndex(i), pePercentile: pe.percentile, status: pe.status };
   });
   send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile'], indices), indices });
 }
@@ -124,10 +97,8 @@ function handleQuotes(req: IncomingMessage, res: ServerResponse) {
   for (const c of dailyQuotes.companies || []) m.set(c.ticker, c);
   for (const i of dailyQuotes.indices || []) m.set(i.ticker, i);
   const results = syms.split(',').map((s: string) => {
-    const t = s.trim().toUpperCase();
-    const c = m.get(t);
-    if (c) return { symbol: t, shortName: c.name||t, regularMarketPrice: c.price||null, marketCap: c.marketCap||null, trailingPE: c.peTtm||null, forwardPE: c.peFwd||null, priceToBook: c.pb||null, regularMarketChangePercent: null, regularMarketVolume: null, fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null };
-    return { symbol: t, shortName: t };
+    const t = s.trim().toUpperCase(), c = m.get(t);
+    return c ? { symbol: t, shortName: c.name||t, regularMarketPrice: c.price||null, marketCap: c.marketCap||null, trailingPE: c.peTtm||null, forwardPE: c.peFwd||null, priceToBook: c.pb||null, regularMarketChangePercent: null, regularMarketVolume: null, fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null } : { symbol: t, shortName: t };
   });
   send(res, { quoteResponse: { result: results } });
 }
@@ -144,9 +115,10 @@ function handleFundamentals(req: IncomingMessage, res: ServerResponse) {
 function handleHistorical(req: IncomingMessage, res: ServerResponse) {
   const sym = qp(req).get('symbol');
   if (!sym) return send(res, { error: 'Missing symbol' }, 400);
-  const t = sym.toUpperCase();
-  const d = historicalCache.data?.[t] || { history:[], splits:[], shares:null };
-  send(res, mapHistoricalPayload(d, historicalCache.timestamp));
+  const t = sym.toUpperCase(), d = historicalCache.data?.[t] || { history:[], splits:[], shares:null };
+  const h = d.history || [], f = new Set<string>();
+  if (h.length > 0) Object.keys(h[0]).forEach(k => f.add(k));
+  send(res, { metadata: { lastUpdated: historicalCache.timestamp || new Date().toISOString(), availableFields: Array.from(f) }, history: h, splits: d.splits || [], shares: d.shares || null });
 }
 
 // --- Entry ---
@@ -154,7 +126,7 @@ function handleHistorical(req: IncomingMessage, res: ServerResponse) {
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const p = (req.url || '').split('?')[0];
   try {
-    if (p.startsWith('/api/valuation'))       return handleValuation(req, res);
+    if (p.startsWith('/api/valuation'))        return handleValuation(req, res);
     if (p.startsWith('/api/index-valuations')) return handleIndexValuations(req, res);
     if (p.startsWith('/api/quotes'))           return handleQuotes(req, res);
     if (p.startsWith('/api/fundamentals'))     return handleFundamentals(req, res);
