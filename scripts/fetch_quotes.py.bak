@@ -1,30 +1,57 @@
 #!/usr/bin/env python3
 """
 美股数据每日抓取脚本
-每天早上8点自动运行，抓取所有股票实时数据并写入缓存文件
 
-优化说明:
-- 添加请求延迟避免限速
-- 添加限速重试逻辑(指数退避)
-- 成功请求立即写入文件(增量写入)
-- 汇总成功/失败数量
+数据源优先级：
+  1. 新浪财经 API（主数据源）— 价格、PE(TTM)、市值、中文名、OHLCV
+  2. Finnhub API（补充数据源）— Forward PE、PB、ROE、52周高低、行业分类
+  3. Alpha Vantage API（补充数据源）— Forward PE、PB、ROE、PEG、分析师评级
+  4. Yahoo Finance（备用，默认关闭）
+
+新浪财经 API 字段映射（gb_{ticker}）：
+  [0]  名称        [1]  当前价       [2]  涨跌幅(%)    [3]  时间
+  [4]  涨跌额      [5]  开盘价       [6]  最高价        [7]  最低价
+  [8]  昨收        [9]  成交量       [10] 成交额        [12] 市值(美元)
+  [14] PE(TTM)
 """
 
-import yfinance as yf
 import json
 import time
 import os
 import sys
+import requests
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 
-REQUEST_DELAY = 0.3
-MAX_RETRIES = 3
-RETRY_BASE_DELAY = 2
-RETRY_MAX_DELAY = 60
-INCREMENTAL_WRITE_INTERVAL = 10
+# --- 配置 ---
+CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 股票列表（与前端 src/config/tickers.ts 保持一致）
+# 加载 API Keys
+def load_env():
+    env = {}
+    env_path = os.path.join(SCRIPT_DIR, '..', '.env')
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, v = line.split('=', 1)
+                    env[k.strip()] = v.strip()
+    return env
+
+ENV = load_env()
+SINA_ENABLED = ENV.get('SINA_ENABLED', 'true').lower() == 'true'
+FINNHUB_KEY = ENV.get('FINNHUB_API_KEY', '')
+ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
+TWELVEDATA_KEY = ENV.get('TWELVE_DATA_API_KEY', '')
+YAHOO_ENABLED = ENV.get('YAHOO_ENABLED', 'false').lower() == 'true'
+
+HEADERS_SINA = {
+    'Referer': 'https://finance.sina.com.cn/',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+}
+
 TICKERS = [
     'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
     'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
@@ -38,7 +65,6 @@ TICKERS = [
     'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
 ]
 
-# 指数基金（与 server.ts 的 INDEX_TICKERS 保持一致）
 INDICES = [
     {'id': 'spy', 'name': 'S&P 500', 'nameZh': '标普500指数', 'ticker': 'SPY', 'type': 'Core'},
     {'id': 'qqq', 'name': 'Nasdaq 100', 'nameZh': '纳斯达克100指数', 'ticker': 'QQQ', 'type': 'Core'},
@@ -60,7 +86,7 @@ INDICES = [
     {'id': 'kre', 'name': 'Regional Banks', 'nameZh': '区域银行指数', 'ticker': 'KRE', 'type': 'Sector'},
     {'id': 'ibb', 'name': 'Biotechnology', 'nameZh': '生物技术指数', 'ticker': 'IBB', 'type': 'Sector'},
     {'id': 'xrt', 'name': 'Retail', 'nameZh': '零售指数', 'ticker': 'XRT', 'type': 'Sector'},
-    {'id': 'vnq', 'name': 'Vanguard Real Estate', 'nameZh': '先锋房地产指数', 'ticker': 'VNQ', 'type': 'Sector'},
+    {'id': 'vnq', 'name': 'Vanguard Real Estate', 'nameZh': '先锋房地产指数', 'ticker': 'VNQ', 'type': 'Core'},
     {'id': 'vig', 'name': 'Dividend Appreciation', 'nameZh': '股息增长指数', 'ticker': 'VIG', 'type': 'Core'},
     {'id': 'schd', 'name': 'US Dividend Equity', 'nameZh': '美股股息指数', 'ticker': 'SCHD', 'type': 'Core'},
     {'id': 'arkk', 'name': 'Innovation', 'nameZh': '创新指数', 'ticker': 'ARKK', 'type': 'Sector'},
@@ -68,251 +94,390 @@ INDICES = [
     {'id': 'gdx', 'name': 'Gold Miners', 'nameZh': '黄金矿业指数', 'ticker': 'GDX', 'type': 'Sector'},
 ]
 
-CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
+
+# ========== 工具函数 ==========
+
+def safe_float(val) -> Optional[float]:
+    if val is None: return None
+    try:
+        v = str(val).strip()
+        if v in ('--', '', 'N/A', 'NA', 'null', 'NaN', 'None'): return None
+        return float(v)
+    except (ValueError, TypeError):
+        return None
+
+def safe_round(val, digits=2) -> Optional[float]:
+    v = safe_float(val)
+    return round(v, digits) if v is not None else None
+
+def format_market_cap(mc) -> Optional[str]:
+    if mc is None: return None
+    if mc >= 1e12: return f"${mc/1e12:.2f}T"
+    if mc >= 1e9:  return f"${mc/1e9:.2f}B"
+    if mc >= 1e6:  return f"${mc/1e6:.2f}M"
+    return f"${mc:.0f}"
 
 def load_cache(filepath: str) -> Dict:
-    """加载旧缓存文件，如果不存在或格式错误返回空结构"""
-    if not os.path.exists(filepath):
-        return {'companies': [], 'indices': []}
+    if not os.path.exists(filepath): return {'companies': [], 'indices': []}
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return {
-                'companies': data.get('companies', []),
-                'indices': data.get('indices', [])
-            }
-    except (json.JSONDecodeError, IOError) as e:
-        print(f"  ⚠️ 加载旧缓存失败: {e}, 将使用空缓存")
-        return {'companies': [], 'indices': []}
+            d = json.load(f)
+            return {'companies': d.get('companies', []), 'indices': d.get('indices', [])}
+    except: return {'companies': [], 'indices': []}
 
-def merge_and_save(
-    new_companies: List[Dict],
-    new_indices: List[Dict],
-    filepath: str,
-    success_rate: float,
-    is_final: bool = False
-) -> bool:
-    """
-    合并旧缓存与新数据后写入。
-    
-    逻辑:
-    1. 加载旧缓存
-    2. 按 ticker 合并：新数据有就用新的，没有就保留旧的
-    3. 非最终写入：始终合并（增量保存，不丢数据）
-    4. 最终写入：仅当成功率 > 50% 时写入，否则保留旧数据
-    
-    Returns: True 如果实际写入了新数据
-    """
-    old_cache = load_cache(filepath)
-
-    # 合并逻辑：新数据优先，旧数据补充
-    merged_companies = []
-    merged_indices = []
-    seen_companies = set()
-    seen_indices = set()
-    
-    # 先加入所有新数据
-    for c in new_companies:
-        merged_companies.append(c)
-        seen_companies.add(c['ticker'])
-    
-    for i in new_indices:
-        merged_indices.append(i)
-        seen_indices.add(i['ticker'])
-    
-    # 再补充旧数据中没有被新数据覆盖的条目
-    for c in old_cache.get('companies', []):
-        if c['ticker'] not in seen_companies:
-            merged_companies.append(c)
-            seen_companies.add(c['ticker'])
-    
-    for i in old_cache.get('indices', []):
-        if i['ticker'] not in seen_indices:
-            merged_indices.append(i)
-            seen_indices.add(i['ticker'])
-    
-    # 最终写入时检查成功率
-    if is_final:
-        if success_rate < 0.5:
-            print(f"  ⚠️ 成功率 {success_rate:.1%} < 50%, 保留旧缓存不写入")
-            return False
-    
-    # 写入合并后的数据
-    cache_dir = os.path.dirname(filepath)
-    os.makedirs(cache_dir, exist_ok=True)
-    output = {
-        'timestamp': datetime.now().isoformat(),
-        'companies': merged_companies,
-        'indices': merged_indices
-    }
+def merge_and_save(new_c, new_i, filepath, rate, is_final=False):
+    old = load_cache(filepath)
+    mc, mi, sc, si = [], [], set(), set()
+    for c in new_c: mc.append(c); sc.add(c['ticker'])
+    for i in new_i: mi.append(i); si.add(i['ticker'])
+    for c in old.get('companies', []):
+        if c['ticker'] not in sc: mc.append(c); sc.add(c['ticker'])
+    for i in old.get('indices', []):
+        if i['ticker'] not in si: mi.append(i); si.add(i['ticker'])
+    if is_final and rate < 0.3:
+        print(f"  ⚠️ 成功率 {rate:.1%} < 30%, 保留旧缓存")
+        return False
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
-    
+        json.dump({'timestamp': datetime.now().isoformat(), 'companies': mc, 'indices': mi}, f, ensure_ascii=False, indent=2)
     return True
 
-def fetch_with_retry(ticker: str, fetch_func, max_retries: int = MAX_RETRIES) -> Optional[Any]:
-    """带指数退避重试的请求封装"""
-    for attempt in range(max_retries):
-        try:
-            result = fetch_func(ticker)
-            if result is not None:
-                return result
-            if attempt < max_retries - 1:
-                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
-                print(f"  ⏳ {ticker} 无数据, {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-        except Exception as e:
-            error_msg = str(e).lower()
-            if '429' in error_msg or 'too many requests' in error_msg or 'rate limit' in error_msg:
-                wait_time = min(RETRY_BASE_DELAY * (2 ** attempt), RETRY_MAX_DELAY)
-                print(f"  ⚠️ {ticker} 限速(429), {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-            elif attempt < max_retries - 1:
-                wait_time = RETRY_BASE_DELAY * (attempt + 1)
-                print(f"  ⚠️ {ticker} 错误: {e}, {wait_time}s后重试({attempt + 1}/{max_retries})...")
-                time.sleep(wait_time)
-            else:
-                raise
-    return None
 
-FIELDS = [
-    'currentPrice', 'regularMarketPrice', 'trailingPE', 'forwardPE',
-    'marketCap', 'priceToBook', 'shortName', 'longName', 'returnOnEquity'
-]
+# ========== 新浪财经 API（主数据源）==========
 
-def format_market_cap(market_cap):
-    """Format market cap to string like $1.23T or $456.78B"""
-    if market_cap is None:
-        return None
-    if market_cap >= 1e12:
-        return f"${market_cap/1e12:.2f}T"
-    elif market_cap >= 1e9:
-        return f"${market_cap/1e9:.2f}B"
-    elif market_cap >= 1e6:
-        return f"${market_cap/1e6:.2f}M"
-    else:
-        return f"${market_cap:.0f}"
+def sina_ticker(ticker: str) -> str:
+    return ticker.lower().replace('-', '')
 
-def compute_pe_percentile(ticker):
-    """PE百分位将在服务端基于历史数据计算，此处跳过"""
-    return None
+def fetch_sina_batch(tickers: List[str], batch_size: int = 30) -> Dict[str, Dict]:
+    """分批从新浪获取行情，避免 URL 过长"""
+    results = {}
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i + batch_size]
+        batch_data = _fetch_sina_batch_raw(batch)
+        results.update(batch_data)
+        if i + batch_size < len(tickers):
+            time.sleep(0.1)
+    return results
 
-def fetch_quote(ticker):
-    """Fetch quote for a single ticker"""
+
+def _fetch_sina_batch_raw(tickers: List[str]) -> Dict[str, Dict]:
+    codes = ','.join(f'gb_{sina_ticker(t)}' for t in tickers)
+    url = f'https://hq.sinajs.cn/list={codes}'
+    results = {}
     try:
-        t = yf.Ticker(ticker)
-        info = t.info
-        
-        price = info.get('currentPrice') or info.get('regularMarketPrice')
-        if price is None:
-            return None
-        
-        # 计算PE百分位
-        pe_percentile = compute_pe_percentile(ticker)
-        
-        # 根据百分位判断状态
-        status = 'Neutral'
-        if pe_percentile < 30:
-            status = 'Low'
-        elif pe_percentile > 70:
-            status = 'High'
-        
-        # ROE: yfinance returns decimal (e.g., 1.4147 = 141.47%)
-        roe_raw = info.get('returnOnEquity')
-        roe = round(roe_raw * 100, 2) if roe_raw is not None else None
-
-        result = {
-            'ticker': ticker.upper(),
-            'price': round(price, 2) if price is not None else None,
-            'peTtm': round(info.get('trailingPE'), 2) if info.get('trailingPE') is not None else None,
-            'peFwd': round(info.get('forwardPE'), 2) if info.get('forwardPE') is not None else None,
-            'pb': round(info.get('priceToBook'), 2) if info.get('priceToBook') is not None else None,
-            'roe': roe,
-            'marketCap': info.get('marketCap'),
-            'marketCapStr': format_market_cap(info.get('marketCap')),
-            'name': info.get('shortName') or info.get('longName') or ticker,
-            'pePercentile': None,  # 服务端计算
-            'status': 'Neutral',  # 服务端计算
-            'timestamp': datetime.now().isoformat()
-        }
-        return result
+        resp = requests.get(url, headers=HEADERS_SINA, timeout=15)
+        resp.encoding = 'gbk'
+        lines = resp.text.strip().split('\n')
+        for i, line in enumerate(lines):
+            if i >= len(tickers): break
+            ticker = tickers[i]
+            try:
+                data_str = line.split('="', 1)[1].rstrip('"; \r')
+                if not data_str: continue
+                f = data_str.split(',')
+                if len(f) < 2: continue
+                results[ticker] = {
+                    'name': f[0],
+                    'price': safe_float(f[1]),
+                    'change_pct': safe_float(f[2]),
+                    'change_time': f[3] if len(f) > 3 else None,
+                    'change_amount': safe_float(f[4]),
+                    'open': safe_float(f[5]),
+                    'high': safe_float(f[6]),
+                    'low': safe_float(f[7]),
+                    'prev_close': safe_float(f[8]),
+                    'volume': safe_float(f[9]),
+                    'turnover': safe_float(f[10]),
+                    'market_cap': safe_float(f[12]),
+                    'pe_ttm': safe_float(f[14]),
+                }
+            except (IndexError, ValueError) as e:
+                print(f"    ⚠️ {ticker} 新浪解析失败: {e}")
     except Exception as e:
-        print(f"  ⚠️ {ticker}: {e}")
-        return None
+        print(f"    ❌ 新浪请求失败: {e}")
+    return results
+
+
+# ========== Finnhub API（补充数据源）==========
+
+def fetch_finnhub_metrics(tickers: List[str]) -> Dict[str, Dict]:
+    """从 Finnhub 获取补充指标：Forward PE, PB, ROE, 52周高低"""
+    if not FINNHUB_KEY:
+        print("    ⚠️ FINNHUB_API_KEY 未配置，跳过")
+        return {}
+
+    results = {}
+    for ticker in tickers:
+        # Finnhub ticker: BRK-B → BRK.B
+        ft = ticker.replace('-', '.')
+        try:
+            # 基本财务指标
+            resp = requests.get(
+                f'https://finnhub.io/api/v1/stock/metric?symbol={ft}&metric=all&token={FINNHUB_KEY}',
+                timeout=15
+            )
+            data = resp.json()
+            m = data.get('metric', {})
+
+            results[ticker] = {
+                'forwardPE': safe_round(m.get('forwardPE')),
+                'pb': safe_round(m.get('pbAnnual')),
+                'roe': safe_round(m.get('roeTTM')),
+                'peNormalized': safe_round(m.get('peNormalizedAnnual')),
+                '52weekHigh': safe_float(m.get('52WeekHigh')),
+                '52weekLow': safe_float(m.get('52WeekLow')),
+                'beta': safe_round(m.get('beta'), 3),
+                'dividendYield': safe_round(m.get('currentDividendYieldTTM'), 4),
+            }
+        except Exception as e:
+            print(f"    ⚠️ {ticker} Finnhub 失败: {e}")
+            results[ticker] = {}
+
+        time.sleep(0.05)  # 60次/分限制，留点余量
+
+    return results
+
+
+# ========== Alpha Vantage API（补充数据源）==========
+
+def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
+    """
+    从 Alpha Vantage 获取补充指标：Forward PE, PB, ROE, PEG, 分析师评级
+    限制：25次/天（免费版），每次拿 OVERVIEW
+    """
+    if not ALPHAVANTAGE_KEY:
+        print("    ⚠️ ALPHA_VANTAGE_API_KEY 未配置，跳过")
+        return {}
+
+    results = {}
+    for ticker in tickers:
+        try:
+            resp = requests.get(
+                f'https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey={ALPHAVANTAGE_KEY}',
+                timeout=15
+            )
+            data = resp.json()
+
+            if not data or 'Error Message' in data or 'Note' in data:
+                msg = data.get('Note', data.get('Error Message', 'empty response'))
+                print(f"    ⚠️ {ticker} Alpha Vantage: {msg}")
+                # Rate limited, stop trying
+                if 'call frequency' in str(msg).lower() or 'thank you' in str(msg).lower():
+                    print(f"    ⏹️ Alpha Vantage 限速，停止请求")
+                    break
+                continue
+
+            results[ticker] = {
+                'forwardPE': safe_round(data.get('ForwardPE')),
+                'pb': safe_round(data.get('PriceToBookRatio')),
+                'roe': safe_round(data.get('ReturnOnEquityTTM')),
+                'roe_raw': safe_float(data.get('ReturnOnEquityTTM')),  # 小数格式
+                'peg': safe_round(data.get('PEGRatio')),
+                'evToRevenue': safe_round(data.get('EVToRevenue')),
+                'evToEBITDA': safe_round(data.get('EVToEBITDA')),
+                'analystTargetPrice': safe_round(data.get('AnalystTargetPrice')),
+                'analystStrongBuy': safe_float(data.get('AnalystRatingStrongBuy')),
+                'analystBuy': safe_float(data.get('AnalystRatingBuy')),
+                'analystHold': safe_float(data.get('AnalystRatingHold')),
+                'analystSell': safe_float(data.get('AnalystRatingSell')),
+            }
+            print(f"    ✅ AV {ticker}: FwdPE={results[ticker].get('forwardPE')} PB={results[ticker].get('pb')} ROE={results[ticker].get('roe')} PEG={results[ticker].get('peg')}")
+
+        except Exception as e:
+            print(f"    ⚠️ {ticker} Alpha Vantage 失败: {e}")
+
+        time.sleep(1)  # AV rate limit: ~25/day, 1s between calls
+
+    return results
+
+
+# ========== 主流程 ==========
 
 def main():
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
-    print(f"   配置: 延迟={REQUEST_DELAY}s, 重试={MAX_RETRIES}次, 增量写入={INCREMENTAL_WRITE_INTERVAL}")
-    
+
+    all_tickers = TICKERS + [idx['ticker'] for idx in INDICES]
+
+    # ============================
+    # 第 1 步：新浪财经（主数据源）
+    # ============================
+    print(f"\n📡 [1/3] 新浪财经 — 批量抓取 {len(all_tickers)} 个 ticker...")
+    sina_data = fetch_sina_batch(all_tickers)
+
     companies = []
     indices = []
-    success_companies = 0
-    failed_companies = 0
-    total_companies = len(TICKERS)
-    total_indices = len(INDICES)
-    total_tickers = total_companies + total_indices
-    incremental_counter = 0
-    
-    for i, ticker in enumerate(TICKERS, 1):
-        print(f"[{i}/{total_companies}] 抓取 {ticker}...", end=' ')
-        quote = fetch_with_retry(ticker, fetch_quote)
-        if quote:
-            print(f"✅ ${quote['price']}")
-            companies.append(quote)
-            success_companies += 1
+    c_ok, c_fail, i_ok, i_fail = 0, 0, 0, 0
+
+    for t in TICKERS:
+        sd = sina_data.get(t)
+        if sd and sd.get('price') is not None:
+            companies.append({
+                'ticker': t.upper(), 'name': sd.get('name', t),
+                'price': sd.get('price'), 'peTtm': sd.get('pe_ttm'),
+                'peFwd': None, 'pb': None, 'roe': None, 'peg': None,
+                'marketCap': sd.get('market_cap'),
+                'marketCapStr': format_market_cap(sd.get('market_cap')),
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+                'source': {'price': 'sina', 'peTtm': 'sina', 'marketCap': 'sina'},
+            })
+            c_ok += 1
         else:
-            print("❌ 失败")
-            failed_companies += 1
-        
-        incremental_counter += 1
-        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
-            current_success = success_companies
-            current_rate = current_success / total_tickers if total_tickers > 0 else 0
-            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
-            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
-            incremental_counter = 0
-        
-        time.sleep(REQUEST_DELAY)
-    
-    print(f"\n📊 公司完成: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
-    print("📊 处理指数基金...")
-    
-    success_indices = 0
-    failed_indices = 0
+            companies.append({
+                'ticker': t.upper(), 'name': t, 'price': None,
+                'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None, 'peg': None,
+                'marketCap': None, 'marketCapStr': None,
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(), 'source': {},
+            })
+            c_fail += 1
+            print(f"  ❌ {t}: 新浪无数据")
+
     for idx in INDICES:
-        ticker = idx['ticker']
-        print(f"  {ticker}...", end=' ')
-        quote = fetch_with_retry(ticker, fetch_quote)
-        if quote:
-            idx_data = {**idx, **quote}
-            indices.append(idx_data)
-            print(f"✅ ${quote['price']}")
-            success_indices += 1
+        t = idx['ticker']
+        sd = sina_data.get(t)
+        if sd and sd.get('price') is not None:
+            indices.append({
+                **idx, 'price': sd.get('price'), 'peTtm': sd.get('pe_ttm'),
+                'peFwd': None, 'pb': None, 'roe': None,
+                'marketCap': sd.get('market_cap'),
+                'marketCapStr': format_market_cap(sd.get('market_cap')),
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            i_ok += 1
         else:
-            print("❌ 失败")
-            failed_indices += 1
-        
-        incremental_counter += 1
-        if incremental_counter >= INCREMENTAL_WRITE_INTERVAL:
-            current_success = success_companies + success_indices
-            current_rate = current_success / total_tickers if total_tickers > 0 else 0
-            merge_and_save(companies, indices, CACHE_FILE, current_rate, is_final=False)
-            print(f"  💾 增量保存: {len(companies)} 家公司 + {len(indices)} 个指数")
-            incremental_counter = 0
-        
-        time.sleep(REQUEST_DELAY)
-    
-    total_success = success_companies + success_indices
-    final_rate = total_success / total_tickers if total_tickers > 0 else 0
-    wrote = merge_and_save(companies, indices, CACHE_FILE, final_rate, is_final=True)
-    
+            indices.append({
+                **idx, 'price': None,
+                'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None,
+                'marketCap': None, 'marketCapStr': None,
+                'pePercentile': None, 'status': 'Neutral',
+                'timestamp': datetime.now().isoformat(),
+            })
+            i_fail += 1
+            print(f"  ❌ {t}: 新浪无数据")
+
+    print(f"  新浪: {c_ok} 公司 + {i_ok} 指数 成功")
+
+    # 合并 ticker→entry 的映射
+    all_entries = {c['ticker']: c for c in companies}
+    for idx in indices:
+        all_entries[idx['ticker']] = idx
+
+    ok_tickers = [t for t in all_tickers if all_entries.get(t, {}).get('price') is not None]
+
+    # ============================
+    # 第 2 步：Finnhub（补充 Forward PE, PB, ROE）
+    # ============================
+    finnhub_hit = 0
+    if FINNHUB_KEY and ok_tickers:
+        print(f"\n📡 [2/3] Finnhub — 补充 {len(ok_tickers)} 个 ticker 的 FwdPE/PB/ROE...")
+        fh_data = fetch_finnhub_metrics(ok_tickers)
+        for ticker, fh in fh_data.items():
+            entry = all_entries.get(ticker)
+            if not entry or not fh: continue
+            updated = False
+            if fh.get('forwardPE') is not None and entry.get('peFwd') is None:
+                entry['peFwd'] = fh['forwardPE']
+                entry.setdefault('source', {})['peFwd'] = 'finnhub'
+                updated = True
+            if fh.get('pb') is not None and entry.get('pb') is None:
+                entry['pb'] = fh['pb']
+                entry.setdefault('source', {})['pb'] = 'finnhub'
+                updated = True
+            if fh.get('roe') is not None and entry.get('roe') is None:
+                entry['roe'] = fh['roe']
+                entry.setdefault('source', {})['roe'] = 'finnhub'
+                updated = True
+            # 额外字段
+            if fh.get('52weekHigh') is not None:
+                entry['52weekHigh'] = fh['52weekHigh']
+            if fh.get('52weekLow') is not None:
+                entry['52weekLow'] = fh['52weekLow']
+            if fh.get('beta') is not None:
+                entry['beta'] = fh['beta']
+            if updated:
+                finnhub_hit += 1
+        print(f"  Finnhub: {finnhub_hit}/{len(ok_tickers)} 补充成功")
+
+    # ============================
+    # 第 3 步：Alpha Vantage（补充 PEG、分析师评级、二次补充）
+    # ============================
+    av_hit = 0
+    if ALPHAVANTAGE_KEY and ok_tickers:
+        # Alpha Vantage 25次/天，优先补还没有 Finnhub 数据的
+        missing = [t for t in ok_tickers
+                   if all_entries.get(t, {}).get('peFwd') is None
+                   or all_entries.get(t, {}).get('pb') is None
+                   or all_entries.get(t, {}).get('roe') is None]
+        # 最多取 25 个
+        av_tickers = missing[:25]
+        if av_tickers:
+            print(f"\n📡 [3/3] Alpha Vantage — 补充 {len(av_tickers)} 个缺失 ticker (PEG + 分析师评级)...")
+            av_data = fetch_alphavantage_batch(av_tickers)
+            for ticker, av in av_data.items():
+                entry = all_entries.get(ticker)
+                if not entry or not av: continue
+                updated = False
+                if av.get('forwardPE') is not None and entry.get('peFwd') is None:
+                    entry['peFwd'] = av['forwardPE']
+                    entry.setdefault('source', {})['peFwd'] = 'alphavantage'
+                    updated = True
+                if av.get('pb') is not None and entry.get('pb') is None:
+                    entry['pb'] = av['pb']
+                    entry.setdefault('source', {})['pb'] = 'alphavantage'
+                    updated = True
+                if av.get('roe_raw') is not None and entry.get('roe') is None:
+                    # AV 返回小数 (1.015 = 101.5%)
+                    roe = av['roe_raw']
+                    entry['roe'] = round(roe * 100, 2) if roe < 5 else round(roe, 2)
+                    entry.setdefault('source', {})['roe'] = 'alphavantage'
+                    updated = True
+                if av.get('peg') is not None:
+                    entry['peg'] = av['peg']
+                    entry.setdefault('source', {})['peg'] = 'alphavantage'
+                    updated = True
+                # 分析师评级
+                if av.get('analystTargetPrice'):
+                    entry['analystTargetPrice'] = av['analystTargetPrice']
+                if av.get('analystStrongBuy') is not None:
+                    entry['analystRating'] = {
+                        'strongBuy': av.get('analystStrongBuy', 0),
+                        'buy': av.get('analystBuy', 0),
+                        'hold': av.get('analystHold', 0),
+                        'sell': av.get('analystSell', 0),
+                    }
+                if updated:
+                    av_hit += 1
+            print(f"  Alpha Vantage: {av_hit}/{len(av_tickers)} 补充成功")
+        else:
+            print(f"\n📡 [3/3] Alpha Vantage — 所有字段已有数据，跳过")
+
+    # 清理 source 字段（不需要存入缓存）
+    for entry in companies + indices:
+        entry.pop('source', None)
+
+    # ============================
+    # 保存
+    # ============================
+    total = len(TICKERS) + len(INDICES)
+    total_ok = c_ok + i_ok
+    rate = total_ok / total if total > 0 else 0
+
+    wrote = merge_and_save(companies, indices, CACHE_FILE, rate, is_final=True)
     if wrote:
-        print(f"\n✅ 完成！已保存 {len(companies)} 家公司 + {len(indices)} 个指数到 {CACHE_FILE}")
+        # 统计补充覆盖率
+        fwd_count = sum(1 for c in companies if c.get('peFwd') is not None)
+        pb_count = sum(1 for c in companies if c.get('pb') is not None)
+        roe_count = sum(1 for c in companies if c.get('roe') is not None)
+        peg_count = sum(1 for c in companies if c.get('peg') is not None)
+        print(f"\n✅ 完成！{len(companies)} 公司 + {len(indices)} 指数 | 新浪 {rate:.1%}")
+        print(f"   字段覆盖率: FwdPE {fwd_count}/{len(companies)} | PB {pb_count}/{len(companies)} | ROE {roe_count}/{len(companies)} | PEG {peg_count}/{len(companies)}")
     else:
-        print(f"\n⚠️ 完成！成功率不足，保留旧缓存")
-    print(f"   公司: {success_companies}/{total_companies} 成功, {failed_companies} 失败")
-    print(f"   指数: {success_indices}/{total_indices} 成功, {failed_indices} 失败")
-    print(f"   总成功率: {final_rate:.1%}")
+        print(f"\n⚠️ 成功率不足，保留旧缓存")
+
+    return 0 if rate > 0.3 else 1
+
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

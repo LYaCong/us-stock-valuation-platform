@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """
 美股数据每日抓取脚本
-主数据源：新浪财经 API（国内直连、免费无限制）
-补充数据源：Yahoo Finance（可选，补充新浪缺失字段 forwardPE/PB/ROE）
+
+数据源优先级：
+  1. 新浪财经 API（主数据源）— 价格、PE(TTM)、市值、中文名、OHLCV
+  2. Finnhub API（补充数据源）— Forward PE、PB、ROE、52周高低
+     + 新浪不支持的 ticker（如 BRK-B）由 Finnhub quote API 提供价格
+  3. Alpha Vantage API（补充数据源）— Forward PE、PB、ROE、分析师评级（25次/天）
 
 新浪财经 API 字段映射（gb_{ticker}）：
   [0]  名称        [1]  当前价       [2]  涨跌幅(%)    [3]  时间
   [4]  涨跌额      [5]  开盘价       [6]  最高价        [7]  最低价
-  [8]  昨收        [9]  成交量       [10] 成交额        [11] ?
-  [12] 市值(美元)  [13] ?           [14] PE(TTM)
+  [8]  昨收        [9]  成交量       [10] 成交额        [12] 市值(美元)
+  [14] PE(TTM)
 """
 
 import json
@@ -17,15 +21,34 @@ import os
 import sys
 import requests
 from datetime import datetime
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, List
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 # --- 配置 ---
-SINA_DELAY = 0.2
-YAHOO_DELAY = 0.5
-YAHOO_ENABLED = os.environ.get('YAHOO_ENABLED', 'true').lower() == 'true'
 CACHE_FILE = os.path.join(os.path.dirname(__file__), '..', 'stock_cache', 'daily_quotes.json')
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-HEADERS = {
+def load_env():
+    env = {}
+    env_path = os.path.join(SCRIPT_DIR, '..', '.env')
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, v = line.split('=', 1)
+                    env[k.strip()] = v.strip()
+    return env
+
+ENV = load_env()
+SINA_ENABLED = ENV.get('SINA_ENABLED', 'true').lower() == 'true'
+FINNHUB_KEY = ENV.get('FINNHUB_API_KEY', '')
+ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
+TWELVEDATA_KEY = ENV.get('TWELVE_DATA_API_KEY', '')
+YAHOO_ENABLED = ENV.get('YAHOO_ENABLED', 'false').lower() == 'true'
+
+HEADERS_SINA = {
     'Referer': 'https://finance.sina.com.cn/',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
 }
@@ -72,85 +95,13 @@ INDICES = [
     {'id': 'gdx', 'name': 'Gold Miners', 'nameZh': '黄金矿业指数', 'ticker': 'GDX', 'type': 'Sector'},
 ]
 
-
-# ========== 新浪财经 API ==========
+# 新浪不支持的 ticker（由 Finnhub 提供全部数据）
+SINA_SKIP_TICKERS = {'BRK-B'}
 
 def sina_ticker(ticker: str) -> str:
+    if ticker in SINA_SKIP_TICKERS:
+        return None
     return ticker.lower().replace('-', '')
-
-
-def fetch_sina_batch(tickers: List[str]) -> Dict[str, Dict]:
-    """批量从新浪财经获取行情（支持一次请求多个 ticker）"""
-    codes = ','.join(f'gb_{sina_ticker(t)}' for t in tickers)
-    url = f'https://hq.sinajs.cn/list={codes}'
-    results = {}
-
-    try:
-        resp = requests.get(url, headers=HEADERS, timeout=15)
-        resp.encoding = 'gbk'
-        lines = resp.text.strip().split('\n')
-
-        for i, line in enumerate(lines):
-            if i >= len(tickers):
-                break
-            ticker = tickers[i]
-            try:
-                data_str = line.split('="', 1)[1].rstrip('"; \r')
-                if not data_str:
-                    continue
-                f = data_str.split(',')
-                if len(f) < 2:
-                    continue
-
-                results[ticker] = {
-                    'name': f[0],
-                    'price': safe_float(f[1]),
-                    'change_pct': safe_float(f[2]),
-                    'change_time': f[3] if len(f) > 3 else None,
-                    'change_amount': safe_float(f[4]),
-                    'open': safe_float(f[5]),
-                    'high': safe_float(f[6]),
-                    'low': safe_float(f[7]),
-                    'prev_close': safe_float(f[8]),
-                    'volume': safe_float(f[9]),       # 成交量
-                    'turnover': safe_float(f[10]),     # 成交额
-                    'market_cap': safe_float(f[12]),   # 市值（美元）
-                    'pe_ttm': safe_float(f[14]),       # PE(TTM)
-                }
-            except (IndexError, ValueError) as e:
-                print(f"    ⚠️ {ticker} 新浪解析失败: {e}")
-    except Exception as e:
-        print(f"    ❌ 新浪请求失败: {e}")
-
-    return results
-
-
-# ========== Yahoo Finance（补充数据源） ==========
-
-def fetch_yahoo_supplement(tickers: List[str]) -> Dict[str, Dict]:
-    if not YAHOO_ENABLED:
-        return {}
-    try:
-        import yfinance as yf
-    except ImportError:
-        print("    ⚠️ yfinance 未安装，跳过 Yahoo 补充")
-        return {}
-
-    results = {}
-    for ticker in tickers:
-        try:
-            info = yf.Ticker(ticker).info
-            results[ticker] = {
-                'peFwd': safe_round(info.get('forwardPE')),
-                'pb': safe_round(info.get('priceToBook')),
-                'roe_raw': info.get('returnOnEquity'),
-                'marketCap': info.get('marketCap'),
-                'shortName': info.get('shortName') or info.get('longName'),
-            }
-        except Exception as e:
-            print(f"    ⚠️ {ticker} Yahoo 失败: {e}")
-        time.sleep(YAHOO_DELAY)
-    return results
 
 
 # ========== 工具函数 ==========
@@ -159,7 +110,7 @@ def safe_float(val) -> Optional[float]:
     if val is None: return None
     try:
         v = str(val).strip()
-        if v in ('--', '', 'N/A', 'NA', 'null', 'NaN'): return None
+        if v in ('--', '', 'N/A', 'NA', 'null', 'NaN', 'None'): return None
         return float(v)
     except (ValueError, TypeError):
         return None
@@ -201,64 +152,253 @@ def merge_and_save(new_c, new_i, filepath, rate, is_final=False):
     return True
 
 
+# ========== 新浪财经 API（主数据源）==========
+
+def fetch_sina_batch(tickers: List[str], batch_size: int = 30) -> Dict[str, Dict]:
+    """分批从新浪获取行情，跳过不支持的 ticker"""
+    fetchable = [t for t in tickers if sina_ticker(t) is not None]
+    skipped = [t for t in tickers if sina_ticker(t) is None]
+    if skipped:
+        print(f"  新浪跳过（不支持）: {skipped}")
+
+    results = {}
+    for i in range(0, len(fetchable), batch_size):
+        batch = fetchable[i:i + batch_size]
+        batch_data = _fetch_sina_batch_raw(batch)
+        results.update(batch_data)
+        if i + batch_size < len(fetchable):
+            time.sleep(0.1)
+    return results
+
+
+def _fetch_sina_batch_raw(tickers: List[str]) -> Dict[str, Dict]:
+    codes = ','.join(f'gb_{sina_ticker(t)}' for t in tickers)
+    url = f'https://hq.sinajs.cn/list={codes}'
+    results = {}
+    try:
+        resp = requests.get(url, headers=HEADERS_SINA, timeout=15)
+        resp.encoding = 'gbk'
+        lines = resp.text.strip().split('\n')
+        for i, line in enumerate(lines):
+            if i >= len(tickers): break
+            ticker = tickers[i]
+            try:
+                data_str = line.split('="', 1)[1].rstrip('"; \r')
+                if not data_str: continue
+                f = data_str.split(',')
+                if len(f) < 2: continue
+                results[ticker] = {
+                    'name': f[0],
+                    'price': safe_float(f[1]),
+                    'change_pct': safe_float(f[2]),
+                    'change_time': f[3] if len(f) > 3 else None,
+                    'change_amount': safe_float(f[4]),
+                    'open': safe_float(f[5]),
+                    'high': safe_float(f[6]),
+                    'low': safe_float(f[7]),
+                    'prev_close': safe_float(f[8]),
+                    'volume': safe_float(f[9]),
+                    'turnover': safe_float(f[10]),
+                    'market_cap': safe_float(f[12]),
+                    'pe_ttm': safe_float(f[14]),
+                }
+            except (IndexError, ValueError) as e:
+                print(f"    ⚠️ {ticker} 新浪解析失败: {e}")
+    except Exception as e:
+        print(f"    ❌ 新浪请求失败: {e}")
+    return results
+
+
+# ========== Finnhub API（限速并发）==========
+
+_finnhub_lock = threading.Lock()
+_finnhub_last_request = 0.0
+FINNHUB_MIN_INTERVAL = 1.1  # 秒，确保 < 60次/分钟
+
+def _finnhub_throttle():
+    """限速：确保请求间隔 >= FINNHUB_MIN_INTERVAL"""
+    global _finnhub_last_request
+    with _finnhub_lock:
+        now = time.time()
+        wait = FINNHUB_MIN_INTERVAL - (now - _finnhub_last_request)
+        if wait > 0:
+            time.sleep(wait)
+        _finnhub_last_request = time.time()
+
+
+def _fetch_finnhub_single(ticker: str) -> tuple:
+    """单个 ticker 的 Finnhub 请求（含限速）"""
+    _finnhub_throttle()
+    ft = ticker.replace('-', '.')
+    result = {}
+    try:
+        resp = requests.get(
+            f'https://finnhub.io/api/v1/stock/metric?symbol={ft}&metric=all&token={FINNHUB_KEY}',
+            timeout=15
+        )
+        data = resp.json()
+        m = data.get('metric', {})
+        result = {
+            'forwardPE': safe_round(m.get('forwardPE')),
+            'pb': safe_round(m.get('pbAnnual')),
+            'roe': safe_round(m.get('roeTTM')),
+            'peNormalized': safe_round(m.get('peNormalizedAnnual')),
+            '52weekHigh': safe_float(m.get('52WeekHigh')),
+            '52weekLow': safe_float(m.get('52WeekLow')),
+            'beta': safe_round(m.get('beta'), 3),
+            'dividendYield': safe_round(m.get('currentDividendYieldTTM'), 4),
+        }
+    except Exception as e:
+        print(f"    ⚠️ {ticker} Finnhub metric 失败: {e}")
+    return (ticker, result)
+
+
+def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 2) -> Dict[str, Dict]:
+    """限速并发从 Finnhub 获取补充指标。2线程 + 每请求间隔1.1秒 ≈ 每分钟约55次"""
+    if not FINNHUB_KEY:
+        print("    ⚠️ FINNHUB_API_KEY 未配置，跳过")
+        return {}
+
+    results = {}
+    total = len(tickers)
+    done = 0
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = {pool.submit(_fetch_finnhub_single, t): t for t in tickers}
+        for future in as_completed(futures):
+            ticker, data = future.result()
+            results[ticker] = data
+            done += 1
+            if done % 25 == 0 or done == total:
+                print(f"    Finnhub 进度: {done}/{total}")
+
+    return results
+
+
+def fetch_finnhub_quote(ticker: str) -> Optional[Dict]:
+    """从 Finnhub 获取实时报价（用于新浪不支持的 ticker）"""
+    if not FINNHUB_KEY:
+        return None
+    _finnhub_throttle()
+    ft = ticker.replace('-', '.')
+    try:
+        resp = requests.get(
+            f'https://finnhub.io/api/v1/quote?symbol={ft}&token={FINNHUB_KEY}',
+            timeout=15
+        )
+        data = resp.json()
+        if data and data.get('c') and data['c'] > 0:
+            return {
+                'price': data['c'],
+                'change_pct': safe_round(((data['c'] - data.get('pc', data['c'])) / data.get('pc', data['c'])) * 100) if data.get('pc') else None,
+                'change_amount': safe_round(data.get('d')),
+                'open': safe_float(data.get('o')),
+                'high': safe_float(data.get('h')),
+                'low': safe_float(data.get('l')),
+                'prev_close': safe_float(data.get('pc')),
+            }
+    except Exception as e:
+        print(f"    ⚠️ {ticker} Finnhub quote 失败: {e}")
+    return None
+
+
+# ========== Alpha Vantage API（补充数据源）==========
+
+def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
+    """从 Alpha Vantage 获取补充指标，限制 25次/天"""
+    if not ALPHAVANTAGE_KEY:
+        print("    ⚠️ ALPHA_VANTAGE_API_KEY 未配置，跳过")
+        return {}
+
+    results = {}
+    for ticker in tickers:
+        try:
+            resp = requests.get(
+                f'https://www.alphavantage.co/query?function=OVERVIEW&symbol={ticker}&apikey={ALPHAVANTAGE_KEY}',
+                timeout=15
+            )
+            data = resp.json()
+
+            if not data or 'Error Message' in data or 'Note' in data:
+                msg = data.get('Note', data.get('Error Message', 'empty response'))
+                print(f"    ⚠️ {ticker} Alpha Vantage: {msg}")
+                if 'call frequency' in str(msg).lower() or 'thank you' in str(msg).lower():
+                    print(f"    ⏹️ Alpha Vantage 限速，停止请求")
+                    break
+                continue
+
+            results[ticker] = {
+                'forwardPE': safe_round(data.get('ForwardPE')),
+                'pb': safe_round(data.get('PriceToBookRatio')),
+                'roe_raw': safe_float(data.get('ReturnOnEquityTTM')),
+                'analystTargetPrice': safe_round(data.get('AnalystTargetPrice')),
+                'analystStrongBuy': safe_float(data.get('AnalystRatingStrongBuy')),
+                'analystBuy': safe_float(data.get('AnalystRatingBuy')),
+                'analystHold': safe_float(data.get('AnalystRatingHold')),
+                'analystSell': safe_float(data.get('AnalystRatingSell')),
+            }
+            print(f"    ✅ AV {ticker}: FwdPE={results[ticker].get('forwardPE')} PB={results[ticker].get('pb')} ROE={results[ticker].get('roe_raw')}")
+
+        except Exception as e:
+            print(f"    ⚠️ {ticker} Alpha Vantage 失败: {e}")
+
+        time.sleep(1)
+
+    return results
+
+
 # ========== 主流程 ==========
 
 def main():
+    start_time = time.time()
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
-    print(f"   主数据源: 新浪财经 | 补充: {'Yahoo' if YAHOO_ENABLED else '禁用'}")
 
-    # --- 公司：新浪批量 ---
-    print(f"\n📊 新浪抓取 {len(TICKERS)} 家公司...")
-    sina_data = fetch_sina_batch(TICKERS)
+    all_tickers = TICKERS + [idx['ticker'] for idx in INDICES]
+
+    # ============================
+    # 第 1 步：新浪财经（主数据源）
+    # ============================
+    print(f"\n📡 [1/3] 新浪财经 — 批量抓取 {len(all_tickers)} 个 ticker...")
+    sina_data = fetch_sina_batch(all_tickers)
 
     companies = []
-    c_ok, c_fail = 0, 0
+    indices = []
+    c_ok, c_fail, i_ok, i_fail = 0, 0, 0, 0
+
     for t in TICKERS:
         sd = sina_data.get(t)
-        if sd and sd.get('price') is not None:
+        if sd and sd.get('price') is not None and sd.get('price', 0) > 0:
             companies.append({
-                'ticker': t.upper(),
-                'name': sd.get('name', t),
-                'price': sd.get('price'),
-                'peTtm': sd.get('pe_ttm'),
-                'peFwd': None,
-                'pb': None,
-                'roe': None,
+                'ticker': t.upper(), 'name': sd.get('name', t),
+                'price': sd.get('price'), 'peTtm': sd.get('pe_ttm'),
+                'peFwd': None, 'pb': None, 'roe': None,
                 'marketCap': sd.get('market_cap'),
                 'marketCapStr': format_market_cap(sd.get('market_cap')),
-                'pePercentile': None,
-                'status': 'Neutral',
+                'pePercentile': None, 'status': 'Neutral',
                 'timestamp': datetime.now().isoformat(),
+                'source': {'price': 'sina', 'peTtm': 'sina', 'marketCap': 'sina'},
             })
             c_ok += 1
-            print(f"  ✅ {t}: ${sd['price']} PE={sd.get('pe_ttm') or 'N/A'} Cap={format_market_cap(sd.get('market_cap'))}")
         else:
             companies.append({
                 'ticker': t.upper(), 'name': t, 'price': None,
                 'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None,
                 'marketCap': None, 'marketCapStr': None,
                 'pePercentile': None, 'status': 'Neutral',
-                'timestamp': datetime.now().isoformat(),
+                'timestamp': datetime.now().isoformat(), 'source': {},
             })
             c_fail += 1
-            print(f"  ❌ {t}: 无数据")
-    print(f"  公司: {c_ok}/{len(TICKERS)} 成功")
+            if t in SINA_SKIP_TICKERS:
+                print(f"  ⏭️ {t}: 新浪不支持，将由 Finnhub 提供全部数据")
+            else:
+                print(f"  ❌ {t}: 新浪无数据")
 
-    # --- 指数：新浪批量 ---
-    print(f"\n📊 新浪抓取 {len(INDICES)} 个指数...")
-    idx_tickers = [idx['ticker'] for idx in INDICES]
-    sina_idx = fetch_sina_batch(idx_tickers)
-
-    indices = []
-    i_ok, i_fail = 0, 0
     for idx in INDICES:
         t = idx['ticker']
-        sd = sina_idx.get(t)
-        if sd and sd.get('price') is not None:
+        sd = sina_data.get(t)
+        if sd and sd.get('price') is not None and sd.get('price', 0) > 0:
             indices.append({
-                **idx,
-                'price': sd.get('price'),
-                'peTtm': sd.get('pe_ttm'),
+                **idx, 'price': sd.get('price'), 'peTtm': sd.get('pe_ttm'),
                 'peFwd': None, 'pb': None, 'roe': None,
                 'marketCap': sd.get('market_cap'),
                 'marketCapStr': format_market_cap(sd.get('market_cap')),
@@ -266,61 +406,154 @@ def main():
                 'timestamp': datetime.now().isoformat(),
             })
             i_ok += 1
-            print(f"  ✅ {t}: ${sd['price']}")
         else:
-            indices.append({**idx, 'price': None,
+            indices.append({
+                **idx, 'price': None,
                 'peTtm': None, 'peFwd': None, 'pb': None, 'roe': None,
                 'marketCap': None, 'marketCapStr': None,
                 'pePercentile': None, 'status': 'Neutral',
                 'timestamp': datetime.now().isoformat(),
             })
             i_fail += 1
-            print(f"  ❌ {t}: 无数据")
-    print(f"  指数: {i_ok}/{len(INDICES)} 成功")
+            print(f"  ❌ {t}: 新浪无数据")
 
-    # --- Yahoo 补充 ---
-    yahoo_ok_tickers = [c['ticker'] for c in companies if c['price'] is not None]
-    yahoo_ok_tickers += [idx['ticker'] for idx in indices if idx.get('price') is not None]
+    print(f"  新浪: {c_ok} 公司 + {i_ok} 指数 成功")
 
-    if yahoo_ok_tickers and YAHOO_ENABLED:
-        print(f"\n📊 Yahoo 补充 {len(yahoo_ok_tickers)} 个 ticker (forwardPE/PB/ROE)...")
-        yahoo_data = fetch_yahoo_supplement(yahoo_ok_tickers)
-        yahoo_hit = 0
-        for c in companies:
-            yd = yahoo_data.get(c['ticker'])
-            if yd:
-                if yd.get('peFwd') is not None: c['peFwd'] = yd['peFwd']
-                if yd.get('pb') is not None: c['pb'] = yd['pb']
-                if yd.get('roe_raw') is not None:
-                    roe = yd['roe_raw']
-                    c['roe'] = round(roe * 100, 2) if roe < 1 else round(roe, 2)
-                if not c.get('marketCap') and yd.get('marketCap'):
-                    c['marketCap'] = yd['marketCap']
-                    c['marketCapStr'] = format_market_cap(yd['marketCap'])
-                yahoo_hit += 1
-        for idx in indices:
-            yd = yahoo_data.get(idx['ticker'])
-            if yd:
-                if yd.get('peFwd') is not None: idx['peFwd'] = yd['peFwd']
-                if yd.get('pb') is not None: idx['pb'] = yd['pb']
-                if yd.get('roe_raw') is not None:
-                    roe = yd['roe_raw']
-                    idx['roe'] = round(roe * 100, 2) if roe < 1 else round(roe, 2)
-                yahoo_hit += 1
-        print(f"  Yahoo 补充: {yahoo_hit}/{len(yahoo_ok_tickers)} 成功")
-    elif not YAHOO_ENABLED:
-        print("\n  ⏭️ Yahoo 补充已禁用（设置 YAHOO_ENABLED=true 启用）")
+    # 合并 ticker→entry 的映射
+    all_entries = {c['ticker']: c for c in companies}
+    for idx in indices:
+        all_entries[idx['ticker']] = idx
 
-    # --- 保存 ---
+    ok_tickers = [t for t in all_tickers if all_entries.get(t, {}).get('price') is not None]
+    no_price_tickers = [t for t in all_tickers if all_entries.get(t, {}).get('price') is None]
+
+    # ============================
+    # 第 1.5 步：Finnhub 补价格（新浪不支持的 ticker）
+    # ============================
+    if FINNHUB_KEY and no_price_tickers:
+        print(f"\n📡 [1.5/3] Finnhub quote — 补 {len(no_price_tickers)} 个新浪缺失 ticker 的价格...")
+        for t in no_price_tickers:
+            q = fetch_finnhub_quote(t)
+            if q and q.get('price'):
+                entry = all_entries.get(t)
+                if entry:
+                    entry['price'] = q['price']
+                    if q.get('open'): entry['open'] = q['open']
+                    if q.get('high'): entry['high'] = q['high']
+                    if q.get('low'): entry['low'] = q['low']
+                    if q.get('prev_close'): entry['prev_close'] = q['prev_close']
+                    if t.upper() == 'BRK-B':
+                        entry['name'] = '伯克希尔B类'
+                    print(f"  ✅ {t}: Finnhub 价格 {q['price']}")
+                    if t in TICKERS:
+                        c_ok += 1; c_fail -= 1
+                    else:
+                        i_ok += 1; i_fail -= 1
+
+    # 重新计算 ok_tickers
+    ok_tickers = [t for t in all_tickers if all_entries.get(t, {}).get('price') is not None]
+
+    # ============================
+    # 第 2 步：Finnhub（限速并发补充 Forward PE, PB, ROE）
+    # ============================
+    finnhub_hit = 0
+    if FINNHUB_KEY and ok_tickers:
+        est_time = len(ok_tickers) * FINNHUB_MIN_INTERVAL / 2  # 2 threads
+        print(f"\n📡 [2/3] Finnhub — 限速并发补充 {len(ok_tickers)} 个 ticker (2线程, 预计{est_time:.0f}s)...")
+        fh_data = fetch_finnhub_concurrent(ok_tickers, max_workers=2)
+        for ticker, fh in fh_data.items():
+            entry = all_entries.get(ticker)
+            if not entry or not fh: continue
+            updated = False
+            if fh.get('forwardPE') is not None and entry.get('peFwd') is None:
+                entry['peFwd'] = fh['forwardPE']
+                entry.setdefault('source', {})['peFwd'] = 'finnhub'
+                updated = True
+            if fh.get('pb') is not None and entry.get('pb') is None:
+                entry['pb'] = fh['pb']
+                entry.setdefault('source', {})['pb'] = 'finnhub'
+                updated = True
+            if fh.get('roe') is not None and entry.get('roe') is None:
+                entry['roe'] = fh['roe']
+                entry.setdefault('source', {})['roe'] = 'finnhub'
+                updated = True
+            if fh.get('52weekHigh') is not None:
+                entry['52weekHigh'] = fh['52weekHigh']
+            if fh.get('52weekLow') is not None:
+                entry['52weekLow'] = fh['52weekLow']
+            if fh.get('beta') is not None:
+                entry['beta'] = fh['beta']
+            if updated:
+                finnhub_hit += 1
+        print(f"  Finnhub: {finnhub_hit}/{len(ok_tickers)} 补充成功")
+
+    # ============================
+    # 第 3 步：Alpha Vantage（补充分析师评级、二次补充）
+    # ============================
+    av_hit = 0
+    if ALPHAVANTAGE_KEY and ok_tickers:
+        missing = [t for t in TICKERS
+                   if all_entries.get(t, {}).get('peFwd') is None
+                   or all_entries.get(t, {}).get('pb') is None
+                   or all_entries.get(t, {}).get('roe') is None]
+        av_tickers = missing[:25]
+        if av_tickers:
+            print(f"\n📡 [3/3] Alpha Vantage — 补充 {len(av_tickers)} 个缺失个股...")
+            av_data = fetch_alphavantage_batch(av_tickers)
+            for ticker, av in av_data.items():
+                entry = all_entries.get(ticker)
+                if not entry or not av: continue
+                updated = False
+                if av.get('forwardPE') is not None and entry.get('peFwd') is None:
+                    entry['peFwd'] = av['forwardPE']
+                    entry.setdefault('source', {})['peFwd'] = 'alphavantage'
+                    updated = True
+                if av.get('pb') is not None and entry.get('pb') is None:
+                    entry['pb'] = av['pb']
+                    entry.setdefault('source', {})['pb'] = 'alphavantage'
+                    updated = True
+                if av.get('roe_raw') is not None and entry.get('roe') is None:
+                    roe = av['roe_raw']
+                    entry['roe'] = round(roe * 100, 2) if roe < 5 else round(roe, 2)
+                    entry.setdefault('source', {})['roe'] = 'alphavantage'
+                    updated = True
+                if av.get('analystTargetPrice'):
+                    entry['analystTargetPrice'] = av['analystTargetPrice']
+                if av.get('analystStrongBuy') is not None:
+                    entry['analystRating'] = {
+                        'strongBuy': av.get('analystStrongBuy', 0),
+                        'buy': av.get('analystBuy', 0),
+                        'hold': av.get('analystHold', 0),
+                        'sell': av.get('analystSell', 0),
+                    }
+                if updated:
+                    av_hit += 1
+            print(f"  Alpha Vantage: {av_hit}/{len(av_tickers)} 补充成功")
+        else:
+            print(f"\n📡 [3/3] Alpha Vantage — 所有个股字段已有数据，跳过")
+
+    # 清理 source 字段
+    for entry in companies + indices:
+        entry.pop('source', None)
+
+    # ============================
+    # 保存
+    # ============================
     total = len(TICKERS) + len(INDICES)
     total_ok = c_ok + i_ok
     rate = total_ok / total if total > 0 else 0
 
     wrote = merge_and_save(companies, indices, CACHE_FILE, rate, is_final=True)
+    elapsed = time.time() - start_time
+
     if wrote:
-        print(f"\n✅ 完成！{len(companies)} 公司 + {len(indices)} 指数 | 成功率 {rate:.1%}")
+        fwd_count = sum(1 for c in companies if c.get('peFwd') is not None)
+        pb_count = sum(1 for c in companies if c.get('pb') is not None)
+        roe_count = sum(1 for c in companies if c.get('roe') is not None)
+        print(f"\n✅ 完成！{len(companies)} 公司 + {len(indices)} 指数 | 价格覆盖率 {rate:.1%} | 耗时 {elapsed:.1f}s")
+        print(f"   字段覆盖率: FwdPE {fwd_count}/{len(companies)} | PB {pb_count}/{len(companies)} | ROE {roe_count}/{len(companies)}")
     else:
-        print(f"\n⚠️ 成功率不足，保留旧缓存")
+        print(f"\n⚠️ 成功率不足，保留旧缓存 | 耗时 {elapsed:.1f}s")
 
     return 0 if rate > 0.3 else 1
 
