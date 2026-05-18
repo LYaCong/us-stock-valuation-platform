@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-17T05:03:39.553527",
+  "timestamp": "2026-05-18T10:42:38.868706",
   "companies": [
     {
       "ticker": "NVDA",
@@ -11,12 +11,17 @@
       "roe": 104.37,
       "marketCap": 5457368744147.0,
       "marketCapStr": "$5.46T",
-      "pePercentile": null,
+      "pePercentile": 43.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872412",
+      "timestamp": "2026-05-18T10:39:35.838750",
       "52weekHigh": 236.54,
       "52weekLow": 129.16,
-      "beta": 2.262
+      "beta": 2.262,
+      "pe10yMin": 18.05,
+      "pe10yMax": 138.24,
+      "pe10yMedian": 47.64,
+      "pePercentile5y": 31.7,
+      "priceChange10y": 18770.09
     },
     {
       "ticker": "AAPL",
@@ -28,12 +33,17 @@
       "roe": 146.69,
       "marketCap": 4409584891880.0,
       "marketCapStr": "$4.41T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872439",
+      "pePercentile": 96.7,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838770",
       "52weekHigh": 303.2,
       "52weekLow": 193.46,
-      "beta": 1.074
+      "beta": 1.074,
+      "pe10yMin": 11.11,
+      "pe10yMax": 39.75,
+      "pe10yMedian": 26.49,
+      "pePercentile5y": 95.0,
+      "priceChange10y": 1081.09
     },
     {
       "ticker": "GOOGL",
@@ -45,12 +55,17 @@
       "roe": 38.98,
       "marketCap": 4807165931424.0,
       "marketCapStr": "$4.81T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872448",
+      "pePercentile": 80.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838775",
       "52weekHigh": 403.7,
       "52weekLow": 162.0,
-      "beta": 1.274
+      "beta": 1.274,
+      "pe10yMin": 17.24,
+      "pe10yMax": 36.93,
+      "pe10yMedian": 25.87,
+      "pePercentile5y": 95.0,
+      "priceChange10y": 934.59
     },
     {
       "ticker": "MSFT",
@@ -62,12 +77,17 @@
       "roe": 33.13,
       "marketCap": 3134205170311.0,
       "marketCapStr": "$3.13T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872456",
+      "pePercentile": 23.3,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838780",
       "52weekHigh": 555.45,
       "52weekLow": 356.28,
-      "beta": 1.092
+      "beta": 1.092,
+      "pe10yMin": 20.47,
+      "pe10yMax": 39.22,
+      "pe10yMedian": 29.2,
+      "pePercentile5y": 8.3,
+      "priceChange10y": 669.38
     },
     {
       "ticker": "AMZN",
@@ -79,12 +99,17 @@
       "roe": 23.34,
       "marketCap": 2841382885896.0,
       "marketCapStr": "$2.84T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872464",
+      "pePercentile": 4.2,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838785",
       "52weekHigh": 278.56,
       "52weekLow": 196.0,
-      "beta": 1.463
+      "beta": 1.463,
+      "pe10yMin": 24.91,
+      "pe10yMax": 328.78,
+      "pe10yMedian": 81.04,
+      "pePercentile5y": 8.3,
+      "priceChange10y": 635.53
     },
     {
       "ticker": "TSM",
@@ -96,12 +121,17 @@
       "roe": 36.93,
       "marketCap": 2097163263997.0,
       "marketCapStr": "$2.10T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872473",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838790",
       "52weekHigh": 2345.0,
       "52weekLow": 946.0,
-      "beta": 1.178
+      "beta": 1.179,
+      "pe10yMin": 10.47,
+      "pe10yMax": 37.04,
+      "pe10yMedian": 20.95,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 1507.2
     },
     {
       "ticker": "META",
@@ -113,12 +143,17 @@
       "roe": 33.22,
       "marketCap": 1559175746015.0,
       "marketCapStr": "$1.56T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872481",
+      "pePercentile": 19.2,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838794",
       "52weekHigh": 796.25,
       "52weekLow": 520.26,
-      "beta": 1.234
+      "beta": 1.234,
+      "pe10yMin": 8.88,
+      "pe10yMax": 45.17,
+      "pe10yMedian": 26.6,
+      "pePercentile5y": 30.0,
+      "priceChange10y": 407.53
     },
     {
       "ticker": "AVGO",
@@ -130,12 +165,17 @@
       "roe": 32.85,
       "marketCap": 2013133645515.0,
       "marketCapStr": "$2.01T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872488",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838798",
       "52weekHigh": 442.36,
       "52weekLow": 221.6,
-      "beta": 1.431
+      "beta": 1.431,
+      "pe10yMin": 10.73,
+      "pe10yMax": 59.09,
+      "pe10yMedian": 17.06,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 2615.67
     },
     {
       "ticker": "TSLA",
@@ -147,12 +187,17 @@
       "roe": 4.77,
       "marketCap": 1585816803800.0,
       "marketCapStr": "$1.59T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872496",
+      "pePercentile": 99.1,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838802",
       "52weekHigh": 498.83,
       "52weekLow": 273.21,
-      "beta": 1.786
+      "beta": 1.786,
+      "pe10yMin": -2200.0,
+      "pe10yMax": 356.92,
+      "pe10yMedian": 68.67,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 2812.97
     },
     {
       "ticker": "BRK-B",
@@ -166,14 +211,19 @@
       "marketCapStr": null,
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872502",
+      "timestamp": "2026-05-18T10:39:35.838806",
       "open": 486.7,
       "high": 488.3,
       "low": 481.76,
       "prev_close": 484.06,
       "52weekHigh": 775000.0,
       "52weekLow": 685150.0,
-      "beta": 0.227
+      "beta": 0.225,
+      "pe10yMin": 18.32,
+      "pe10yMax": 36.58,
+      "pe10yMedian": 22.63,
+      "pePercentile5y": null,
+      "priceChange10y": 245.07
     },
     {
       "ticker": "WMT",
@@ -185,12 +235,17 @@
       "roe": 23.69,
       "marketCap": 1047678447417.0,
       "marketCapStr": "$1.05T",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872538",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838856",
       "52weekHigh": 134.69,
       "52weekLow": 91.89,
-      "beta": 0.653
+      "beta": 0.653,
+      "pe10yMin": 5.3,
+      "pe10yMax": 48.15,
+      "pe10yMedian": 26.2,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 452.56
     },
     {
       "ticker": "LLY",
@@ -202,12 +257,17 @@
       "roe": 101.31,
       "marketCap": 946374773717.0,
       "marketCapStr": "$946.37B",
-      "pePercentile": null,
+      "pePercentile": 65.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872547",
+      "timestamp": "2026-05-18T10:39:35.838873",
       "52weekHigh": 1133.95,
       "52weekLow": 623.78,
-      "beta": 0.48
+      "beta": 0.48,
+      "pe10yMin": 16.67,
+      "pe10yMax": 119.25,
+      "pe10yMedian": 26.23,
+      "pePercentile5y": 30.0,
+      "priceChange10y": 1219.3
     },
     {
       "ticker": "JPM",
@@ -219,12 +279,17 @@
       "roe": 16.32,
       "marketCap": 797985330833.0,
       "marketCapStr": "$797.99B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872555",
+      "pePercentile": 80.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838882",
       "52weekHigh": 337.25,
       "52weekLow": 256.0,
-      "beta": 1.033
+      "beta": 1.033,
+      "pe10yMin": 8.21,
+      "pe10yMax": 16.81,
+      "pe10yMedian": 12.01,
+      "pePercentile5y": 81.7,
+      "priceChange10y": 366.95
     },
     {
       "ticker": "V",
@@ -236,12 +301,17 @@
       "roe": 58.9,
       "marketCap": 586060101719.0,
       "marketCapStr": "$586.06B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872564",
+      "pePercentile": 22.5,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838891",
       "52weekHigh": 375.51,
       "52weekLow": 293.89,
-      "beta": 0.785
+      "beta": 0.785,
+      "pe10yMin": 23.66,
+      "pe10yMax": 46.9,
+      "pe10yMedian": 30.81,
+      "pePercentile5y": 30.0,
+      "priceChange10y": 313.47
     },
     {
       "ticker": "MA",
@@ -253,12 +323,17 @@
       "roe": 206.14,
       "marketCap": 436667141141.0,
       "marketCapStr": "$436.67B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872572",
+      "pePercentile": 10.0,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838899",
       "52weekHigh": 601.77,
       "52weekLow": 480.5,
-      "beta": 0.758
+      "beta": 0.758,
+      "pe10yMin": 25.02,
+      "pe10yMax": 60.26,
+      "pe10yMedian": 35.37,
+      "pePercentile5y": 6.7,
+      "priceChange10y": 421.18
     },
     {
       "ticker": "UNH",
@@ -270,12 +345,17 @@
       "roe": 12.4,
       "marketCap": 357672670364.0,
       "marketCapStr": "$357.67B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872580",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838907",
       "52weekHigh": 404.15,
       "52weekLow": 234.6,
-      "beta": 0.661
+      "beta": 0.661,
+      "pe10yMin": 10.03,
+      "pe10yMax": 27.04,
+      "pe10yMedian": 20.54,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 196.69
     },
     {
       "ticker": "HD",
@@ -287,12 +367,17 @@
       "roe": 130.02,
       "marketCap": 296328142715.0,
       "marketCapStr": "$296.33B",
-      "pePercentile": null,
+      "pePercentile": 27.5,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872588",
+      "timestamp": "2026-05-18T10:39:35.838915",
       "52weekHigh": 426.75,
       "52weekLow": 296.88,
-      "beta": 0.986
+      "beta": 0.986,
+      "pe10yMin": 16.96,
+      "pe10yMax": 29.15,
+      "pe10yMedian": 22.81,
+      "pePercentile5y": 36.7,
+      "priceChange10y": 134.98
     },
     {
       "ticker": "PG",
@@ -304,12 +389,17 @@
       "roe": 31.23,
       "marketCap": 329659757173.0,
       "marketCapStr": "$329.66B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872596",
+      "pePercentile": 6.7,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838924",
       "52weekHigh": 170.99,
       "52weekLow": 137.62,
-      "beta": 0.398
+      "beta": 0.398,
+      "pe10yMin": 17.52,
+      "pe10yMax": 28.9,
+      "pe10yMedian": 23.84,
+      "pePercentile5y": 0.0,
+      "priceChange10y": 77.54
     },
     {
       "ticker": "JNJ",
@@ -321,12 +411,17 @@
       "roe": 26.26,
       "marketCap": 545740159495.0,
       "marketCapStr": "$545.74B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872603",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838932",
       "52weekHigh": 251.71,
       "52weekLow": 147.33,
-      "beta": 0.265
+      "beta": 0.265,
+      "pe10yMin": 13.82,
+      "pe10yMax": 23.0,
+      "pe10yMedian": 17.09,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 99.06
     },
     {
       "ticker": "ASML",
@@ -338,12 +433,17 @@
       "roe": 44.68,
       "marketCap": 578824103473.0,
       "marketCapStr": "$578.82B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872610",
+      "pePercentile": 85.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838940",
       "52weekHigh": 1371.6,
       "52weekLow": 587.8,
-      "beta": 2.259
+      "beta": 2.261,
+      "pe10yMin": 21.52,
+      "pe10yMax": 60.76,
+      "pe10yMedian": 37.7,
+      "pePercentile5y": 75.0,
+      "priceChange10y": 1421.24
     },
     {
       "ticker": "COST",
@@ -355,12 +455,17 @@
       "roe": 28.81,
       "marketCap": 465369331833.0,
       "marketCapStr": "$465.37B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872628",
+      "pePercentile": 94.2,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838947",
       "52weekHigh": 1067.08,
       "52weekLow": 844.06,
-      "beta": 0.916
+      "beta": 0.916,
+      "pe10yMin": 24.41,
+      "pe10yMax": 60.3,
+      "pe10yMedian": 37.28,
+      "pePercentile5y": 88.3,
+      "priceChange10y": 586.89
     },
     {
       "ticker": "ABBV",
@@ -372,12 +477,17 @@
       "roe": 95.59,
       "marketCap": 371715551288.0,
       "marketCapStr": "$371.72B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872635",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838955",
       "52weekHigh": 244.81,
       "52weekLow": 176.57,
-      "beta": 0.299
+      "beta": 0.299,
+      "pe10yMin": 7.79,
+      "pe10yMax": 24.5,
+      "pe10yMedian": 12.5,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 230.24
     },
     {
       "ticker": "CRM",
@@ -389,12 +499,17 @@
       "roe": 12.37,
       "marketCap": 141940505121.0,
       "marketCapStr": "$141.94B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872643",
+      "pePercentile": 4.2,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838963",
       "52weekHigh": 292.17,
       "52weekLow": 163.52,
-      "beta": 1.134
+      "beta": 1.134,
+      "pe10yMin": 16.25,
+      "pe10yMax": 100.86,
+      "pe10yMedian": 48.46,
+      "pePercentile5y": 8.3,
+      "priceChange10y": 104.65
     },
     {
       "ticker": "ORCL",
@@ -406,12 +521,17 @@
       "roe": 57.35,
       "marketCap": 554933075700.0,
       "marketCapStr": "$554.93B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872650",
+      "pePercentile": 96.7,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838971",
       "52weekHigh": 345.72,
       "52weekLow": 134.57,
-      "beta": 1.566
+      "beta": 1.566,
+      "pe10yMin": 12.44,
+      "pe10yMax": 46.03,
+      "pe10yMedian": 16.67,
+      "pePercentile5y": 93.3,
+      "priceChange10y": 364.73
     },
     {
       "ticker": "AMD",
@@ -423,12 +543,17 @@
       "roe": 8.08,
       "marketCap": 691537730575.0,
       "marketCapStr": "$691.54B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872657",
+      "pePercentile": 98.3,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838979",
       "52weekHigh": 469.215,
       "52weekLow": 107.6671,
-      "beta": 2.437
+      "beta": 2.437,
+      "pe10yMin": -207.86,
+      "pe10yMax": 182.14,
+      "pe10yMedian": 48.09,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 9709.41
     },
     {
       "ticker": "NFLX",
@@ -440,12 +565,17 @@
       "roe": 49.24,
       "marketCap": 366423687906.0,
       "marketCapStr": "$366.42B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872700",
+      "pePercentile": 6.7,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.838987",
       "52weekHigh": 134.12,
       "52weekLow": 75.01,
-      "beta": 1.536
+      "beta": 1.536,
+      "pe10yMin": 15.62,
+      "pe10yMax": 312.25,
+      "pe10yMedian": 61.63,
+      "pePercentile5y": 13.3,
+      "priceChange10y": 754.39
     },
     {
       "ticker": "CVX",
@@ -457,12 +587,17 @@
       "roe": 6.23,
       "marketCap": 380594326967.0,
       "marketCapStr": "$380.59B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872707",
+      "pePercentile": 78.3,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.838995",
       "52weekHigh": 214.71,
       "52weekLow": 133.77,
-      "beta": 0.508
+      "beta": 0.508,
+      "pe10yMin": -500.0,
+      "pe10yMax": 125.21,
+      "pe10yMedian": 17.06,
+      "pePercentile5y": 96.7,
+      "priceChange10y": 84.11
     },
     {
       "ticker": "MRK",
@@ -474,12 +609,17 @@
       "roe": 17.93,
       "marketCap": 275089052364.0,
       "marketCapStr": "$275.09B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872713",
+      "pePercentile": 90.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839003",
       "52weekHigh": 125.14,
       "52weekLow": 73.31,
-      "beta": 0.194
+      "beta": 0.194,
+      "pe10yMin": 9.7,
+      "pe10yMax": 84.77,
+      "pe10yMedian": 14.75,
+      "pePercentile5y": 81.7,
+      "priceChange10y": 109.33
     },
     {
       "ticker": "BAC",
@@ -491,12 +631,17 @@
       "roe": 10.5,
       "marketCap": 353197316700.0,
       "marketCapStr": "$353.20B",
-      "pePercentile": null,
+      "pePercentile": 40.8,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872717",
+      "timestamp": "2026-05-18T10:39:35.839010",
       "52weekHigh": 57.55,
       "52weekLow": 42.35,
-      "beta": 1.232
+      "beta": 1.232,
+      "pe10yMin": 7.38,
+      "pe10yMax": 18.86,
+      "pe10yMedian": 12.99,
+      "pePercentile5y": 41.7,
+      "priceChange10y": 243.34
     },
     {
       "ticker": "PEP",
@@ -508,12 +653,17 @@
       "roe": 43.89,
       "marketCap": 203812491132.0,
       "marketCapStr": "$203.81B",
-      "pePercentile": null,
+      "pePercentile": 56.7,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872721",
+      "timestamp": "2026-05-18T10:39:35.839018",
       "52weekHigh": 171.48,
       "52weekLow": 127.6,
-      "beta": 0.394
+      "beta": 0.394,
+      "pe10yMin": 16.37,
+      "pe10yMax": 27.9,
+      "pe10yMedian": 22.91,
+      "pePercentile5y": 55.0,
+      "priceChange10y": 50.09
     },
     {
       "ticker": "KO",
@@ -525,12 +675,17 @@
       "roe": 43.62,
       "marketCap": 347726616010.0,
       "marketCapStr": "$347.73B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872726",
+      "pePercentile": 79.2,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839026",
       "52weekHigh": 82.0,
       "52weekLow": 65.3538,
-      "beta": 0.37
+      "beta": 0.37,
+      "pe10yMin": 20.68,
+      "pe10yMax": 28.12,
+      "pe10yMedian": 23.92,
+      "pePercentile5y": 78.3,
+      "priceChange10y": 79.44
     },
     {
       "ticker": "TMO",
@@ -542,12 +697,17 @@
       "roe": 13.24,
       "marketCap": 162896540256.0,
       "marketCapStr": "$162.90B",
-      "pePercentile": null,
+      "pePercentile": 63.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872730",
+      "timestamp": "2026-05-18T10:39:35.839034",
       "52weekHigh": 643.99,
       "52weekLow": 385.46,
-      "beta": 0.865
+      "beta": 0.865,
+      "pe10yMin": 17.06,
+      "pe10yMax": 32.21,
+      "pe10yMedian": 23.15,
+      "pePercentile5y": 55.0,
+      "priceChange10y": 202.63
     },
     {
       "ticker": "LIN",
@@ -559,12 +719,17 @@
       "roe": 18.4,
       "marketCap": 233998597064.0,
       "marketCapStr": "$234.00B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872734",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839041",
       "52weekHigh": 521.28,
       "52weekLow": 387.78,
-      "beta": 0.752
+      "beta": 0.752,
+      "pe10yMin": 19.41,
+      "pe10yMax": 34.0,
+      "pe10yMedian": 27.99,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 358.65
     },
     {
       "ticker": "ADI",
@@ -576,12 +741,17 @@
       "roe": 7.92,
       "marketCap": 203820353505.0,
       "marketCapStr": "$203.82B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872739",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839050",
       "52weekHigh": 435.72,
       "52weekLow": 206.0,
-      "beta": 1.208
+      "beta": 1.208,
+      "pe10yMin": 14.07,
+      "pe10yMax": 58.77,
+      "pe10yMedian": 21.72,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 617.35
     },
     {
       "ticker": "CSCO",
@@ -593,12 +763,17 @@
       "roe": 25.14,
       "marketCap": 466916880846.0,
       "marketCapStr": "$466.92B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872743",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839058",
       "52weekHigh": 119.36,
       "52weekLow": 62.3,
-      "beta": 0.96
+      "beta": 0.96,
+      "pe10yMin": 11.51,
+      "pe10yMax": 24.28,
+      "pe10yMedian": 14.78,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 241.79
     },
     {
       "ticker": "MCD",
@@ -610,12 +785,17 @@
       "roe": 95.13,
       "marketCap": 196465670490.0,
       "marketCapStr": "$196.47B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872747",
+      "pePercentile": 18.3,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839065",
       "52weekHigh": 341.75,
       "52weekLow": 271.975,
-      "beta": 0.431
+      "beta": 0.431,
+      "pe10yMin": 20.17,
+      "pe10yMax": 36.32,
+      "pe10yMedian": 25.33,
+      "pePercentile5y": 8.3,
+      "priceChange10y": 125.14
     },
     {
       "ticker": "ABT",
@@ -627,12 +807,17 @@
       "roe": 12.2,
       "marketCap": 147130957371.0,
       "marketCapStr": "$147.13B",
-      "pePercentile": null,
+      "pePercentile": 38.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872752",
+      "timestamp": "2026-05-18T10:39:35.839073",
       "52weekHigh": 139.06,
       "52weekLow": 81.97,
-      "beta": 0.637
+      "beta": 0.637,
+      "pe10yMin": 17.01,
+      "pe10yMax": 36.37,
+      "pe10yMedian": 24.37,
+      "pePercentile5y": 38.3,
+      "priceChange10y": 112.87
     },
     {
       "ticker": "DIS",
@@ -644,12 +829,17 @@
       "roe": 10.29,
       "marketCap": 178374453165.0,
       "marketCapStr": "$178.37B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872756",
+      "pePercentile": 12.5,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839081",
       "52weekHigh": 124.69,
       "52weekLow": 92.185,
-      "beta": 1.428
+      "beta": 1.428,
+      "pe10yMin": 15.59,
+      "pe10yMax": 236.3,
+      "pe10yMedian": 21.23,
+      "pePercentile5y": 3.3,
+      "priceChange10y": 6.99
     },
     {
       "ticker": "INTU",
@@ -661,12 +851,17 @@
       "roe": 22.2,
       "marketCap": 108684150000.0,
       "marketCapStr": "$108.68B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872760",
+      "pePercentile": 4.2,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839089",
       "52weekHigh": 813.7,
       "52weekLow": 342.105,
-      "beta": 1.02
+      "beta": 1.02,
+      "pe10yMin": 19.14,
+      "pe10yMax": 68.81,
+      "pe10yMedian": 36.51,
+      "pePercentile5y": 8.3,
+      "priceChange10y": 263.53
     },
     {
       "ticker": "QCOM",
@@ -678,12 +873,17 @@
       "roe": 40.19,
       "marketCap": 212370460000.0,
       "marketCapStr": "$212.37B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872765",
+      "pePercentile": 85.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839097",
       "52weekHigh": 247.9,
       "52weekLow": 121.99,
-      "beta": 1.513
+      "beta": 1.513,
+      "pe10yMin": 9.02,
+      "pe10yMax": 35.21,
+      "pe10yMedian": 15.53,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 282.94
     },
     {
       "ticker": "TM",
@@ -695,12 +895,17 @@
       "roe": 10.1,
       "marketCap": 248520616642.0,
       "marketCapStr": "$248.52B",
-      "pePercentile": null,
+      "pePercentile": 55.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872769",
+      "timestamp": "2026-05-18T10:39:35.839106",
       "52weekHigh": 4000.0,
       "52weekLow": 2434.0,
-      "beta": 1.474
+      "beta": 1.481,
+      "pe10yMin": 0.33,
+      "pe10yMax": 102.59,
+      "pe10yMedian": 9.37,
+      "pePercentile5y": 70.0,
+      "priceChange10y": 75.54
     },
     {
       "ticker": "NVO",
@@ -712,12 +917,17 @@
       "roe": 66.36,
       "marketCap": 198325754903.0,
       "marketCapStr": "$198.33B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872773",
+      "pePercentile": 15.0,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839114",
       "52weekHigh": 533.4,
       "52weekLow": 224.25,
-      "beta": 1.853
+      "beta": 1.852,
+      "pe10yMin": 1.59,
+      "pe10yMax": 48.72,
+      "pe10yMedian": 22.96,
+      "pePercentile5y": 30.0,
+      "priceChange10y": 67.74
     },
     {
       "ticker": "SAP",
@@ -729,12 +939,17 @@
       "roe": 16.88,
       "marketCap": 197877907963.0,
       "marketCapStr": "$197.88B",
-      "pePercentile": null,
+      "pePercentile": 50.8,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872777",
+      "timestamp": "2026-05-18T10:39:35.839121",
       "52weekHigh": 273.55,
       "52weekLow": 135.44,
-      "beta": 0.946
+      "beta": 0.938,
+      "pe10yMin": 13.77,
+      "pe10yMax": 84.94,
+      "pe10yMedian": 22.72,
+      "pePercentile5y": 36.7,
+      "priceChange10y": 106.33
     },
     {
       "ticker": "AZN",
@@ -746,12 +961,17 @@
       "roe": 22.27,
       "marketCap": 281629790127.0,
       "marketCapStr": "$281.63B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872781",
+      "pePercentile": 16.7,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839129",
       "52weekHigh": 15730.0,
       "52weekLow": 10104.0,
-      "beta": 1.315
+      "beta": 1.3,
+      "pe10yMin": -200.24,
+      "pe10yMax": 447.32,
+      "pe10yMedian": 37.55,
+      "pePercentile5y": 10.0,
+      "priceChange10y": 210.67
     },
     {
       "ticker": "HDB",
@@ -763,12 +983,17 @@
       "roe": 13.6,
       "marketCap": 124731214044.0,
       "marketCapStr": "$124.73B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872785",
+      "pePercentile": 0.0,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839137",
       "52weekHigh": 1020.5,
       "52weekLow": 726.65,
-      "beta": 1.094
+      "beta": 1.069,
+      "pe10yMin": 14.84,
+      "pe10yMax": 127.93,
+      "pe10yMedian": 26.83,
+      "pePercentile5y": 0.0,
+      "priceChange10y": 49.41
     },
     {
       "ticker": "SHEL",
@@ -780,12 +1005,17 @@
       "roe": 10.05,
       "marketCap": 237983680000.0,
       "marketCapStr": "$237.98B",
-      "pePercentile": null,
+      "pePercentile": 58.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872790",
+      "timestamp": "2026-05-18T10:39:35.839145",
       "52weekHigh": 3591.0,
       "52weekLow": 2404.5,
-      "beta": 0.091
+      "beta": 0.077,
+      "pe10yMin": 5.07,
+      "pe10yMax": 33.09,
+      "pe10yMedian": 12.38,
+      "pePercentile5y": 83.3,
+      "priceChange10y": 75.95
     },
     {
       "ticker": "NVS",
@@ -793,16 +1023,21 @@
       "price": 148.08,
       "peTtm": 20.97,
       "peFwd": 16.33,
-      "pb": 5.76,
+      "pb": 5.75,
       "roe": 31.67,
       "marketCap": 282550258177.0,
       "marketCapStr": "$282.55B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872794",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839153",
       "52weekHigh": 131.0,
       "52weekLow": 87.89,
-      "beta": 1.079
+      "beta": 1.085,
+      "pe10yMin": 12.46,
+      "pe10yMax": 18.78,
+      "pe10yMedian": 14.93,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 107.94
     },
     {
       "ticker": "BABA",
@@ -814,12 +1049,17 @@
       "roe": 10.22,
       "marketCap": 318090080602.0,
       "marketCapStr": "$318.09B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872798",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839160",
       "52weekHigh": 192.67,
       "52weekLow": 103.71,
-      "beta": 0.477
+      "beta": 0.477,
+      "pe10yMin": 1.15,
+      "pe10yMax": 6.49,
+      "pe10yMedian": 3.71,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 64.43
     },
     {
       "ticker": "PDD",
@@ -831,12 +1071,17 @@
       "roe": 26.15,
       "marketCap": 136404083145.0,
       "marketCapStr": "$136.40B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872803",
+      "pePercentile": 94.4,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839169",
       "52weekHigh": 139.41,
       "52weekLow": 93.81,
-      "beta": 0.038
+      "beta": 0.038,
+      "pe10yMin": -95.66,
+      "pe10yMax": 84.12,
+      "pe10yMedian": 1.56,
+      "pePercentile5y": 91.7,
+      "priceChange10y": 323.77
     },
     {
       "ticker": "HSBC",
@@ -848,12 +1093,17 @@
       "roe": 8.99,
       "marketCap": 303736619993.0,
       "marketCapStr": "$303.74B",
-      "pePercentile": null,
+      "pePercentile": 64.2,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872807",
+      "timestamp": "2026-05-18T10:39:35.839176",
       "52weekHigh": 1410.4,
       "52weekLow": 847.0,
-      "beta": 1.682
+      "beta": 1.678,
+      "pe10yMin": 6.15,
+      "pe10yMax": 268.07,
+      "pe10yMedian": 12.45,
+      "pePercentile5y": 93.3,
+      "priceChange10y": 177.37
     },
     {
       "ticker": "CAT",
@@ -865,12 +1115,17 @@
       "roe": 47.57,
       "marketCap": 409148464418.0,
       "marketCapStr": "$409.15B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872811",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839183",
       "52weekHigh": 931.35,
       "52weekLow": 336.2409,
-      "beta": 1.631
+      "beta": 1.631,
+      "pe10yMin": 10.58,
+      "pe10yMax": 45.16,
+      "pe10yMedian": 17.5,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 1158.01
     },
     {
       "ticker": "GE",
@@ -882,12 +1137,17 @@
       "roe": 46.22,
       "marketCap": 293730731769.0,
       "marketCapStr": "$293.73B",
-      "pePercentile": null,
+      "pePercentile": 65.8,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872815",
+      "timestamp": "2026-05-18T10:39:35.839191",
       "52weekHigh": 348.48,
       "52weekLow": 223.45,
-      "beta": 1.382
+      "beta": 1.382,
+      "pe10yMin": 5.91,
+      "pe10yMax": 438.0,
+      "pe10yMedian": 21.81,
+      "pePercentile5y": 41.7,
+      "priceChange10y": 105.31
     },
     {
       "ticker": "IBM",
@@ -899,12 +1159,17 @@
       "roe": 35.53,
       "marketCap": 206116841904.0,
       "marketCapStr": "$206.12B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872819",
+      "pePercentile": 80.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839199",
       "52weekHigh": 324.9,
       "52weekLow": 212.34,
-      "beta": 0.557
+      "beta": 0.557,
+      "pe10yMin": 7.81,
+      "pe10yMax": 28.13,
+      "pe10yMedian": 13.41,
+      "pePercentile5y": 61.7,
+      "priceChange10y": 49.15
     },
     {
       "ticker": "AMAT",
@@ -916,12 +1181,17 @@
       "roe": 38.9,
       "marketCap": 346505940129.0,
       "marketCapStr": "$346.51B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872823",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839207",
       "52weekHigh": 448.45,
       "52weekLow": 153.47,
-      "beta": 1.67
+      "beta": 1.67,
+      "pe10yMin": 7.36,
+      "pe10yMax": 40.91,
+      "pe10yMedian": 17.73,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 1665.77
     },
     {
       "ticker": "TXN",
@@ -933,12 +1203,17 @@
       "roe": 32.49,
       "marketCap": 275512390316.0,
       "marketCapStr": "$275.51B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872828",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839214",
       "52weekHigh": 310.29,
       "52weekLow": 152.73,
-      "beta": 1.319
+      "beta": 1.319,
+      "pe10yMin": 15.75,
+      "pe10yMax": 49.53,
+      "pe10yMedian": 22.36,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 387.08
     },
     {
       "ticker": "NOW",
@@ -950,12 +1225,17 @@
       "roe": 14.98,
       "marketCap": 98046451560.0,
       "marketCapStr": "$98.05B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872832",
+      "pePercentile": 10.3,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839222",
       "52weekHigh": 211.48,
       "52weekLow": 81.24,
-      "beta": 0.813
+      "beta": 0.813,
+      "pe10yMin": -604.0,
+      "pe10yMax": 2324.0,
+      "pe10yMedian": 99.06,
+      "pePercentile5y": 15.0,
+      "priceChange10y": 521.0
     },
     {
       "ticker": "ISRG",
@@ -967,12 +1247,17 @@
       "roe": 16.98,
       "marketCap": 149145056023.0,
       "marketCapStr": "$149.15B",
-      "pePercentile": null,
+      "pePercentile": 47.5,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872836",
+      "timestamp": "2026-05-18T10:39:35.839230",
       "52weekHigh": 603.88,
       "52weekLow": 417.74,
-      "beta": 1.491
+      "beta": 1.491,
+      "pe10yMin": 28.41,
+      "pe10yMax": 80.68,
+      "pe10yMedian": 52.39,
+      "pePercentile5y": 18.3,
+      "priceChange10y": 512.41
     },
     {
       "ticker": "BKNG",
@@ -984,12 +1269,17 @@
       "roe": 139.63,
       "marketCap": 119432013494.0,
       "marketCapStr": "$119.43B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872840",
+      "pePercentile": 93.3,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839238",
       "52weekHigh": 233.58,
       "52weekLow": 150.62,
-      "beta": 1.095
+      "beta": 1.095,
+      "pe10yMin": -258.72,
+      "pe10yMax": 153.7,
+      "pe10yMedian": 3.77,
+      "pePercentile5y": 96.7,
+      "priceChange10y": 217.5
     },
     {
       "ticker": "GS",
@@ -1001,12 +1291,17 @@
       "roe": 14.56,
       "marketCap": 279805695235.0,
       "marketCapStr": "$279.81B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872844",
+      "pePercentile": 95.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839246",
       "52weekHigh": 984.7,
       "52weekLow": 582.5,
-      "beta": 1.294
+      "beta": 1.294,
+      "pe10yMin": 5.75,
+      "pe10yMax": 18.24,
+      "pe10yMedian": 11.32,
+      "pePercentile5y": 91.7,
+      "priceChange10y": 493.12
     },
     {
       "ticker": "MS",
@@ -1018,12 +1313,17 @@
       "roe": 16.32,
       "marketCap": 303643101083.0,
       "marketCapStr": "$303.64B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872849",
+      "pePercentile": 92.5,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839254",
       "52weekHigh": 197.5,
       "52weekLow": 123.88,
-      "beta": 1.221
+      "beta": 1.221,
+      "pe10yMin": 7.07,
+      "pe10yMax": 19.61,
+      "pe10yMedian": 12.94,
+      "pePercentile5y": 85.0,
+      "priceChange10y": 600.8
     },
     {
       "ticker": "RTX",
@@ -1035,12 +1335,17 @@
       "roe": 11.23,
       "marketCap": 230525259276.0,
       "marketCapStr": "$230.53B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872853",
+      "pePercentile": 95.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839262",
       "52weekHigh": 214.5,
       "52weekLow": 130.9,
-      "beta": 0.308
+      "beta": 0.308,
+      "pe10yMin": 7.3,
+      "pe10yMax": 36.31,
+      "pe10yMedian": 18.15,
+      "pePercentile5y": 93.3,
+      "priceChange10y": 182.61
     },
     {
       "ticker": "HON",
@@ -1052,12 +1357,17 @@
       "roe": 29.15,
       "marketCap": 135120192161.0,
       "marketCapStr": "$135.12B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872857",
+      "pePercentile": 99.2,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839269",
       "52weekHigh": 248.18,
       "52weekLow": 186.76,
-      "beta": 0.827
+      "beta": 0.827,
+      "pe10yMin": 14.92,
+      "pe10yMax": 31.96,
+      "pe10yMedian": 20.17,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 113.67
     },
     {
       "ticker": "PFE",
@@ -1069,12 +1379,17 @@
       "roe": 8.37,
       "marketCap": 144366910618.0,
       "marketCapStr": "$144.37B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872861",
+      "pePercentile": 95.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839278",
       "52weekHigh": 28.745,
       "52weekLow": 22.09,
-      "beta": 0.298
+      "beta": 0.298,
+      "pe10yMin": 6.14,
+      "pe10yMax": 28.28,
+      "pe10yMedian": 12.44,
+      "pePercentile5y": 91.7,
+      "priceChange10y": -21.42
     },
     {
       "ticker": "AMGN",
@@ -1086,12 +1401,17 @@
       "roe": 89.41,
       "marketCap": 176112219288.0,
       "marketCapStr": "$176.11B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872866",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839286",
       "52weekHigh": 391.29,
       "52weekLow": 264.15,
-      "beta": 0.432
+      "beta": 0.432,
+      "pe10yMin": 11.5,
+      "pe10yMax": 17.95,
+      "pe10yMedian": 14.18,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 112.91
     },
     {
       "ticker": "T",
@@ -1103,12 +1423,17 @@
       "roe": 19.65,
       "marketCap": 166968581940.0,
       "marketCapStr": "$166.97B",
-      "pePercentile": null,
+      "pePercentile": 60.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872870",
+      "timestamp": "2026-05-18T10:39:35.839294",
       "52weekHigh": 29.79,
       "52weekLow": 22.95,
-      "beta": 0.197
+      "beta": 0.197,
+      "pe10yMin": 5.12,
+      "pe10yMax": 13.36,
+      "pe10yMedian": 7.41,
+      "pePercentile5y": 61.7,
+      "priceChange10y": -14.64
     },
     {
       "ticker": "VZ",
@@ -1120,12 +1445,17 @@
       "roe": 16.68,
       "marketCap": 193620666656.0,
       "marketCapStr": "$193.62B",
-      "pePercentile": null,
+      "pePercentile": 52.5,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872874",
+      "timestamp": "2026-05-18T10:39:35.839302",
       "52weekHigh": 51.68,
       "52weekLow": 38.39,
-      "beta": 0.222
+      "beta": 0.222,
+      "pe10yMin": 6.72,
+      "pe10yMax": 14.42,
+      "pe10yMedian": 11.03,
+      "pePercentile5y": 100.0,
+      "priceChange10y": -5.83
     },
     {
       "ticker": "CMCSA",
@@ -1137,12 +1467,17 @@
       "roe": 19.83,
       "marketCap": 88448379071.0,
       "marketCapStr": "$88.45B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872878",
+      "pePercentile": 0.0,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839309",
       "52weekHigh": 34.3442,
       "52weekLow": 24.1234,
-      "beta": 0.691
+      "beta": 0.691,
+      "pe10yMin": 5.66,
+      "pe10yMax": 21.01,
+      "pe10yMedian": 13.49,
+      "pePercentile5y": 0.0,
+      "priceChange10y": -16.05
     },
     {
       "ticker": "NEE",
@@ -1154,12 +1489,17 @@
       "roe": 15.24,
       "marketCap": 194687478798.0,
       "marketCapStr": "$194.69B",
-      "pePercentile": null,
+      "pePercentile": 43.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872882",
+      "timestamp": "2026-05-18T10:39:35.839317",
       "52weekHigh": 98.75,
       "52weekLow": 63.88,
-      "beta": 0.72
+      "beta": 0.72,
+      "pe10yMin": 17.36,
+      "pe10yMax": 36.76,
+      "pe10yMedian": 24.09,
+      "pePercentile5y": 40.0,
+      "priceChange10y": 214.85
     },
     {
       "ticker": "PM",
@@ -1171,12 +1511,17 @@
       "roe": 575.44,
       "marketCap": 295518342600.0,
       "marketCapStr": "$295.52B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872886",
+      "pePercentile": 99.2,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839324",
       "52weekHigh": 192.95,
       "52weekLow": 142.11,
-      "beta": 0.424
+      "beta": 0.424,
+      "pe10yMin": 13.09,
+      "pe10yMax": 26.79,
+      "pe10yMedian": 16.94,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 89.36
     },
     {
       "ticker": "UNP",
@@ -1188,12 +1533,17 @@
       "roe": 40.38,
       "marketCap": 160635040956.0,
       "marketCapStr": "$160.64B",
-      "pePercentile": null,
+      "pePercentile": 68.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872890",
+      "timestamp": "2026-05-18T10:39:35.839331",
       "52weekHigh": 274.79,
       "52weekLow": 210.84,
-      "beta": 1.003
+      "beta": 1.003,
+      "pe10yMin": 15.74,
+      "pe10yMax": 27.95,
+      "pe10yMedian": 21.05,
+      "pePercentile5y": 63.3,
+      "priceChange10y": 215.56
     },
     {
       "ticker": "LOW",
@@ -1205,12 +1555,17 @@
       "roe": 264.53,
       "marketCap": 122328937744.0,
       "marketCapStr": "$122.33B",
-      "pePercentile": null,
+      "pePercentile": 32.5,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872894",
+      "timestamp": "2026-05-18T10:39:35.839339",
       "52weekHigh": 293.06,
       "52weekLow": 210.33,
-      "beta": 0.895
+      "beta": 0.895,
+      "pe10yMin": 14.04,
+      "pe10yMax": 23.86,
+      "pe10yMedian": 19.02,
+      "pePercentile5y": 46.7,
+      "priceChange10y": 180.19
     },
     {
       "ticker": "SPGI",
@@ -1222,12 +1577,17 @@
       "roe": 14.82,
       "marketCap": 119332400000.0,
       "marketCapStr": "$119.33B",
-      "pePercentile": null,
+      "pePercentile": 40.8,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872898",
+      "timestamp": "2026-05-18T10:39:35.839347",
       "52weekHigh": 579.05,
       "52weekLow": 381.605,
-      "beta": 1.092
+      "beta": 1.092,
+      "pe10yMin": 19.99,
+      "pe10yMax": 35.76,
+      "pe10yMedian": 28.57,
+      "pePercentile5y": 15.0,
+      "priceChange10y": 279.37
     },
     {
       "ticker": "INTC",
@@ -1241,10 +1601,15 @@
       "marketCapStr": "$546.68B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872902",
+      "timestamp": "2026-05-18T10:39:35.839354",
       "52weekHigh": 132.75,
       "52weekLow": 18.965,
-      "beta": 2.211
+      "beta": 2.211,
+      "pe10yMin": -182.54,
+      "pe10yMax": 211.6,
+      "pe10yMedian": 11.97,
+      "pePercentile5y": null,
+      "priceChange10y": 281.8
     },
     {
       "ticker": "COP",
@@ -1256,12 +1621,17 @@
       "roe": 11.29,
       "marketCap": 149131369396.0,
       "marketCapStr": "$149.13B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872906",
+      "pePercentile": 85.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839361",
       "52weekHigh": 135.87,
       "52weekLow": 84.28,
-      "beta": 0.146
+      "beta": 0.146,
+      "pe10yMin": -1978.0,
+      "pe10yMax": 96.41,
+      "pe10yMedian": 12.89,
+      "pePercentile5y": 91.7,
+      "priceChange10y": 169.17
     },
     {
       "ticker": "SYK",
@@ -1273,12 +1643,17 @@
       "roe": 15.1,
       "marketCap": 117599747044.0,
       "marketCapStr": "$117.60B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872910",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839369",
       "52weekHigh": 404.87,
       "52weekLow": 281.0,
-      "beta": 0.806
+      "beta": 0.806,
+      "pe10yMin": 20.25,
+      "pe10yMax": 34.92,
+      "pe10yMedian": 26.95,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 164.89
     },
     {
       "ticker": "UPS",
@@ -1290,12 +1665,17 @@
       "roe": 33.03,
       "marketCap": 84091119400.0,
       "marketCapStr": "$84.09B",
-      "pePercentile": null,
+      "pePercentile": 40.8,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872914",
+      "timestamp": "2026-05-18T10:39:35.839377",
       "52weekHigh": 122.41,
       "52weekLow": 82.0,
-      "beta": 1.047
+      "beta": 1.047,
+      "pe10yMin": 11.09,
+      "pe10yMax": 22.3,
+      "pe10yMedian": 16.67,
+      "pePercentile5y": 55.0,
+      "priceChange10y": -4.51
     },
     {
       "ticker": "ELV",
@@ -1307,12 +1687,17 @@
       "roe": 11.95,
       "marketCap": 85275323378.0,
       "marketCapStr": "$85.28B",
-      "pePercentile": null,
+      "pePercentile": 68.3,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872918",
+      "timestamp": "2026-05-18T10:39:35.839384",
       "52weekHigh": 412.96,
       "52weekLow": 273.71,
-      "beta": 0.687
+      "beta": 0.687,
+      "pe10yMin": 8.87,
+      "pe10yMax": 20.67,
+      "pe10yMedian": 15.12,
+      "pePercentile5y": 70.0,
+      "priceChange10y": 197.59
     },
     {
       "ticker": "BA",
@@ -1324,12 +1709,17 @@
       "roe": 143.62,
       "marketCap": 173812780741.0,
       "marketCapStr": "$173.81B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872924",
+      "pePercentile": 95.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839394",
       "52weekHigh": 254.3499,
       "52weekLow": 176.77,
-      "beta": 1.214
+      "beta": 1.214,
+      "pe10yMin": -92.02,
+      "pe10yMax": 226.91,
+      "pe10yMedian": -10.18,
+      "pePercentile5y": 91.7,
+      "priceChange10y": 87.77
     },
     {
       "ticker": "MDT",
@@ -1341,12 +1731,17 @@
       "roe": 9.54,
       "marketCap": 97767838866.0,
       "marketCapStr": "$97.77B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872934",
+      "pePercentile": 85.8,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839412",
       "52weekHigh": 106.33,
       "52weekLow": 74.4,
-      "beta": 0.628
+      "beta": 0.628,
+      "pe10yMin": 13.26,
+      "pe10yMax": 33.66,
+      "pe10yMedian": 17.74,
+      "pePercentile5y": 91.7,
+      "priceChange10y": -4.55
     },
     {
       "ticker": "LMT",
@@ -1358,12 +1753,17 @@
       "roe": 74.53,
       "marketCap": 118973127364.0,
       "marketCapStr": "$118.97B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872939",
+      "pePercentile": 92.5,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839420",
       "52weekHigh": 692.0,
       "52weekLow": 410.11,
-      "beta": 0.104
+      "beta": 0.104,
+      "pe10yMin": 12.59,
+      "pe10yMax": 30.62,
+      "pe10yMedian": 17.36,
+      "pePercentile5y": 93.3,
+      "priceChange10y": 120.55
     },
     {
       "ticker": "TJX",
@@ -1375,12 +1775,17 @@
       "roe": 59.53,
       "marketCap": 163030203575.0,
       "marketCapStr": "$163.03B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872943",
+      "pePercentile": 78.3,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839428",
       "52weekHigh": 165.82,
       "52weekLow": 119.8405,
-      "beta": 0.63
+      "beta": 0.63,
+      "pe10yMin": 17.84,
+      "pe10yMax": 228.1,
+      "pe10yMedian": 24.95,
+      "pePercentile5y": 78.3,
+      "priceChange10y": 294.8
     },
     {
       "ticker": "AXP",
@@ -1392,12 +1797,17 @@
       "roe": 33.95,
       "marketCap": 213895693351.0,
       "marketCapStr": "$213.90B",
-      "pePercentile": null,
+      "pePercentile": 50.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872948",
+      "timestamp": "2026-05-18T10:39:35.839436",
       "52weekHigh": 387.49,
       "52weekLow": 281.465,
-      "beta": 1.088
+      "beta": 1.088,
+      "pe10yMin": 18.87,
+      "pe10yMax": 20.15,
+      "pe10yMedian": 19.61,
+      "pePercentile5y": 50.0,
+      "priceChange10y": 378.06
     },
     {
       "ticker": "DE",
@@ -1409,12 +1819,17 @@
       "roe": 18.93,
       "marketCap": 151754391100.0,
       "marketCapStr": "$151.75B",
-      "pePercentile": null,
+      "pePercentile": 50.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872952",
+      "timestamp": "2026-05-18T10:39:35.839444",
       "52weekHigh": 674.1899,
       "52weekLow": 433.0,
-      "beta": 0.964
+      "beta": 0.964,
+      "pe10yMin": 31.43,
+      "pe10yMax": 32.92,
+      "pe10yMedian": 32.85,
+      "pePercentile5y": 50.0,
+      "priceChange10y": 615.43
     },
     {
       "ticker": "C",
@@ -1426,12 +1841,17 @@
       "roe": 7.55,
       "marketCap": 210502308279.0,
       "marketCapStr": "$210.50B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872956",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839452",
       "52weekHigh": 135.29,
       "52weekLow": 71.65,
-      "beta": 1.137
+      "beta": 1.137,
+      "pe10yMin": 12.5,
+      "pe10yMax": 14.11,
+      "pe10yMedian": 13.94,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 171.51
     },
     {
       "ticker": "PLD",
@@ -1443,12 +1863,17 @@
       "roe": 7.01,
       "marketCap": 131021452394.0,
       "marketCapStr": "$131.02B",
-      "pePercentile": null,
+      "pePercentile": 65.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872960",
+      "timestamp": "2026-05-18T10:39:35.839460",
       "52weekHigh": 145.44,
       "52weekLow": 103.02,
-      "beta": 1.356
+      "beta": 1.356,
+      "pe10yMin": 19.21,
+      "pe10yMax": 65.1,
+      "pe10yMedian": 32.31,
+      "pePercentile5y": 51.7,
+      "priceChange10y": 202.46
     },
     {
       "ticker": "CB",
@@ -1460,12 +1885,17 @@
       "roe": 15.65,
       "marketCap": 125724853035.0,
       "marketCapStr": "$125.72B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872964",
+      "pePercentile": 2.5,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839468",
       "52weekHigh": 345.67,
       "52weekLow": 264.1,
-      "beta": 0.453
+      "beta": 0.453,
+      "pe10yMin": 10.53,
+      "pe10yMax": 24.03,
+      "pe10yMedian": 13.76,
+      "pePercentile5y": 1.7,
+      "priceChange10y": 154.38
     },
     {
       "ticker": "ABNB",
@@ -1477,12 +1907,17 @@
       "roe": 31.24,
       "marketCap": 78912898937.0,
       "marketCapStr": "$78.91B",
-      "pePercentile": null,
+      "pePercentile": 50.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872968",
+      "timestamp": "2026-05-18T10:39:35.839475",
       "52weekHigh": 147.25,
       "52weekLow": 110.81,
-      "beta": 1.176
+      "beta": 1.176,
+      "pe10yMin": 31.18,
+      "pe10yMax": 34.66,
+      "pe10yMedian": 33.45,
+      "pePercentile5y": 50.0,
+      "priceChange10y": -7.71
     },
     {
       "ticker": "MDLZ",
@@ -1494,12 +1929,17 @@
       "roe": 10.06,
       "marketCap": 77583791615.0,
       "marketCapStr": "$77.58B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872972",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839483",
       "52weekHigh": 71.15,
       "52weekLow": 51.2008,
-      "beta": 0.411
+      "beta": 0.411,
+      "pe10yMin": 20.22,
+      "pe10yMax": 21.65,
+      "pe10yMedian": 21.56,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 38.68
     },
     {
       "ticker": "CI",
@@ -1511,12 +1951,17 @@
       "roe": 15.16,
       "marketCap": 75463147193.0,
       "marketCapStr": "$75.46B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872976",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839491",
       "52weekHigh": 338.89,
       "52weekLow": 239.51,
-      "beta": 0.316
+      "beta": 0.316,
+      "pe10yMin": 8.63,
+      "pe10yMax": 9.66,
+      "pe10yMedian": 9.4,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 133.0
     },
     {
       "ticker": "ZTS",
@@ -1528,12 +1973,17 @@
       "roe": 62.41,
       "marketCap": 31115110917.0,
       "marketCapStr": "$31.12B",
-      "pePercentile": null,
+      "pePercentile": 50.0,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872980",
+      "timestamp": "2026-05-18T10:39:35.839502",
       "52weekHigh": 172.23,
       "52weekLow": 72.38,
-      "beta": 0.811
+      "beta": 0.811,
+      "pe10yMin": 11.89,
+      "pe10yMax": 18.27,
+      "pe10yMedian": 17.77,
+      "pePercentile5y": 50.0,
+      "priceChange10y": 62.21
     },
     {
       "ticker": "REGN",
@@ -1545,12 +1995,17 @@
       "roe": 14.32,
       "marketCap": 73203854094.0,
       "marketCapStr": "$73.20B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872987",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839510",
       "52weekHigh": 821.11,
       "52weekLow": 476.4869,
-      "beta": 0.288
+      "beta": 0.288,
+      "pe10yMin": 15.5,
+      "pe10yMax": 16.93,
+      "pe10yMedian": 15.85,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 81.34
     },
     {
       "ticker": "GILD",
@@ -1562,12 +2017,17 @@
       "roe": 42.21,
       "marketCap": 160882621551.0,
       "marketCapStr": "$160.88B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872992",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839518",
       "52weekHigh": 157.29,
       "52weekLow": 97.86,
-      "beta": 0.334
+      "beta": 0.334,
+      "pe10yMin": 15.63,
+      "pe10yMax": 16.65,
+      "pe10yMedian": 16.12,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 55.0
     },
     {
       "ticker": "VRTX",
@@ -1579,12 +2039,17 @@
       "roe": 23.93,
       "marketCap": 110900276521.0,
       "marketCapStr": "$110.90B",
-      "pePercentile": null,
+      "pePercentile": 44.2,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.872996",
+      "timestamp": "2026-05-18T10:39:35.839527",
       "52weekHigh": 507.92,
       "52weekLow": 362.5,
-      "beta": 0.298
+      "beta": 0.298,
+      "pe10yMin": -1242.68,
+      "pe10yMax": 2361.38,
+      "pe10yMedian": 28.61,
+      "pePercentile5y": 75.0,
+      "priceChange10y": 381.26
     },
     {
       "ticker": "MMC",
@@ -1598,10 +2063,10 @@
       "marketCapStr": "$89.51B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873000",
+      "timestamp": "2026-05-18T10:39:35.839536",
       "52weekHigh": 235.7799,
       "52weekLow": 170.37,
-      "beta": -0.135
+      "beta": -0.127
     },
     {
       "ticker": "AMT",
@@ -1613,12 +2078,17 @@
       "roe": 78.17,
       "marketCap": 79495334534.0,
       "marketCapStr": "$79.50B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873007",
+      "pePercentile": 1.7,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839558",
       "52weekHigh": 234.33,
       "52weekLow": 165.08,
-      "beta": 0.889
+      "beta": 0.889,
+      "pe10yMin": 24.82,
+      "pe10yMax": 136.46,
+      "pe10yMedian": 53.64,
+      "pePercentile5y": 3.3,
+      "priceChange10y": 69.05
     },
     {
       "ticker": "BSX",
@@ -1630,12 +2100,17 @@
       "roe": 14.87,
       "marketCap": 78301190829.0,
       "marketCapStr": "$78.30B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873029",
+      "pePercentile": 10.8,
+      "status": "Low",
+      "timestamp": "2026-05-18T10:39:35.839596",
       "52weekHigh": 109.5,
       "52weekLow": 52.52,
-      "beta": 0.615
+      "beta": 0.615,
+      "pe10yMin": 17.45,
+      "pe10yMax": 41.52,
+      "pe10yMedian": 26.84,
+      "pePercentile5y": 5.0,
+      "priceChange10y": 138.22
     },
     {
       "ticker": "PANW",
@@ -1647,12 +2122,17 @@
       "roe": 15.49,
       "marketCap": 196935135585.0,
       "marketCapStr": "$196.94B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873045",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839603",
       "52weekHigh": 245.8,
       "52weekLow": 139.5706,
-      "beta": 0.829
+      "beta": 0.829,
+      "pe10yMin": 32.15,
+      "pe10yMax": 97.88,
+      "pe10yMedian": 58.66,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 891.72
     },
     {
       "ticker": "SNPS",
@@ -1664,12 +2144,17 @@
       "roe": 4.57,
       "marketCap": 96244591595.0,
       "marketCapStr": "$96.24B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873051",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839611",
       "52weekHigh": 651.73,
       "52weekLow": 376.18,
-      "beta": 1.265
+      "beta": 1.265,
+      "pe10yMin": 18.52,
+      "pe10yMax": 53.8,
+      "pe10yMedian": 35.56,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 893.25
     },
     {
       "ticker": "CDNS",
@@ -1681,12 +2166,17 @@
       "roe": 21.06,
       "marketCap": 95774347840.0,
       "marketCapStr": "$95.77B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873058",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839618",
       "52weekHigh": 376.445,
       "52weekLow": 262.749,
-      "beta": 1.134
+      "beta": 1.134,
+      "pe10yMin": 20.73,
+      "pe10yMax": 61.88,
+      "pe10yMedian": 42.05,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 1348.38
     },
     {
       "ticker": "KLAC",
@@ -1698,12 +2188,17 @@
       "roe": 89.07,
       "marketCap": 235693861320.0,
       "marketCapStr": "$235.69B",
-      "pePercentile": null,
-      "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873079",
+      "pePercentile": 100.0,
+      "status": "High",
+      "timestamp": "2026-05-18T10:39:35.839625",
       "52weekHigh": 1939.36,
       "52weekLow": 740.44,
-      "beta": 1.505
+      "beta": 1.505,
+      "pe10yMin": 9.79,
+      "pe10yMax": 49.71,
+      "pe10yMedian": 18.75,
+      "pePercentile5y": 100.0,
+      "priceChange10y": 2383.68
     }
   ],
   "indices": [
@@ -1722,7 +2217,7 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873091",
+      "timestamp": "2026-05-18T10:39:35.839639",
       "52weekHigh": 749.53,
       "52weekLow": 575.6,
       "beta": 1.017
@@ -1742,10 +2237,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873097",
+      "timestamp": "2026-05-18T10:39:35.839649",
       "52weekHigh": 722.03,
       "52weekLow": 505.58,
-      "beta": 1.227
+      "beta": 1.224
     },
     {
       "id": "dia",
@@ -1762,10 +2257,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873103",
+      "timestamp": "2026-05-18T10:39:35.839661",
       "52weekHigh": 505.3,
       "52weekLow": 413.83,
-      "beta": 0.875
+      "beta": 0.878
     },
     {
       "id": "iwm",
@@ -1782,7 +2277,7 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873107",
+      "timestamp": "2026-05-18T10:39:35.839669",
       "52weekHigh": 287.58,
       "52weekLow": 199.65,
       "beta": 1.128
@@ -1802,7 +2297,7 @@
       "marketCapStr": "$280.23B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873112",
+      "timestamp": "2026-05-18T10:39:35.839678",
       "52weekHigh": 368.25,
       "52weekLow": 283.0,
       "beta": 1.029
@@ -1822,10 +2317,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873117",
+      "timestamp": "2026-05-18T10:39:35.839687",
       "52weekHigh": 180.215,
       "52weekLow": 112.55,
-      "beta": 1.321
+      "beta": 1.313
     },
     {
       "id": "xlf",
@@ -1842,10 +2337,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873121",
+      "timestamp": "2026-05-18T10:39:35.839696",
       "52weekHigh": 56.515,
       "52weekLow": 47.67,
-      "beta": 0.896
+      "beta": 0.903
     },
     {
       "id": "xlv",
@@ -1862,10 +2357,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873125",
+      "timestamp": "2026-05-18T10:39:35.839704",
       "52weekHigh": 160.59,
       "52weekLow": 127.35,
-      "beta": 0.584
+      "beta": 0.586
     },
     {
       "id": "xly",
@@ -1882,10 +2377,10 @@
       "marketCapStr": "$11.59B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873130",
+      "timestamp": "2026-05-18T10:39:35.839713",
       "52weekHigh": 125.01,
       "52weekLow": 103.86,
-      "beta": 1.219
+      "beta": 1.223
     },
     {
       "id": "xlp",
@@ -1902,10 +2397,10 @@
       "marketCapStr": "$18.53B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873134",
+      "timestamp": "2026-05-18T10:39:35.839721",
       "52weekHigh": 90.14,
       "52weekLow": 75.16,
-      "beta": 0.509
+      "beta": 0.51
     },
     {
       "id": "xle",
@@ -1922,10 +2417,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873139",
+      "timestamp": "2026-05-18T10:39:35.839729",
       "52weekHigh": 63.46,
       "52weekLow": 40.36,
-      "beta": 0.46
+      "beta": 0.47
     },
     {
       "id": "xli",
@@ -1942,10 +2437,10 @@
       "marketCapStr": "$19.63B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873143",
+      "timestamp": "2026-05-18T10:39:35.839737",
       "52weekHigh": 179.305,
       "52weekLow": 139.63,
-      "beta": 1.022
+      "beta": 1.026
     },
     {
       "id": "xlb",
@@ -1962,10 +2457,10 @@
       "marketCapStr": "$2.46B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873147",
+      "timestamp": "2026-05-18T10:39:35.839746",
       "52weekHigh": 54.14,
       "52weekLow": 42.03,
-      "beta": 0.953
+      "beta": 0.954
     },
     {
       "id": "xlre",
@@ -1982,10 +2477,10 @@
       "marketCapStr": "$4.05B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873152",
+      "timestamp": "2026-05-18T10:39:35.839754",
       "52weekHigh": 44.91,
       "52weekLow": 39.725,
-      "beta": 1.009
+      "beta": 1.013
     },
     {
       "id": "xlu",
@@ -2002,10 +2497,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873156",
+      "timestamp": "2026-05-18T10:39:35.839763",
       "52weekHigh": 47.8,
-      "52weekLow": 39.05,
-      "beta": 0.621
+      "52weekLow": 39.58,
+      "beta": 0.625
     },
     {
       "id": "xlc",
@@ -2022,10 +2517,10 @@
       "marketCapStr": "$16.95B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873160",
+      "timestamp": "2026-05-18T10:39:35.839771",
       "52weekHigh": 120.405,
       "52weekLow": 99.6,
-      "beta": 0.987
+      "beta": 0.99
     },
     {
       "id": "soxx",
@@ -2042,10 +2537,10 @@
       "marketCapStr": "$5.06B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873165",
+      "timestamp": "2026-05-18T10:39:35.839780",
       "52weekHigh": 533.74,
       "52weekLow": 199.93,
-      "beta": 1.788
+      "beta": 1.778
     },
     {
       "id": "kre",
@@ -2062,10 +2557,10 @@
       "marketCapStr": "$2.39B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873169",
+      "timestamp": "2026-05-18T10:39:35.839788",
       "52weekHigh": 74.08,
       "52weekLow": 55.37,
-      "beta": 0.883
+      "beta": 0.889
     },
     {
       "id": "ibb",
@@ -2082,10 +2577,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873174",
+      "timestamp": "2026-05-18T10:39:35.839796",
       "52weekHigh": 179.64,
       "52weekLow": 116.49,
-      "beta": 0.726
+      "beta": 0.724
     },
     {
       "id": "xrt",
@@ -2102,10 +2597,10 @@
       "marketCapStr": "$416.61M",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873181",
+      "timestamp": "2026-05-18T10:39:35.839808",
       "52weekHigh": 91.65,
       "52weekLow": 73.87,
-      "beta": 1.189
+      "beta": 1.199
     },
     {
       "id": "vnq",
@@ -2122,10 +2617,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873186",
+      "timestamp": "2026-05-18T10:39:35.839816",
       "52weekHigh": 97.37,
       "52weekLow": 86.36,
-      "beta": 1.017
+      "beta": 1.021
     },
     {
       "id": "vig",
@@ -2142,10 +2637,10 @@
       "marketCapStr": "$77.25B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873190",
+      "timestamp": "2026-05-18T10:39:35.839825",
       "52weekHigh": 231.315,
       "52weekLow": 193.0056,
-      "beta": 0.836
+      "beta": 0.839
     },
     {
       "id": "schd",
@@ -2162,10 +2657,10 @@
       "marketCapStr": "$102.61B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873194",
+      "timestamp": "2026-05-18T10:39:35.839833",
       "52weekHigh": 32.13,
       "52weekLow": 25.69,
-      "beta": 0.704
+      "beta": 0.708
     },
     {
       "id": "arkk",
@@ -2182,10 +2677,10 @@
       "marketCapStr": "$2.60B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873199",
+      "timestamp": "2026-05-18T10:39:35.839842",
       "52weekHigh": 92.65,
       "52weekLow": 55.02,
-      "beta": 1.96
+      "beta": 1.961
     },
     {
       "id": "kweb",
@@ -2202,10 +2697,10 @@
       "marketCapStr": "$1.42B",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873203",
+      "timestamp": "2026-05-18T10:39:35.839850",
       "52weekHigh": 43.365,
       "52weekLow": 27.62,
-      "beta": 0.355
+      "beta": 0.349
     },
     {
       "id": "gdx",
@@ -2222,10 +2717,10 @@
       "marketCapStr": "$0",
       "pePercentile": null,
       "status": "Neutral",
-      "timestamp": "2026-05-17T05:01:01.873210",
+      "timestamp": "2026-05-18T10:39:35.839861",
       "52weekHigh": 117.18,
-      "52weekLow": 45.1,
-      "beta": 0.645
+      "52weekLow": 45.25,
+      "beta": 0.632
     }
   ]
 }

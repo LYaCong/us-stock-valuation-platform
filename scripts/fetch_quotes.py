@@ -349,6 +349,54 @@ def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
 
 # ========== 主流程 ==========
 
+def append_valuation_history(companies, indices, cache_dir):
+    """把每天的估值指标追加到 valuation_history.json（按日期分区）"""
+    from datetime import date
+    today = date.today().isoformat()  # "2026-05-13"
+    hist_file = os.path.join(cache_dir, '..', 'stock_cache', 'valuation_history.json')
+    
+    # 加载已有数据
+    hist = {}
+    if os.path.exists(hist_file):
+        try:
+            with open(hist_file, 'r', encoding='utf-8') as f:
+                hist = json.load(f)
+        except:
+            hist = {}
+    
+    # 构建当天的估值快照
+    snapshot = {}
+    for c in companies:
+        if c.get('price') is None or c.get('price', 0) == 0:
+            continue
+        snapshot[c['ticker']] = {
+            'price': c.get('price'),
+            'peTtm': c.get('peTtm'),
+            'peFwd': c.get('peFwd'),
+            'pb': c.get('pb'),
+            'roe': c.get('roe'),
+            'marketCap': c.get('marketCap'),
+        }
+    for idx in indices:
+        if idx.get('price') is None or idx.get('price', 0) == 0:
+            continue
+        snapshot[idx['ticker']] = {
+            'price': idx.get('price'),
+            'peTtm': idx.get('peTtm'),
+            'marketCap': idx.get('marketCap'),
+        }
+    
+    # 追加/覆盖当天数据
+    hist[today] = snapshot
+    
+    # 保存
+    os.makedirs(os.path.dirname(hist_file), exist_ok=True)
+    with open(hist_file, 'w', encoding='utf-8') as f:
+        json.dump(hist, f, ensure_ascii=False, indent=2)
+    
+    dates = sorted(hist.keys())
+    print(f"  💾 估值历史已更新: {today} ({len(snapshot)} tickers) | 总计 {len(dates)} 天数据")
+
 def main():
     start_time = time.time()
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
@@ -569,50 +617,3 @@ if __name__ == '__main__':
 
 # ========== 估值历史积累 ==========
 
-def append_valuation_history(companies, indices, cache_dir):
-    """把每天的估值指标追加到 valuation_history.json（按日期分区）"""
-    from datetime import date
-    today = date.today().isoformat()  # "2026-05-13"
-    hist_file = os.path.join(cache_dir, '..', 'stock_cache', 'valuation_history.json')
-    
-    # 加载已有数据
-    hist = {}
-    if os.path.exists(hist_file):
-        try:
-            with open(hist_file, 'r', encoding='utf-8') as f:
-                hist = json.load(f)
-        except:
-            hist = {}
-    
-    # 构建当天的估值快照
-    snapshot = {}
-    for c in companies:
-        if c.get('price') is None or c.get('price', 0) == 0:
-            continue
-        snapshot[c['ticker']] = {
-            'price': c.get('price'),
-            'peTtm': c.get('peTtm'),
-            'peFwd': c.get('peFwd'),
-            'pb': c.get('pb'),
-            'roe': c.get('roe'),
-            'marketCap': c.get('marketCap'),
-        }
-    for idx in indices:
-        if idx.get('price') is None or idx.get('price', 0) == 0:
-            continue
-        snapshot[idx['ticker']] = {
-            'price': idx.get('price'),
-            'peTtm': idx.get('peTtm'),
-            'marketCap': idx.get('marketCap'),
-        }
-    
-    # 追加/覆盖当天数据
-    hist[today] = snapshot
-    
-    # 保存
-    os.makedirs(os.path.dirname(hist_file), exist_ok=True)
-    with open(hist_file, 'w', encoding='utf-8') as f:
-        json.dump(hist, f, ensure_ascii=False, indent=2)
-    
-    dates = sorted(hist.keys())
-    print(f"  💾 估值历史已更新: {today} ({len(snapshot)} tickers) | 总计 {len(dates)} 天数据")

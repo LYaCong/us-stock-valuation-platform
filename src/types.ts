@@ -11,6 +11,11 @@ export interface CompanyValuation {
   peg: number | null;
   roe: number | null;
   pePercentile10y: number | null;
+  pe10yMin: number | null;
+  pe10yMax: number | null;
+  pe10yMedian: number | null;
+  pePercentile5y: number | null;
+  priceChange10y: number | null;
   status: 'Low' | 'Neutral' | 'High';
   logo?: string;
   price?: number | null;

@@ -24,7 +24,7 @@ function fallback(ticker: string) {
 }
 
 function mapCompany(c: any) {
-  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, status: c.status||'Neutral' };
+  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, pe10yMin: c.pe10yMin??null, pe10yMax: c.pe10yMax??null, pe10yMedian: c.pe10yMedian??null, pePercentile5y: c.pePercentile5y??null, priceChange10y: c.priceChange10y??null, status: c.status||'Neutral' };
 }
 
 function mapIndex(c: any) {
@@ -76,10 +76,21 @@ function handleValuation(req: IncomingMessage, res: ServerResponse) {
   const companies = tickers.map(t => {
     const c = m.get(t);
     if (!c) return fallback(t);
-    const pe = pePercentile(c.peTtm);
-    return { ...mapCompany(c), pePercentile10y: pe.percentile, status: pe.status };
+    // Use real percentile from daily_quotes.json (pre-calculated by calculate_pe_history.py)
+    const mapped = mapCompany(c);
+    // Override status based on real percentile if available
+    if (c.pePercentile != null) {
+      mapped.pePercentile10y = c.pePercentile;
+      mapped.status = c.pePercentile <= 25 ? 'Low' : c.pePercentile <= 75 ? 'Neutral' : 'High';
+    } else {
+      // Fallback to heuristic
+      const pe = pePercentile(c.peTtm);
+      mapped.pePercentile10y = pe.percentile;
+      mapped.status = pe.status;
+    }
+    return mapped;
   });
-  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile','marketCap'], companies), companies });
+  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile','pe10yMin','pe10yMax','pe10yMedian','pePercentile5y','priceChange10y','marketCap'], companies), companies });
 }
 
 function handleIndexValuations(_req: IncomingMessage, res: ServerResponse) {

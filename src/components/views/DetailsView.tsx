@@ -228,12 +228,12 @@ export function DetailsView({
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         <StatCard label={t.currentValue} value={(company.peTtm != null && company.peTtm !== 0) ? company.peTtm.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.percentileCurrentRange} value={company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.percentileAllHistory} value="46.0%" theme={theme} lang={lang} />
-        <StatCard label={t.rollingPercentile5Y} value="1.6%" theme={theme} lang={lang} />
+        <StatCard label={t.rangeMin} value={company.pe10yMin != null ? company.pe10yMin.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeMax} value={company.pe10yMax != null ? company.pe10yMax.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rollingPercentile5Y} value={company.pePercentile5y != null ? `${company.pePercentile5y}%` : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.rollingPercentile10Y} value={company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeChange} value="+21.23%" color="text-red-400" theme={theme} lang={lang} />
-        <StatCard label={t.rangeMin} value="16.97" theme={theme} lang={lang} />
-        <StatCard label={t.rangeMax} value="246.85" theme={theme} lang={lang} />
+        <StatCard label={t.rangeChange} value={company.priceChange10y != null ? `${company.priceChange10y > 0 ? '+' : ''}${company.priceChange10y.toFixed(2)}%` : 'N/A'} color={company.priceChange10y != null ? (company.priceChange10y >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
+        <StatCard label={t.percentileAllHistory} value={company.pe10yMedian != null ? company.pe10yMedian.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
       </div>
     </div>
   );
