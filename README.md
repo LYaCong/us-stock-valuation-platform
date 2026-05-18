@@ -2,7 +2,7 @@
 
 # 📊 US Stock Valuation Platform
 
-**Real-time US stock valuation analysis with AI-powered insights**
+**Real-time US stock valuation analysis with PE percentile ranking and AI-powered insights**
 
 [English](#features) · [中文](#功能特性)
 
@@ -14,14 +14,15 @@
 
 - 🔍 **100+ US Stocks Tracking** — Covers mega-cap, large-cap, and ADRs including NVDA, AAPL, GOOGL, MSFT, AMZN, TSM, BABA, etc.
 - 📈 **26 Major Indices & ETFs** — SPY, QQQ, DIA, IWM, sector ETFs (XLK, XLF, XLV...), and thematic ETFs (ARKK, KWEB, GDX...)
-- 📐 **Multi-dimensional Valuation** — PE (TTM/Forward), PB, ROE ratios, PE percentile ranking
-- 📊 **Historical Trend Charts** — 20 years of monthly price data with PE trend visualization
+- 📐 **Multi-dimensional Valuation** — PE (TTM/Forward), PB, ROE ratios with real historical percentile ranking
+- 📊 **10-Year PE Percentile** — Calculated from rolling TTM EPS × monthly prices, showing where current PE stands historically
+- 📉 **Interactive PE Trend Charts** — PE, price, and market cap time-series with percentile overlay (20 years)
 - 🤖 **AI-Powered Analysis** — Gemini AI integration for intelligent stock analysis and insights
-- 🏷️ **Valuation Status Indicators** — Automatic Low / Neutral / High classification based on PE thresholds
+- 🏷️ **Valuation Status Indicators** — Automatic Low / Neutral / High classification based on 10-year PE percentile (≤25% / 25-75% / ≥75%)
 - 💹 **Market Cap & Price Display** — Real-time market data via Sina Finance API (domestic China direct access)
 - 🎨 **Modern UI** — Built with React 19, Tailwind CSS 4, Recharts, and smooth animations
 - 🚀 **One-Click Deploy** — Vercel deployment with auto CI/CD
-- ⏰ **Automated Data Pipeline** — Cron jobs for daily quotes, monthly history, and EPS accumulation
+- ⏰ **Automated Data Pipeline** — Cron jobs for daily quotes, PE percentile calculation, and EPS accumulation
 
 ## Tech Stack
 
@@ -30,7 +31,7 @@
 | Frontend | React 19, TypeScript, Tailwind CSS 4, Recharts |
 | Backend | Vercel Serverless Functions |
 | Primary Data Source | Sina Finance API (新浪财经) |
-| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS) |
+| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), Finnhub (EPS fallback) |
 | AI | Google Gemini API (`@google/genai`) |
 | Build | Vite 6 |
 | Deployment | Vercel (CI/CD via GitHub push) |
@@ -91,9 +92,9 @@ npm run test
 └──────────────────────┘     └──────────────────────────────────────┘
 
 ┌──────────────────────┐     ┌──────────────────────────────────────┐
-│  Finnhub API          │────▶│  Valuation Supplement                 │
+│  Finnhub API          │────▶│  Valuation Supplement + EPS Fallback  │
 │  Free, 60 req/min     │     │  Forward PE, PB, ROE, 52-week H/L,   │
-│                       │     │  Beta, Dividend Yield                 │
+│                       │     │  Beta, Dividend Yield, EPS (4Q)      │
 │                       │     │  + Full data for BRK-B (Sina N/A)    │
 └──────────────────────┘     └──────────────────────────────────────┘
 
@@ -106,14 +107,25 @@ npm run test
 ┌──────────────────────┐     ┌──────────────────────────────────────┐
 │  Alpha Vantage API    │────▶│  Historical Earnings (EPS)            │
 │  Free, 25 req/day     │     │  Quarterly & Annual EPS               │
-│                       │     │  → Calculate Historical PE(TTM)      │
+│                       │     │  90/100 tickers covered               │
+│                       │     │  (9 fallback to Finnhub)              │
 └──────────────────────┘     └──────────────────────────────────────┘
+          │
+          ▼
+┌──────────────────────────────────────────────────────┐
+│                PE Percentile Engine                    │
+│  calculate_pe_history.py                               │
+│  Rolling TTM EPS (4Q sum) × Monthly Price              │
+│  → Historical PE(TTM) for each month                   │
+│  → 10Y / 5Y percentile, min/max/median, price change   │
+└──────────────────────────────────────────────────────┘
           │
           ▼
 ┌──────────────────────────────────────────┐
 │            stock_cache/                   │
 │  ├── daily_quotes.json    (daily quotes)  │
-│  ├── historical.json      (monthly K-line)│
+│  ├── historical.json      (monthly K-line │
+│  │                         + PE + pct)    │
 │  ├── valuation_history.json (PE timeline) │
 │  └── earnings.json         (quarterly EPS)│
 │                    │                      │
@@ -122,17 +134,30 @@ npm run test
 └──────────────────────────────────────────┘
 ```
 
+## PE Percentile Calculation
+
+The core metric — **10-Year PE Percentile** — is calculated as follows:
+
+1. **Rolling TTM EPS**: For each month, sum the most recent 4 quarters of reported EPS
+2. **Monthly PE(TTM)**: Month-end closing price ÷ Rolling TTM EPS
+3. **Percentile**: Where the current PE ranks among all monthly PEs in the past 10 years
+4. **Status**: ≤25% = Low (undervalued) · 25-75% = Neutral · ≥75% = High (overvalued)
+
+Additional metrics: **5-Year percentile**, **10-Year PE min/max/median**, **10-Year price change**
+
+Coverage: **99/100 tickers** with PE history, **91% monthly data point coverage**
+
 ## Automated Data Pipeline (Cron Jobs)
 
 All data updates are automated via OpenClaw cron jobs:
 
-| Job | Schedule | Script | Duration | Description |
-|-----|----------|--------|----------|-------------|
-| **Daily Quotes** | Every day 05:00 CST | `fetch_quotes.py` | ~4 min | Sina (price) + Finnhub (PE/PB/ROE) → git push → Vercel deploy |
-| **Monthly History** | 1st of month 05:30 CST | `fetch_history.py` | ~16 min | Twelve Data monthly K-line (20 years, 240 pts) |
-| **Historical EPS** | Every day 02:00 CST | `fetch_earnings.py` | ~30 sec | Alpha Vantage quarterly/annual EPS (25 tickers/day) |
+| Job | Schedule | Script | Description |
+|-----|----------|--------|-------------|
+| **Daily Quotes + PE** | Every day 05:00 CST | `fetch_quotes.py` → `calculate_pe_history.py` | Sina (price) + Finnhub (PE/PB/ROE) → PE percentile → git push → Vercel deploy |
+| **Monthly History** | 1st of month 05:30 CST | `fetch_history.py` | Twelve Data monthly K-line (20 years, 240 pts) |
+| **Historical EPS** | Every day 02:00 CST | `fetch_earnings.py` | Alpha Vantage quarterly/annual EPS (25 tickers/day) |
 
-### Daily Quotes Flow (fetch_quotes.py)
+### Daily Pipeline Flow
 
 ```
 [1/3] Sina Finance → Price, PE(TTM), Market Cap (batch, seconds)
@@ -140,17 +165,18 @@ All data updates are automated via OpenClaw cron jobs:
 [2/3] Finnhub Metric → Forward PE, PB, ROE (rate-limited concurrent, 2 threads)
 [3/3] Alpha Vantage → Supplement missing metrics (25/day limit)
 → Save to daily_quotes.json + append to valuation_history.json
+
+[PE] calculate_pe_history.py
+→ Read earnings.json + historical.json
+→ Calculate rolling TTM EPS for each month
+→ PE = price / TTM EPS → percentile ranking
+→ Update historical.json (add peTtm, percentile fields)
+→ Update daily_quotes.json (add pe10yMin/Max/Median, pePercentile10y/5y)
+
 → git push → Vercel auto-deploys
 ```
 
-**Coverage**: Price 100% | Forward PE 99/100 | PB 100/100 | ROE 100/100
-
-### Historical PE Timeline
-
-Two approaches combined for maximum coverage:
-
-- **Approach A (Backfill)**: Fetch quarterly EPS from Alpha Vantage → calculate PE(TTM) = monthly price / rolling 4-quarter EPS sum → gives 10+ years of historical PE
-- **Approach B (Ongoing)**: Every day's PE/PB/ROE snapshot is automatically appended to `valuation_history.json` → builds a growing daily valuation timeline from now on
+**Coverage**: Price 100% | Forward PE 99/100 | PB 100/100 | ROE 100/100 | PE Percentile 97/100
 
 ## Project Structure
 
@@ -159,21 +185,19 @@ us-stock-valuation-platform/
 ├── api/
 │   └── [[...path]].ts               # Vercel Serverless API handler
 ├── server.ts                        # Express API server (local dev)
-├── server/
-│   ├── services/
-│   │   ├── marketDataService.ts     # Market data fetching & caching
-│   │   └── cacheService.ts          # Cache file I/O
-│   └── mappers/
-│       └── valuationMappers.ts      # Data transformation & mapping
 ├── src/
 │   ├── App.tsx                      # Main application component
 │   ├── types.ts                     # TypeScript type definitions
-│   ├── config/
-│   │   └── tickers.ts               # Stock & index ticker lists
 │   ├── components/
 │   │   ├── common/                  # Reusable UI components
-│   │   └── views/                   # Page-level views
-│   ├── hooks/                       # Custom React hooks
+│   │   └── views/
+│   │       ├── OverviewView.tsx     # Main dashboard
+│   │       ├── DetailsView.tsx      # Company detail (PE chart + stats)
+│   │       ├── ComparisonView.tsx   # Multi-stock comparison
+│   │       ├── IndexView.tsx        # Index overview
+│   │       ├── IndexDetailsView.tsx # Index detail
+│   │       ├── DcfView.tsx          # DCF calculator
+│   │       └── SettingsView.tsx     # Settings
 │   ├── services/                    # API client services
 │   ├── utils/                       # Utility functions
 │   ├── data/                        # Static data & mappings
@@ -181,24 +205,24 @@ us-stock-valuation-platform/
 ├── scripts/
 │   ├── fetch_quotes.py              # Daily quotes + valuation snapshot
 │   ├── fetch_history.py             # Monthly K-line history (Twelve Data)
-│   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage, 25/day)
+│   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage + Finnhub fallback)
+│   ├── calculate_pe_history.py      # PE percentile engine (rolling TTM EPS)
 │   └── prebuild-api-data.sh         # Copy cache to api/_data/ for Vercel
 ├── stock_cache/                     # Cached data files
-│   ├── daily_quotes.json            # Latest quotes (100 cos + 26 indices)
-│   ├── historical.json              # 20-year monthly data (126 tickers)
+│   ├── daily_quotes.json            # Latest quotes + PE percentile stats
+│   ├── historical.json              # 20-year monthly data (price + PE + pct)
 │   ├── valuation_history.json       # Daily PE/PB/ROE timeline
-│   └── earnings.json                # Quarterly/annual EPS data
+│   └── earnings.json                # Quarterly/annual EPS (99 tickers)
 ├── vercel.json                      # Vercel deployment config
-├── vite.config.ts
-└── tsconfig.json
+└── vite.config.ts
 ```
 
 ## How It Works
 
 1. **Data Fetching** — Python scripts fetch from multiple free APIs with rate-limit-aware concurrent requests
-2. **Serverless API** — Vercel Serverless Function serves cached data via REST endpoints, bundled at build time
-3. **PE Percentile Calculation** — Computes PE percentile using empirical thresholds based on S&P 500 historical distribution
-4. **Valuation Classification** — Classifies stocks as Low/Neutral/High based on PE thresholds
+2. **EPS Fallback** — Alpha Vantage primary + Finnhub fallback for tickers not supported (9 tickers)
+3. **PE Percentile Engine** — Rolling TTM EPS × monthly prices → 10-year empirical percentile
+4. **Serverless API** — Vercel Serverless Function serves cached data via REST endpoints, bundled at build time
 5. **Visualization** — Interactive charts showing PE trends, percentile bands, and comparison data
 6. **AI Insights** — (Optional) Gemini API provides AI-generated analysis and commentary
 7. **Auto Update** — Cron jobs run daily to keep data fresh, git push triggers Vercel deployment
@@ -207,22 +231,21 @@ us-stock-valuation-platform/
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/valuation?tickers=AAPL,NVDA` | GET | Company valuations with PE/PB/ROE |
+| `/api/valuation?tickers=AAPL,NVDA` | GET | Company valuations with PE/PB/ROE + percentile stats |
 | `/api/index-valuations` | GET | Index & ETF valuations |
 | `/api/quotes?symbols=AAPL` | GET | Real-time quotes (from cache) |
 | `/api/fundamentals?symbol=AAPL` | GET | Company fundamentals (from cache) |
-| `/api/historical?symbol=AAPL` | GET | Historical price & PE data |
+| `/api/historical?symbol=AAPL` | GET | Historical price + PE + percentile data |
 
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
+| `FINNHUB_API_KEY` | Yes | Finnhub API key (PE/PB/ROE + EPS fallback) |
+| `ALPHA_VANTAGE_API_KEY` | Yes | Alpha Vantage API key (historical EPS) |
+| `TWELVE_DATA_API_KEY` | Yes | Twelve Data API key (historical monthly data) |
 | `GEMINI_API_KEY` | No | Google Gemini API key for AI analysis features |
 | `SINA_ENABLED` | No | Enable Sina Finance primary source (`true`/`false`, default: `true`) |
-| `FINNHUB_API_KEY` | No | Finnhub API key for Forward PE/PB/ROE supplement |
-| `TWELVE_DATA_API_KEY` | No | Twelve Data API key for historical monthly data |
-| `ALPHA_VANTAGE_API_KEY` | No | Alpha Vantage API key for historical EPS data |
-| `YAHOO_ENABLED` | No | Enable Yahoo Finance supplement (`true`/`false`, default: `false`) |
 
 ## Deployment (Vercel)
 
@@ -247,7 +270,7 @@ MIT
 
 ## 功能特性
 
-**实时美股估值分析平台，AI 驱动的投资洞察**
+**实时美股估值分析平台，10年PE百分位排名 + AI 驱动的投资洞察**
 
 🌐 **在线访问：[https://us-stock-valuation-platform.vercel.app](https://us-stock-valuation-platform.vercel.app)**
 
@@ -255,22 +278,39 @@ MIT
 
 - 🔍 **100+ 美股追踪** — 覆盖超大盘、大盘股和 ADR，包括 NVDA、AAPL、GOOGL、MSFT、AMZN、TSM、BABA 等
 - 📈 **26 个主流指数和 ETF** — SPY、QQQ、DIA、IWM，行业 ETF（XLK、XLF、XLV...）以及主题 ETF（ARKK、KWEB、GDX...）
-- 📐 **多维度估值分析** — PE（TTM/Forward）、PB、ROE 估值倍数，PE 百分位排名
-- 📊 **20年历史趋势** — 月线价格数据，可视化 PE 比率历史走势，附带百分位参考线
+- 📐 **多维度估值分析** — PE（TTM/Forward）、PB、ROE 估值倍数，附带真实历史百分位排名
+- 📊 **10年PE百分位** — 基于滚动 TTM EPS × 月末价格计算，展示当前 PE 在历史中的位置
+- 📉 **交互式PE趋势图** — PE、股价、市值时间序列，带百分位叠加层（20年数据）
 - 🤖 **AI 智能分析** — 集成 Gemini AI，提供智能股票分析和洞察
-- 🏷️ **估值状态标识** — 基于历史百分位自动划分 低估 / 中性 / 高估
+- 🏷️ **估值状态标识** — 基于 10 年 PE 百分位自动划分 低估(≤25%) / 中性 / 高估(≥75%)
 - 💹 **市值与价格展示** — 通过新浪财经 API 获取实时市场数据（国内直连，100% 成功率）
 - 🎨 **现代化界面** — 基于 React 19、Tailwind CSS 4、Recharts 构建，流畅动画效果
 - 🚀 **一键部署** — Vercel 部署，GitHub 推送自动上线
-- ⏰ **自动化数据管线** — 定时任务自动更新每日行情、历史数据、季度EPS
+- ⏰ **自动化数据管线** — 定时任务自动更新每日行情、PE百分位、历史数据
+
+### PE 百分位计算方法
+
+核心指标「10年PE百分位」的计算流程：
+
+1. **滚动 TTM EPS**：每个月取最近 4 个季度的已报告 EPS 之和
+2. **月度 PE(TTM)**：月末收盘价 ÷ 滚动 TTM EPS
+3. **百分位排名**：当前 PE 在过去 10 年所有月度 PE 中的排名位置
+4. **估值判断**：≤25% 低估 · 25-75% 中性 · ≥75% 高估
+
+额外指标：5年百分位、10年PE最小/最大/中位数、10年区间涨跌幅
+
+覆盖率：**99/100 家公司**有PE历史，**91% 月度数据点覆盖**
 
 ### 数据源架构
 
 ```
 新浪财经 API（主数据源）    → 价格、名称、PE(TTM)、市值、OHLCV（免费无限制，国内直连）
-Finnhub API（估值补充）     → Forward PE、PB、ROE、52周高低、Beta（免费，60次/分钟）
+Finnhub API（估值+EPS补充） → Forward PE、PB、ROE + 9只Alpha Vantage不支持个股的EPS
 Twelve Data API（历史数据）  → 20年月线 OHLCV（免费，8次/分钟，800次/天）
-Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天）
+Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天，90/100只覆盖）
+          ↓
+  PE百分位引擎 (calculate_pe_history.py)
+  滚动TTM EPS × 月末价格 → 10年/5年百分位、最小/最大/中位数
           ↓
      stock_cache/ 本地缓存
           ↓
@@ -279,16 +319,11 @@ Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天）
 
 ### 自动化定时任务
 
-| 任务 | 时间 | 脚本 | 耗时 | 说明 |
-|------|------|------|------|------|
-| **每日行情** | 每天 05:00 | `fetch_quotes.py` | ~4分钟 | 新浪价格 + Finnhub估值 → 自动部署 |
-| **历史月线** | 每月1号 05:30 | `fetch_history.py` | ~16分钟 | Twelve Data 20年月线 |
-| **历史EPS** | 每天 02:00 | `fetch_earnings.py` | ~30秒 | Alpha Vantage 季度EPS（每天25只） |
-
-### 历史PE时间线
-
-- **方案A（回溯）**：从 Alpha Vantage 获取季度 EPS → 计算 PE(TTM) = 月末价格 / 滚动4季度EPS之和 → 得到10年+的历史PE
-- **方案B（积累）**：每天的 PE/PB/ROE 快照自动追加到 `valuation_history.json` → 持续积累每日估值时间线
+| 任务 | 时间 | 脚本 | 说明 |
+|------|------|------|------|
+| **每日行情+PE** | 每天 05:00 | `fetch_quotes.py` → `calculate_pe_history.py` | 行情 + PE百分位 → 自动部署 |
+| **历史月线** | 每月1号 05:30 | `fetch_history.py` | Twelve Data 20年月线 |
+| **历史EPS** | 每天 02:00 | `fetch_earnings.py` | Alpha Vantage 季度EPS（每天25只）|
 
 ### 快速开始
 
