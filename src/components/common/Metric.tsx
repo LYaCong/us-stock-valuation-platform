@@ -2,6 +2,7 @@ import { type Lang, type Theme, type TranslationMap } from '../../types';
 import { cn } from '../../utils/cn';
 
 interface MetricProps {
+  key?: string;
   labelKey: string;
   value: string;
   color?: string;

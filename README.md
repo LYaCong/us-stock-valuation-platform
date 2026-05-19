@@ -31,7 +31,7 @@
 | Frontend | React 19, TypeScript, Tailwind CSS 4, Recharts |
 | Backend | Vercel Serverless Functions |
 | Primary Data Source | Sina Finance API (新浪财经) |
-| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), Finnhub (EPS fallback) |
+| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), Finnhub (EPS fallback), EODHD (ETF/index fundamentals) |
 | AI | Google Gemini API (`@google/genai`) |
 | Build | Vite 6 |
 | Deployment | Vercel (CI/CD via GitHub push) |
@@ -110,6 +110,12 @@ npm run test
 │                       │     │  90/100 tickers covered               │
 │                       │     │  (9 fallback to Finnhub)              │
 └──────────────────────┘     └──────────────────────────────────────┘
+
+┌──────────────────────┐     ┌──────────────────────────────────────┐
+│  EODHD API            │────▶│  ETF / Index Fundamentals             │
+│                       │     │  Provider-direct PE/Fwd PE/PB/Yield, │
+│                       │     │  expense ratio, AUM (no Yahoo API)   │
+└──────────────────────┘     └──────────────────────────────────────┘
           │
           ▼
 ┌──────────────────────────────────────────────────────┐
@@ -160,18 +166,20 @@ All data updates are automated via OpenClaw cron jobs:
 ### Daily Pipeline Flow
 
 ```
-[1/3] Sina Finance → Price, PE(TTM), Market Cap (batch, seconds)
-[1.5/3] Finnhub Quote → BRK-B price (Sina doesn't support it)
-[2/3] Finnhub Metric → Forward PE, PB, ROE (rate-limited concurrent, 2 threads)
-[3/3] Alpha Vantage → Supplement missing metrics (25/day limit)
-→ Save to daily_quotes.json + append to valuation_history.json
+[1/4] Sina Finance → Price, PE(TTM), Market Cap (batch, seconds)
+[1.5/4] Finnhub Quote → BRK-B price (Sina doesn't support it)
+[2/4] Finnhub Metric → Forward PE, PB, ROE (rate-limited concurrent, 2 threads)
+[3/4] Alpha Vantage → Supplement missing company metrics (25/day limit)
+[4/4] EODHD → Provider-direct ETF/index fundamentals (no Yahoo API)
+→ Save to daily_quotes.json
 
 [PE] calculate_pe_history.py
 → Read earnings.json + historical.json
-→ Calculate rolling TTM EPS for each month
-→ PE = price / TTM EPS → percentile ranking
+→ Calculate rolling TTM EPS for each month and latest daily PE
+→ PE = latest price / latest TTM EPS → percentile ranking
 → Update historical.json (add peTtm, percentile fields)
-→ Update daily_quotes.json (add pe10yMin/Max/Median, pePercentile10y/5y)
+→ Update daily_quotes.json (add pe10yMin/Max/Median, pePercentile10y/5y/all-history)
+→ append to valuation_history.json
 
 → git push → Vercel auto-deploys
 ```
@@ -244,6 +252,7 @@ us-stock-valuation-platform/
 | `FINNHUB_API_KEY` | Yes | Finnhub API key (PE/PB/ROE + EPS fallback) |
 | `ALPHA_VANTAGE_API_KEY` | Yes | Alpha Vantage API key (historical EPS) |
 | `TWELVE_DATA_API_KEY` | Yes | Twelve Data API key (historical monthly data) |
+| `EODHD_API_TOKEN` | No | EODHD API token for provider-direct ETF/index fundamentals |
 | `GEMINI_API_KEY` | No | Google Gemini API key for AI analysis features |
 | `SINA_ENABLED` | No | Enable Sina Finance primary source (`true`/`false`, default: `true`) |
 
@@ -308,9 +317,10 @@ MIT
 Finnhub API（估值+EPS补充） → Forward PE、PB、ROE + 9只Alpha Vantage不支持个股的EPS
 Twelve Data API（历史数据）  → 20年月线 OHLCV（免费，8次/分钟，800次/天）
 Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天，90/100只覆盖）
+EODHD API（ETF/指数）       → ETF/指数供应商直给估值、股息率、费率、资产规模（不使用 Yahoo）
           ↓
   PE百分位引擎 (calculate_pe_history.py)
-  滚动TTM EPS × 月末价格 → 10年/5年百分位、最小/最大/中位数
+  最新股价 ÷ 最新滚动TTM EPS → 10年/5年/全历史百分位、最小/最大/中位数
           ↓
      stock_cache/ 本地缓存
           ↓

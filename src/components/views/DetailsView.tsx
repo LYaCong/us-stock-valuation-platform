@@ -208,7 +208,7 @@ export function DetailsView({
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.currentPercentilePosition}</span>
-                <span className="text-xs font-bold text-blue-400">{company.pePercentile10y ?? 'N/A'}%</span>
+                <span className="text-xs font-bold text-blue-400">{company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'}</span>
               </div>
               <div className="h-2 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full relative">
                 <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-lg transition-all duration-500" style={{ left: `calc(${company.pePercentile10y ?? 0}% - 8px)` }} />
@@ -233,7 +233,7 @@ export function DetailsView({
         <StatCard label={t.rollingPercentile5Y} value={company.pePercentile5y != null ? `${company.pePercentile5y}%` : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.rollingPercentile10Y} value={company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.rangeChange} value={company.priceChange10y != null ? `${company.priceChange10y > 0 ? '+' : ''}${company.priceChange10y.toFixed(2)}%` : 'N/A'} color={company.priceChange10y != null ? (company.priceChange10y >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
-        <StatCard label={t.percentileAllHistory} value={company.pe10yMedian != null ? company.pe10yMedian.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.percentileAllHistory} value={company.pePercentileAllHistory != null ? `${company.pePercentileAllHistory}%` : 'N/A'} theme={theme} lang={lang} />
       </div>
     </div>
   );

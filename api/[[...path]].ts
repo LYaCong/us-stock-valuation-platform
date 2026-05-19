@@ -20,40 +20,15 @@ function buildMetadata(timestamp: string | undefined, fields: string[], items: a
 }
 
 function fallback(ticker: string) {
-  return { id: ticker.toLowerCase(), name: ticker, nameZh: ticker, ticker, type: ticker.includes('.') ? 'ADR' : 'US', marketCap: 'N/A', price: null, peTtm: null, peFwd: null, pb: null, peg: null, roe: null, pePercentile10y: null, status: 'Neutral' as const };
+  return { id: ticker.toLowerCase(), name: ticker, nameZh: ticker, ticker, type: ticker.includes('.') ? 'ADR' : 'US', marketCap: 'N/A', price: null, peTtm: null, peFwd: null, pb: null, peg: null, roe: null, pePercentile10y: null, pe10yMin: null, pe10yMax: null, pe10yMedian: null, pePercentile5y: null, pePercentileAllHistory: null, priceChange10y: null, status: 'Neutral' as const };
 }
 
 function mapCompany(c: any) {
-  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, pe10yMin: c.pe10yMin??null, pe10yMax: c.pe10yMax??null, pe10yMedian: c.pe10yMedian??null, pePercentile5y: c.pePercentile5y??null, priceChange10y: c.priceChange10y??null, status: c.status||'Neutral' };
+  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, pe10yMin: c.pe10yMin??null, pe10yMax: c.pe10yMax??null, pe10yMedian: c.pe10yMedian??null, pePercentile5y: c.pePercentile5y??null, pePercentileAllHistory: c.pePercentileAllHistory??null, priceChange10y: c.priceChange10y??null, status: c.status||'Neutral' };
 }
 
 function mapIndex(c: any) {
-  return { id: c.id||c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.nameZh||c.name||c.ticker, ticker: c.ticker, type: c.type||'Core', peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, roe: c.roe??null, pePercentile: c.pePercentile??null, dataRange: c.dataRange||'', status: c.status||'Neutral', price: c.price??null };
-}
-
-function pePercentile(pe: number | null) {
-  if (!pe || pe <= 0) return { percentile: null, status: 'Neutral' as const };
-  let p: number, s: 'Low' | 'Neutral' | 'High';
-  if (pe < 12)      { p = Math.round(10 + pe/12*15); s = 'Low'; }
-  else if (pe < 15) { p = Math.round(25 + (pe-12)/3*10); s = 'Low'; }
-  else if (pe < 20) { p = Math.round(35 + (pe-15)/5*15); s = 'Neutral'; }
-  else if (pe < 25) { p = Math.round(50 + (pe-20)/5*20); s = 'Neutral'; }
-  else if (pe < 30) { p = Math.round(70 + (pe-25)/5*10); s = 'High'; }
-  else if (pe < 40) { p = Math.round(80 + (pe-30)/10*10); s = 'High'; }
-  else              { p = Math.min(99, Math.round(90 + (pe-40)/20*9)); s = 'High'; }
-  return { percentile: p, status: s };
-}
-
-function idxPePercentile(pe: number | null) {
-  if (!pe || pe <= 0) return { percentile: null, status: 'Neutral' as const };
-  let p: number, s: 'Low' | 'Neutral' | 'High';
-  if (pe < 14)      { p = Math.round(10 + pe/14*20); s = 'Low'; }
-  else if (pe < 18) { p = Math.round(30 + (pe-14)/4*20); s = 'Neutral'; }
-  else if (pe < 22) { p = Math.round(50 + (pe-18)/4*15); s = 'Neutral'; }
-  else if (pe < 28) { p = Math.round(65 + (pe-22)/6*15); s = 'High'; }
-  else if (pe < 35) { p = Math.round(80 + (pe-28)/7*10); s = 'High'; }
-  else              { p = Math.min(99, Math.round(90 + (pe-35)/15*9)); s = 'High'; }
-  return { percentile: p, status: s };
+  return { id: c.id||c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.nameZh||c.name||c.ticker, ticker: c.ticker, type: c.type||'Core', peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, roe: c.roe??null, pePercentile: c.pePercentile??null, dataRange: c.dataRange||'', status: c.status||'Neutral', price: c.price??null, dividendYield: c.dividendYield??null, expenseRatio: c.expenseRatio??null, assetsUnderManagement: c.assetsUnderManagement??null, eodhdUpdatedAt: c.eodhdUpdatedAt??null };
 }
 
 function send(res: ServerResponse, data: any, code = 200) {
@@ -76,29 +51,14 @@ function handleValuation(req: IncomingMessage, res: ServerResponse) {
   const companies = tickers.map(t => {
     const c = m.get(t);
     if (!c) return fallback(t);
-    // Use real percentile from daily_quotes.json (pre-calculated by calculate_pe_history.py)
-    const mapped = mapCompany(c);
-    // Override status based on real percentile if available
-    if (c.pePercentile != null) {
-      mapped.pePercentile10y = c.pePercentile;
-      mapped.status = c.pePercentile <= 25 ? 'Low' : c.pePercentile <= 75 ? 'Neutral' : 'High';
-    } else {
-      // Fallback to heuristic
-      const pe = pePercentile(c.peTtm);
-      mapped.pePercentile10y = pe.percentile;
-      mapped.status = pe.status;
-    }
-    return mapped;
+    return mapCompany(c);
   });
-  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile','pe10yMin','pe10yMax','pe10yMedian','pePercentile5y','priceChange10y','marketCap'], companies), companies });
+  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile','pe10yMin','pe10yMax','pe10yMedian','pePercentile5y','pePercentileAllHistory','priceChange10y','marketCap'], companies), companies });
 }
 
 function handleIndexValuations(_req: IncomingMessage, res: ServerResponse) {
-  const indices = (dailyQuotes.indices || []).map((i: any) => {
-    const pe = idxPePercentile(i.peTtm);
-    return { ...mapIndex(i), pePercentile: pe.percentile, status: pe.status };
-  });
-  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','pePercentile'], indices), indices });
+  const indices = (dailyQuotes.indices || []).map((i: any) => mapIndex(i));
+  send(res, { metadata: buildMetadata(dailyQuotes.timestamp, ['price','peTtm','peFwd','pb','dividendYield','expenseRatio','assetsUnderManagement','pePercentile'], indices), indices });
 }
 
 function handleQuotes(req: IncomingMessage, res: ServerResponse) {

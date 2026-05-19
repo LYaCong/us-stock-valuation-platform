@@ -15,6 +15,7 @@ export interface CompanyValuation {
   pe10yMax: number | null;
   pe10yMedian: number | null;
   pePercentile5y: number | null;
+  pePercentileAllHistory: number | null;
   priceChange10y: number | null;
   status: 'Low' | 'Neutral' | 'High';
   logo?: string;
@@ -35,6 +36,10 @@ export interface IndexValuation {
   dataRange: string;
   status: 'Low' | 'Neutral' | 'High';
   price?: number | null;
+  dividendYield?: number | null;
+  expenseRatio?: number | null;
+  assetsUnderManagement?: number | null;
+  eodhdUpdatedAt?: string | null;
 }
 
 export interface HistoricalDataPoint {

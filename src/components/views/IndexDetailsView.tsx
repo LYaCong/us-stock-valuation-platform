@@ -81,6 +81,13 @@ export function IndexDetailsView({
 
   const startDateStr = filteredData.length > 0 ? filteredData[0].date : 'N/A';
   const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : 'N/A';
+  const formatPercent = (value: number) => `${(value > 1 ? value : value * 100).toFixed(2)}%`;
+  const formatAum = (value: number) => {
+    if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
+    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+    return `$${value.toFixed(0)}`;
+  };
 
   return (
     <div className="space-y-6">
@@ -192,16 +199,12 @@ export function IndexDetailsView({
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         <StatCard label={t.currentValue} value={(index.peTtm != null && index.peTtm !== 0) ? index.peTtm.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.percentileCurrentRange} value={index.pePercentile != null ? `${index.pePercentile}%` : 'N/A'} theme={theme} lang={lang} />
-        {hasPercentileHistory && (
-          <>
-            <StatCard label={t.percentileAllHistory} value="46.0%" theme={theme} lang={lang} />
-            <StatCard label={t.rollingPercentile5Y} value="1.6%" theme={theme} lang={lang} />
-            <StatCard label={t.rollingPercentile10Y} value={index.pePercentile != null ? `${index.pePercentile}%` : 'N/A'} theme={theme} lang={lang} />
-            <StatCard label={t.rangeChange} value="+21.23%" color="text-red-400" theme={theme} lang={lang} />
-            <StatCard label={t.rangeMin} value="16.97" theme={theme} lang={lang} />
-            <StatCard label={t.rangeMax} value="246.85" theme={theme} lang={lang} />
-          </>
-        )}
+        <StatCard label={t.peFwd} value={(index.peFwd != null && index.peFwd !== 0) ? index.peFwd.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.pb} value={(index.pb != null && index.pb !== 0) ? index.pb.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.dividendYield} value={index.dividendYield != null ? formatPercent(index.dividendYield) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.expenseRatio} value={index.expenseRatio != null ? formatPercent(index.expenseRatio) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.assetsUnderManagement} value={index.assetsUnderManagement != null ? formatAum(index.assetsUnderManagement) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.price} value={index.price != null ? `$${index.price.toFixed(2)}` : 'N/A'} theme={theme} lang={lang} />
       </div>
     </div>
   );

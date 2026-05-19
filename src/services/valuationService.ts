@@ -3,20 +3,26 @@ import { COMPANY_NAME_ZH, INDEX_NAME_ZH, INDEX_NAME_EN } from '../data/tickerMap
 
 const API_BASE = '';
 
-interface YahooValuation {
+interface ApiCompanyValuation {
   id: string;
   name: string;
   nameZh: string;
   ticker: string;
   type: 'US' | 'ADR';
-  marketCap: string;
-  price: number;
+  marketCap: string | null;
+  price: number | null;
   peTtm: number | null;
   peFwd: number | null;
   pb: number | null;
-  peg: number;
-  roe: number;
-  pePercentile10y: number;
+  peg: number | null;
+  roe: number | null;
+  pePercentile10y: number | null;
+  pe10yMin: number | null;
+  pe10yMax: number | null;
+  pe10yMedian: number | null;
+  pePercentile5y: number | null;
+  pePercentileAllHistory: number | null;
+  priceChange10y: number | null;
   status: 'Low' | 'Neutral' | 'High';
 }
 
@@ -32,7 +38,7 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     console.log('[fetchValuations] 返回数据条数:', data.companies?.length);
-    const companies: YahooValuation[] = data.companies || [];
+    const companies: ApiCompanyValuation[] = data.companies || [];
 
     if (companies.length === 0) {
       console.warn('[fetchValuations] 无数据');
@@ -41,7 +47,7 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
 
     const nameZhMap = COMPANY_NAME_ZH;
 
-    // Merge: use Yahoo data, keep nameZh from TOP_COMPANIES
+    // Merge API data with local Chinese names from TOP_COMPANIES.
     return companies.map(yc => ({
       id: yc.id,
       name: yc.name || yc.ticker,
@@ -56,6 +62,12 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
       peg: yc.peg ?? null,
       roe: yc.roe ?? null,
       pePercentile10y: yc.pePercentile10y ?? null,
+      pe10yMin: yc.pe10yMin ?? null,
+      pe10yMax: yc.pe10yMax ?? null,
+      pe10yMedian: yc.pe10yMedian ?? null,
+      pePercentile5y: yc.pePercentile5y ?? null,
+      pePercentileAllHistory: yc.pePercentileAllHistory ?? null,
+      priceChange10y: yc.priceChange10y ?? null,
       status: yc.status || 'Neutral',
     })) as CompanyValuation[];
   } catch (err) {
@@ -64,7 +76,7 @@ export async function fetchValuations(tickers: string[]): Promise<CompanyValuati
   }
 }
 
-interface YahooIndexValuation {
+interface ApiIndexValuation {
   id: string;
   name: string;
   nameZh: string;
@@ -73,11 +85,15 @@ interface YahooIndexValuation {
   peTtm: number | null;
   peFwd: number | null;
   pb: number | null;
-  roe: number;
-  pePercentile: number;
+  roe: number | null;
+  pePercentile: number | null;
   dataRange: string;
   status: 'Low' | 'Neutral' | 'High';
-  price?: number;
+  price?: number | null;
+  dividendYield?: number | null;
+  expenseRatio?: number | null;
+  assetsUnderManagement?: number | null;
+  eodhdUpdatedAt?: string | null;
 }
 
 export async function fetchIndexValuations(): Promise<IndexValuation[]> {
@@ -89,7 +105,7 @@ export async function fetchIndexValuations(): Promise<IndexValuation[]> {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     console.log('[fetchIndexValuations] 返回数据条数:', data.indices?.length);
-    const indices: YahooIndexValuation[] = data.indices || [];
+    const indices: ApiIndexValuation[] = data.indices || [];
 
     if (indices.length === 0) {
       console.warn('[fetchIndexValuations] 无数据');
@@ -113,6 +129,10 @@ export async function fetchIndexValuations(): Promise<IndexValuation[]> {
       dataRange: yi.dataRange || '',
       status: yi.status || 'Neutral',
       price: yi.price ?? null,
+      dividendYield: yi.dividendYield ?? null,
+      expenseRatio: yi.expenseRatio ?? null,
+      assetsUnderManagement: yi.assetsUnderManagement ?? null,
+      eodhdUpdatedAt: yi.eodhdUpdatedAt ?? null,
     })) as IndexValuation[];
   } catch (err) {
     console.error('[fetchIndexValuations] 失败:', err);

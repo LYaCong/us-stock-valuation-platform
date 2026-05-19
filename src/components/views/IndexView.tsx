@@ -77,13 +77,24 @@ function IndexCard({ index, theme, onClick, lang, t }: IndexCardProps) {
     High: t.high,
   }[index.status];
 
-  const roeDisplay =
-    index.roe != null
-      ? `${index.roe.toFixed(1)}%`
-      : 'N/A';
-
   const percentileText = index.pePercentile != null ? `${index.pePercentile}%` : 'N/A';
   const percentileValue = index.pePercentile ?? 0;
+  const formatPercent = (value: number) => `${(value > 1 ? value : value * 100).toFixed(2)}%`;
+  const formatAum = (value: number) => {
+    if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
+    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+    return `$${value.toFixed(0)}`;
+  };
+  const metrics = [
+    index.peTtm != null && index.peTtm !== 0 ? { labelKey: 'peTtm', value: index.peTtm.toFixed(2) } : null,
+    index.peFwd != null && index.peFwd !== 0 ? { labelKey: 'peFwd', value: index.peFwd.toFixed(2) } : null,
+    index.pb != null && index.pb !== 0 ? { labelKey: 'pb', value: index.pb.toFixed(2) } : null,
+    index.dividendYield != null && index.dividendYield !== 0 ? { labelKey: 'dividendYield', value: formatPercent(index.dividendYield) } : null,
+    index.expenseRatio != null && index.expenseRatio !== 0 ? { labelKey: 'expenseRatio', value: formatPercent(index.expenseRatio) } : null,
+    index.assetsUnderManagement != null && index.assetsUnderManagement !== 0 ? { labelKey: 'assetsUnderManagement', value: formatAum(index.assetsUnderManagement) } : null,
+    index.price != null ? { labelKey: 'price', value: `$${index.price.toFixed(2)}` } : null,
+  ].filter((metric): metric is { labelKey: string; value: string } => metric != null).slice(0, 6);
 
   return (
     <div
@@ -112,29 +123,26 @@ function IndexCard({ index, theme, onClick, lang, t }: IndexCardProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-x-2 gap-y-3 mb-4 relative z-10">
-        <Metric labelKey="peTtm" value={(index.peTtm != null && index.peTtm !== 0) ? index.peTtm.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="peFwd" value={(index.peFwd != null && index.peFwd !== 0) ? index.peFwd.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="pb" value={(index.pb != null && index.pb !== 0) ? index.pb.toFixed(2) : 'N/A'} theme={theme} t={t} lang={lang} />
-        <Metric labelKey="price" value={index.price != null ? `$${index.price.toFixed(2)}` : 'N/A'} theme={theme} t={t} lang={lang} />
-        <Metric
-          labelKey="roe"
-          value={roeDisplay}
-          color={index.roe != null ? (index.roe >= 15 ? 'text-green-400' : index.roe < 5 ? 'text-red-400' : undefined) : undefined}
-          theme={theme}
-          t={t}
-          lang={lang}
-        />
+        {metrics.map((metric) => (
+          <Metric key={metric.labelKey} labelKey={metric.labelKey} value={metric.value} theme={theme} t={t} lang={lang} />
+        ))}
       </div>
 
-      <div className="space-y-2">
-        <div className="flex justify-between items-end">
-          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.percentile}</span>
-          <span className="text-xs font-bold text-blue-400">{percentileText}</span>
+      {index.pePercentile != null ? (
+        <div className="space-y-2">
+          <div className="flex justify-between items-end">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.percentile}</span>
+            <span className="text-xs font-bold text-blue-400">{percentileText}</span>
+          </div>
+          <div className={cn('h-1.5 rounded-full overflow-hidden', theme === 'dark' ? 'bg-white/5' : 'bg-slate-100')}>
+            <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${percentileValue}%` }} />
+          </div>
         </div>
-        <div className={cn('h-1.5 rounded-full overflow-hidden', theme === 'dark' ? 'bg-white/5' : 'bg-slate-100')}>
-          <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${percentileValue}%` }} />
+      ) : (
+        <div className="relative z-10 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+          {index.dataRange || index.eodhdUpdatedAt || ''}
         </div>
-      </div>
+      )}
     </div>
   );
 }

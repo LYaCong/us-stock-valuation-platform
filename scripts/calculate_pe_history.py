@@ -14,7 +14,7 @@ import json
 import os
 import sys
 from datetime import datetime
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, List
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.join(SCRIPT_DIR, '..')
@@ -64,6 +64,22 @@ def compute_ttm_eps(quarterly_eps: List[dict], month_date: str) -> Optional[floa
     return ttm
 
 
+def compute_current_pe(quarterly_eps: List[dict], current_price: Optional[float], now: datetime) -> Optional[float]:
+    """
+    用最新股价和截至当前月份可用的最近4个季度EPS计算当天PE(TTM)。
+    这个口径用于覆盖 BRK-B、INTC 等实时行情源不给 trailing PE 的情况。
+    """
+    if current_price is None or current_price <= 0:
+        return None
+
+    latest_month = f"{now.year}-{now.month:02d}"
+    ttm_eps = compute_ttm_eps(quarterly_eps, latest_month)
+    if ttm_eps is None or ttm_eps == 0:
+        return None
+
+    return round(current_price / ttm_eps, 2)
+
+
 def compute_percentile(value: float, all_values: List[float]) -> Optional[float]:
     """
     计算 value 在 all_values 中的百分位排名（0-100）。
@@ -96,12 +112,7 @@ def compute_stats(pe_values: List[float], current_pe: Optional[float]) -> dict:
     计算统计指标：PE最小值、最大值、中位数、当前百分位
     """
     if not pe_values:
-        return {
-            'pe10yMin': None,
-            'pe10yMax': None,
-            'pe10yMedian': None,
-            'pePercentile': None,
-        }
+        return {'min': None, 'max': None, 'median': None, 'percentile': None}
 
     sorted_pe = sorted(pe_values)
     n = len(sorted_pe)
@@ -112,10 +123,10 @@ def compute_stats(pe_values: List[float], current_pe: Optional[float]) -> dict:
         percentile = compute_percentile(current_pe, pe_values)
 
     return {
-        'pe10yMin': round(sorted_pe[0], 2),
-        'pe10yMax': round(sorted_pe[-1], 2),
-        'pe10yMedian': round(median, 2),
-        'pePercentile': percentile,
+        'min': round(sorted_pe[0], 2),
+        'max': round(sorted_pe[-1], 2),
+        'median': round(median, 2),
+        'percentile': percentile,
     }
 
 
@@ -168,6 +179,7 @@ def main():
             continue
 
         # 计算每个月的TTM PE
+        pe_values_all = []
         pe_values_10y = []
         pe_values_5y = []
 
@@ -183,6 +195,7 @@ def main():
                     pe = price / ttm_eps
                     month_data['peTtm'] = round(pe, 2)
                     total_pe_months += 1
+                    pe_values_all.append(pe)
 
                     parts = month_date.split('-')
                     ym = (int(parts[0]), int(parts[1]))
@@ -211,16 +224,21 @@ def main():
         # 计算当前PE的10年百分位等统计
         company = company_map.get(ticker)
         current_pe = None
-        if company and company.get('peTtm') is not None:
-            current_pe = company['peTtm']
+        current_price = None
+        if company:
+            current_price = company.get('price')
+            current_pe = compute_current_pe(q_eps, current_price, now)
+            company['peTtm'] = current_pe
 
         stats = compute_stats(pe_values_10y, current_pe)
+        all_history_stats = compute_stats(pe_values_all, current_pe)
 
         if company:
-            company['pePercentile'] = stats['pePercentile']
-            company['pe10yMin'] = stats['pe10yMin']
-            company['pe10yMax'] = stats['pe10yMax']
-            company['pe10yMedian'] = stats['pe10yMedian']
+            company['pePercentile'] = stats['percentile']
+            company['pe10yMin'] = stats['min']
+            company['pe10yMax'] = stats['max']
+            company['pe10yMedian'] = stats['median']
+            company['pePercentileAllHistory'] = all_history_stats['percentile']
 
             # 5年滚动百分位
             if pe_values_5y and current_pe is not None:
@@ -231,7 +249,7 @@ def main():
             # 10年区间涨跌幅
             if len(history) >= 2:
                 first_price_10y = None
-                last_price = history[-1].get('price')
+                last_price = current_price or history[-1].get('price')
                 for h in history:
                     parts = h['date'].split('-')
                     ym = (int(parts[0]), int(parts[1]))
@@ -248,7 +266,7 @@ def main():
                 company['priceChange10y'] = None
 
             # 根据百分位更新status
-            pct = stats.get('pePercentile')
+            pct = stats.get('percentile')
             if pct is not None:
                 if pct <= 25:
                     company['status'] = 'Low'

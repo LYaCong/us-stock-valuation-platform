@@ -20,6 +20,7 @@ import time
 import os
 import sys
 import requests
+import subprocess
 from datetime import datetime
 from typing import Optional, Dict, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -46,7 +47,7 @@ SINA_ENABLED = ENV.get('SINA_ENABLED', 'true').lower() == 'true'
 FINNHUB_KEY = ENV.get('FINNHUB_API_KEY', '')
 ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
 TWELVEDATA_KEY = ENV.get('TWELVE_DATA_API_KEY', '')
-YAHOO_ENABLED = ENV.get('YAHOO_ENABLED', 'false').lower() == 'true'
+EODHD_KEY = ENV.get('EODHD_API_TOKEN', '')
 
 HEADERS_SINA = {
     'Referer': 'https://finance.sina.com.cn/',
@@ -118,6 +119,10 @@ def safe_float(val) -> Optional[float]:
 def safe_round(val, digits=2) -> Optional[float]:
     v = safe_float(val)
     return round(v, digits) if v is not None else None
+
+def safe_int(val) -> Optional[int]:
+    v = safe_float(val)
+    return int(v) if v is not None else None
 
 def format_market_cap(mc) -> Optional[str]:
     if mc is None: return None
@@ -345,6 +350,112 @@ def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
         time.sleep(1)
 
     return results
+
+
+# ========== EODHD API（ETF/指数估值直给字段）==========
+
+def get_nested(data: Dict, path: List[str]):
+    cur = data
+    for key in path:
+        if not isinstance(cur, dict) or key not in cur:
+            return None
+        cur = cur[key]
+    return cur
+
+
+def first_nested(data: Dict, paths: List[List[str]]):
+    for path in paths:
+        value = get_nested(data, path)
+        if value is not None:
+            return value
+    return None
+
+
+def fetch_eodhd_index_fundamentals(indices: List[Dict]) -> Dict[str, Dict]:
+    """从 EODHD 读取 ETF/指数供应商直给估值字段，不做持仓加权或估算。"""
+    if not EODHD_KEY:
+        print("    ⚠️ EODHD_API_TOKEN 未配置，跳过指数/ETF估值直给字段")
+        return {}
+
+    results = {}
+    for idx in indices:
+        ticker = idx['ticker']
+        symbol = f"{ticker}.US"
+        url = f"https://eodhd.com/api/fundamentals/{symbol}"
+        try:
+            resp = requests.get(
+                url,
+                params={'api_token': EODHD_KEY, 'fmt': 'json'},
+                timeout=20,
+            )
+            data = resp.json()
+            if not isinstance(data, dict):
+                print(f"    ⚠️ {ticker} EODHD: invalid response")
+                continue
+            if data.get('Message') or data.get('Error Message'):
+                msg = data.get('Message') or data.get('Error Message') or 'empty response'
+                print(f"    ⚠️ {ticker} EODHD: {msg}")
+                continue
+
+            etf_data = data.get('ETF_Data') if isinstance(data.get('ETF_Data'), dict) else {}
+            valuation_paths = [
+                ['ETF_Data', 'Valuations_Growth', 'Valuations_Rates_Portfolio'],
+                ['ETF_Data', 'Valuations_Growth', 'Valuations_Rates'],
+                ['ETF_Data', 'Valuations_Rates_Portfolio'],
+            ]
+            valuation = {}
+            for path in valuation_paths:
+                value = get_nested(data, path)
+                if isinstance(value, dict):
+                    valuation = value
+                    break
+
+            result = {
+                'peTtm': safe_round(first_nested(data, [
+                    ['Highlights', 'PERatio'],
+                    ['Valuation', 'TrailingPE'],
+                ])),
+                'peFwd': safe_round(
+                    valuation.get('Price/Prospective Earnings')
+                    or valuation.get('Price/Forward Earnings')
+                    or first_nested(data, [['Highlights', 'ForwardPE']])
+                ),
+                'pb': safe_round(
+                    valuation.get('Price/Book')
+                    or first_nested(data, [['Highlights', 'PriceBookMRQ']])
+                ),
+                'dividendYield': safe_round(
+                    etf_data.get('Yield')
+                    or first_nested(data, [['Highlights', 'DividendYield']]),
+                    4,
+                ),
+                'expenseRatio': safe_round(
+                    etf_data.get('NetExpenseRatio')
+                    or etf_data.get('Ongoing_Charge'),
+                    4,
+                ),
+                'assetsUnderManagement': safe_int(etf_data.get('TotalAssets')),
+                'eodhdUpdatedAt': data.get('UpdatedAt'),
+            }
+            results[ticker] = {k: v for k, v in result.items() if v is not None}
+            print(f"    ✅ EODHD {ticker}: PE={result.get('peTtm')} FwdPE={result.get('peFwd')} PB={result.get('pb')}")
+        except Exception as e:
+            print(f"    ⚠️ {ticker} EODHD 失败: {e}")
+
+        time.sleep(0.2)
+
+    return results
+
+
+def run_pe_recalculation() -> bool:
+    """行情写入后立即重算公司PE与百分位，避免每日刷新把衍生字段冲空。"""
+    script_path = os.path.join(SCRIPT_DIR, 'calculate_pe_history.py')
+    try:
+        result = subprocess.run([sys.executable, script_path], check=False)
+        return result.returncode == 0
+    except Exception as e:
+        print(f"  ❌ PE百分位重算失败: {e}")
+        return False
 
 
 # ========== 主流程 ==========
@@ -580,6 +691,23 @@ def main():
         else:
             print(f"\n📡 [3/3] Alpha Vantage — 所有个股字段已有数据，跳过")
 
+    # ============================
+    # 第 4 步：EODHD（指数/ETF估值直给字段，不使用 Yahoo）
+    # ============================
+    print(f"\n📡 [4/4] EODHD — 补充指数/ETF供应商直给估值字段...")
+    eodhd_data = fetch_eodhd_index_fundamentals(indices)
+    eodhd_hit = 0
+    for ticker, data in eodhd_data.items():
+        entry = all_entries.get(ticker)
+        if not entry or not data:
+            continue
+        for field in ['peTtm', 'peFwd', 'pb', 'dividendYield', 'expenseRatio', 'assetsUnderManagement', 'eodhdUpdatedAt']:
+            if data.get(field) is not None:
+                entry[field] = data[field]
+        entry['dataRange'] = 'EODHD direct'
+        eodhd_hit += 1
+    print(f"  EODHD: {eodhd_hit}/{len(indices)} 指数/ETF补充成功")
+
     # 清理 source 字段
     for entry in companies + indices:
         entry.pop('source', None)
@@ -594,8 +722,20 @@ def main():
     wrote = merge_and_save(companies, indices, CACHE_FILE, rate, is_final=True)
     elapsed = time.time() - start_time
 
-    # 记录估值历史
+    # 公司 PE 百分位必须在行情写入后重算；之后再记录估值历史。
+    recalculated = True
     if wrote:
+        print("\n📊 [PE] 重算公司PE和历史百分位...")
+        recalculated = run_pe_recalculation()
+        if recalculated:
+            refreshed = load_cache(CACHE_FILE)
+            companies = refreshed.get('companies', companies)
+            indices = refreshed.get('indices', indices)
+        else:
+            print("  ❌ PE重算失败，停止后续流程，避免发布不完整缓存")
+
+    # 记录估值历史
+    if wrote and recalculated:
         cache_dir = os.path.join(SCRIPT_DIR, '..', 'stock_cache')
         append_valuation_history(companies, indices, cache_dir)
 
@@ -608,7 +748,7 @@ def main():
     else:
         print(f"\n⚠️ 成功率不足，保留旧缓存 | 耗时 {elapsed:.1f}s")
 
-    return 0 if rate > 0.3 else 1
+    return 0 if rate > 0.3 and recalculated else 1
 
 
 if __name__ == '__main__':
@@ -616,4 +756,3 @@ if __name__ == '__main__':
 
 
 # ========== 估值历史积累 ==========
-

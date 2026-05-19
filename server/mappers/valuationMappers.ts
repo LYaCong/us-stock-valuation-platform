@@ -31,6 +31,12 @@ export function createFallbackCompanyValuation(ticker: string) {
     peg: null,
     roe: null,
     pePercentile10y: null,
+    pe10yMin: null,
+    pe10yMax: null,
+    pe10yMedian: null,
+    pePercentile5y: null,
+    pePercentileAllHistory: null,
+    priceChange10y: null,
     status: 'Neutral' as const,
   };
 }
@@ -50,6 +56,12 @@ export function mapCachedCompanyToValuation(cached: any) {
     peg: cached.peg ?? null,
     roe: cached.roe ?? null,
     pePercentile10y: cached.pePercentile ?? null,
+    pe10yMin: cached.pe10yMin ?? null,
+    pe10yMax: cached.pe10yMax ?? null,
+    pe10yMedian: cached.pe10yMedian ?? null,
+    pePercentile5y: cached.pePercentile5y ?? null,
+    pePercentileAllHistory: cached.pePercentileAllHistory ?? null,
+    priceChange10y: cached.priceChange10y ?? null,
     status: cached.status || 'Neutral',
   };
 }
@@ -69,6 +81,10 @@ export function mapCachedIndexToValuation(cached: any) {
     dataRange: cached.dataRange || '',
     status: cached.status || 'Neutral',
     price: cached.price ?? null,
+    dividendYield: cached.dividendYield ?? null,
+    expenseRatio: cached.expenseRatio ?? null,
+    assetsUnderManagement: cached.assetsUnderManagement ?? null,
+    eodhdUpdatedAt: cached.eodhdUpdatedAt ?? null,
   };
 }
 
