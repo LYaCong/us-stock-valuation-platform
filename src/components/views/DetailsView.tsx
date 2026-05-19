@@ -10,6 +10,7 @@ import {
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
+  type MouseHandlerDataParam,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -28,6 +29,65 @@ interface DetailsViewProps {
   lang: Lang;
 }
 
+interface RangePeStats {
+  currentPe: number | null;
+  currentPercentile: number | null;
+  min: number | null;
+  max: number | null;
+  percentile5y: number | null;
+  percentile10y: number | null;
+  priceChange: number | null;
+}
+
+function isValidNumber(value: number | null | undefined): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function computePercentile(value: number | null, values: number[]): number | null {
+  if (value == null || values.length === 0) return null;
+
+  const sortedValues = [...values].sort((a, b) => a - b);
+  const lastIndex = sortedValues.length - 1;
+
+  if (lastIndex === 0) return value >= sortedValues[0] ? 100 : 0;
+  if (value <= sortedValues[0]) return 0;
+  if (value >= sortedValues[lastIndex]) return 100;
+
+  const countBelow = sortedValues.filter((item) => item < value).length;
+  const countEqual = sortedValues.filter((item) => item === value).length;
+  const percentile = countEqual > 1
+    ? (countBelow + (countEqual - 1) / 2) / lastIndex * 100
+    : countBelow / lastIndex * 100;
+
+  return Number(percentile.toFixed(1));
+}
+
+function computeRangePeStats(data: HistoricalDataPoint[]): RangePeStats {
+  const peValues = data.map((item) => item.peTtm).filter(isValidNumber);
+  const latestPePoint = [...data].reverse().find((item) => isValidNumber(item.peTtm));
+  const currentPe = latestPePoint?.peTtm ?? null;
+
+  const pricePoints = data.filter((item) => isValidNumber(item.price));
+  const firstPrice = pricePoints[0]?.price ?? null;
+  const lastPrice = pricePoints[pricePoints.length - 1]?.price ?? null;
+  const priceChange = isValidNumber(firstPrice) && isValidNumber(lastPrice) && firstPrice > 0
+    ? Number((((lastPrice - firstPrice) / firstPrice) * 100).toFixed(2))
+    : null;
+
+  const last5yPeValues = data.slice(-60).map((item) => item.peTtm).filter(isValidNumber);
+  const last10yPeValues = data.slice(-120).map((item) => item.peTtm).filter(isValidNumber);
+
+  return {
+    currentPe,
+    currentPercentile: computePercentile(currentPe, peValues),
+    min: peValues.length > 0 ? Math.min(...peValues) : null,
+    max: peValues.length > 0 ? Math.max(...peValues) : null,
+    percentile5y: computePercentile(currentPe, last5yPeValues),
+    percentile10y: computePercentile(currentPe, last10yPeValues),
+    priceChange,
+  };
+}
+
 export function DetailsView({
   company,
   historicalData,
@@ -40,6 +100,7 @@ export function DetailsView({
 }: DetailsViewProps) {
   const [timeRange, setTimeRange] = useState('10Y');
   const [chartType, setChartType] = useState<'pe' | 'price' | 'marketCap'>('pe');
+  const [activeDate, setActiveDate] = useState<string | null>(null);
 
   const hasPeHistory = historicalMetadata?.availableFields?.includes('peTtm') || historicalData.some((item) => item.peTtm != null);
   const hasPercentileHistory = historicalMetadata?.availableFields?.includes('percentile') || historicalData.some((item) => item.percentile != null);
@@ -90,6 +151,35 @@ export function DetailsView({
         };
     }
   }, [chartType, lang]);
+
+  const rangeStats = useMemo(() => computeRangePeStats(filteredData), [filteredData]);
+
+  const fallbackActivePoint = useMemo(() => (
+    [...filteredData].reverse().find((item) => item.percentile != null) ?? filteredData[filteredData.length - 1] ?? null
+  ), [filteredData]);
+
+  const activeDataPoint = useMemo(() => (
+    filteredData.find((item) => item.date === activeDate) ?? fallbackActivePoint
+  ), [activeDate, fallbackActivePoint, filteredData]);
+
+  const highlightedDate = activeDataPoint?.date;
+  const highlightedPercentile = activeDataPoint?.percentile ?? null;
+
+  useEffect(() => {
+    if (activeDate && !filteredData.some((item) => item.date === activeDate)) {
+      setActiveDate(null);
+    }
+  }, [activeDate, filteredData]);
+
+  const handleChartMouseMove = (state: MouseHandlerDataParam) => {
+    if (typeof state.activeLabel === 'string') {
+      setActiveDate(state.activeLabel);
+    }
+  };
+
+  const handleChartMouseLeave = () => {
+    setActiveDate(null);
+  };
 
   if (!company) return null;
 
@@ -155,7 +245,13 @@ export function DetailsView({
           </div>
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={filteredData} syncId="detailsChart" syncMethod="index">
+              <LineChart
+                data={filteredData}
+                syncId="detailsChart"
+                syncMethod="index"
+                onMouseMove={handleChartMouseMove}
+                onMouseLeave={handleChartMouseLeave}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#ffffff05' : '#e2e8f0'} vertical={false} />
                 <XAxis dataKey="date" stroke="#475569" fontSize={10} tickFormatter={(value) => value.split('-')[0]} axisLine={false} tickLine={false} minTickGap={60} />
                 <YAxis stroke="#475569" fontSize={10} axisLine={false} tickLine={false} />
@@ -174,6 +270,9 @@ export function DetailsView({
                     label={{ value: `Split ${split.label}`, position: 'insideTopRight', fill: '#ef4444', fontSize: 11, fontWeight: 'bold', offset: 10 }}
                   />
                 ))}
+                {highlightedDate && (
+                  <ReferenceLine x={highlightedDate} stroke="#94a3b8" strokeDasharray="4 4" strokeWidth={1} />
+                )}
                 <Line type="monotone" dataKey={chartConfig.key} stroke={chartConfig.color} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 0 }} />
               </LineChart>
             </ResponsiveContainer>
@@ -182,10 +281,16 @@ export function DetailsView({
 
         {hasPercentileHistory && (
           <div className={cn('border rounded-2xl p-6', theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200')}>
-            <h3 className={cn('text-lg font-bold mb-6', theme === 'dark' ? 'text-white' : 'text-slate-900')}>{t.percentileTrend}</h3>
+            <h3 className={cn('text-lg font-bold mb-6', theme === 'dark' ? 'text-white' : 'text-slate-900')}>{t.pePercentileTrend}</h3>
             <div className="h-[300px] mb-6">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={filteredData} syncId="detailsChart" syncMethod="index">
+                <AreaChart
+                  data={filteredData}
+                  syncId="detailsChart"
+                  syncMethod="index"
+                  onMouseMove={handleChartMouseMove}
+                  onMouseLeave={handleChartMouseLeave}
+                >
                   <defs>
                     <linearGradient id="colorPct" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -195,7 +300,13 @@ export function DetailsView({
                   <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#ffffff05' : '#e2e8f0'} vertical={false} />
                   <XAxis dataKey="date" stroke="#475569" fontSize={10} tickFormatter={(value) => value.split('-')[0]} axisLine={false} tickLine={false} minTickGap={60} />
                   <YAxis stroke="#475569" fontSize={10} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-                  <Tooltip contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
+                    formatter={(value: number | null) => (value == null ? ['N/A', t.pePercentileTrend] : [`${value}%`, t.pePercentileTrend])}
+                  />
+                  {highlightedDate && (
+                    <ReferenceLine x={highlightedDate} stroke="#94a3b8" strokeDasharray="4 4" strokeWidth={1} />
+                  )}
                   <Area type="monotone" dataKey="percentile" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPct)" />
                   <Brush dataKey="date" height={30} stroke="#3b82f6" fill={theme === 'dark' ? '#1e293b' : '#f8fafc'} tickFormatter={(value) => value.split('-')[0]}>
                     <AreaChart>
@@ -208,10 +319,12 @@ export function DetailsView({
             <div className="space-y-4">
               <div className="flex justify-between items-end">
                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.currentPercentilePosition}</span>
-                <span className="text-xs font-bold text-blue-400">{company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'}</span>
+                <span className="text-xs font-bold text-blue-400">
+                  {highlightedPercentile != null ? `${highlightedPercentile}% · ${highlightedDate}` : 'N/A'}
+                </span>
               </div>
               <div className="h-2 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full relative">
-                <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-lg transition-all duration-500" style={{ left: `calc(${company.pePercentile10y ?? 0}% - 8px)` }} />
+                <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-blue-500 rounded-full shadow-lg transition-all duration-500" style={{ left: `calc(${highlightedPercentile ?? 0}% - 8px)` }} />
               </div>
               <div className="flex justify-between text-[10px] text-slate-500 font-bold">
                 <span>0% {t.undervalued}</span>
@@ -226,13 +339,13 @@ export function DetailsView({
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <StatCard label={t.currentValue} value={(company.peTtm != null && company.peTtm !== 0) ? company.peTtm.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.percentileCurrentRange} value={company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeMin} value={company.pe10yMin != null ? company.pe10yMin.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeMax} value={company.pe10yMax != null ? company.pe10yMax.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rollingPercentile5Y} value={company.pePercentile5y != null ? `${company.pePercentile5y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rollingPercentile10Y} value={company.pePercentile10y != null ? `${company.pePercentile10y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeChange} value={company.priceChange10y != null ? `${company.priceChange10y > 0 ? '+' : ''}${company.priceChange10y.toFixed(2)}%` : 'N/A'} color={company.priceChange10y != null ? (company.priceChange10y >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
+        <StatCard label={t.currentValue} value={rangeStats.currentPe != null ? rangeStats.currentPe.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.percentileCurrentRange} value={rangeStats.currentPercentile != null ? `${rangeStats.currentPercentile}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeMin} value={rangeStats.min != null ? rangeStats.min.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeMax} value={rangeStats.max != null ? rangeStats.max.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rollingPercentile5Y} value={rangeStats.percentile5y != null ? `${rangeStats.percentile5y}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rollingPercentile10Y} value={rangeStats.percentile10y != null ? `${rangeStats.percentile10y}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeChange} value={rangeStats.priceChange != null ? `${rangeStats.priceChange > 0 ? '+' : ''}${rangeStats.priceChange.toFixed(2)}%` : 'N/A'} color={rangeStats.priceChange != null ? (rangeStats.priceChange >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
         <StatCard label={t.percentileAllHistory} value={company.pePercentileAllHistory != null ? `${company.pePercentileAllHistory}%` : 'N/A'} theme={theme} lang={lang} />
       </div>
     </div>
