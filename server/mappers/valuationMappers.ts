@@ -41,6 +41,14 @@ export function createFallbackCompanyValuation(ticker: string) {
   };
 }
 
+function formatMarketCapValue(marketCap: number | null | undefined) {
+  if (marketCap == null || marketCap <= 0) return 'N/A';
+  if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(2)}T`;
+  if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`;
+  if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`;
+  return `$${marketCap.toFixed(0)}`;
+}
+
 export function mapCachedCompanyToValuation(cached: any) {
   return {
     id: cached.ticker.toLowerCase(),
@@ -48,7 +56,7 @@ export function mapCachedCompanyToValuation(cached: any) {
     nameZh: cached.name || cached.ticker,
     ticker: cached.ticker,
     type: cached.ticker.includes('.') ? 'ADR' : 'US',
-    marketCap: cached.marketCapStr || 'N/A',
+    marketCap: cached.marketCapStr || formatMarketCapValue(cached.marketCap),
     price: cached.price ?? null,
     peTtm: cached.peTtm ?? null,
     peFwd: cached.peFwd ?? null,

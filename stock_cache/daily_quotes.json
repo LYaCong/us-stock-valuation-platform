@@ -216,8 +216,11 @@
       "peFwd": 23.31,
       "pb": 1.51,
       "roe": 10.31,
-      "marketCap": null,
-      "marketCapStr": null,
+      "marketCap": 1042773100000.0,
+      "marketCapStr": "$1.04T",
+      "source": {
+        "marketCap": "finnhub"
+      },
       "pePercentile": 8.3,
       "status": "Low",
       "timestamp": "2026-05-20T10:33:19.197123",

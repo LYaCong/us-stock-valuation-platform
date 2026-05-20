@@ -131,6 +131,11 @@ def format_market_cap(mc) -> Optional[str]:
     if mc >= 1e6:  return f"${mc/1e6:.2f}M"
     return f"${mc:.0f}"
 
+def source_map(entry: Dict) -> Dict:
+    if not isinstance(entry.get('source'), dict):
+        entry['source'] = {}
+    return entry['source']
+
 def load_cache(filepath: str) -> Dict:
     if not os.path.exists(filepath): return {'companies': [], 'indices': []}
     try:
@@ -243,11 +248,13 @@ def _fetch_finnhub_single(ticker: str) -> tuple:
         )
         data = resp.json()
         m = data.get('metric', {})
+        market_cap_millions = safe_float(m.get('marketCapitalization'))
         result = {
             'forwardPE': safe_round(m.get('forwardPE')),
             'pb': safe_round(m.get('pbAnnual')),
             'roe': safe_round(m.get('roeTTM')),
             'peNormalized': safe_round(m.get('peNormalizedAnnual')),
+            'marketCap': market_cap_millions * 1_000_000 if market_cap_millions is not None else None,
             '52weekHigh': safe_float(m.get('52WeekHigh')),
             '52weekLow': safe_float(m.get('52WeekLow')),
             'beta': safe_round(m.get('beta'), 3),
@@ -626,15 +633,20 @@ def main():
             updated = False
             if fh.get('forwardPE') is not None and entry.get('peFwd') is None:
                 entry['peFwd'] = fh['forwardPE']
-                entry.setdefault('source', {})['peFwd'] = 'finnhub'
+                source_map(entry)['peFwd'] = 'finnhub'
                 updated = True
             if fh.get('pb') is not None and entry.get('pb') is None:
                 entry['pb'] = fh['pb']
-                entry.setdefault('source', {})['pb'] = 'finnhub'
+                source_map(entry)['pb'] = 'finnhub'
                 updated = True
             if fh.get('roe') is not None and entry.get('roe') is None:
                 entry['roe'] = fh['roe']
-                entry.setdefault('source', {})['roe'] = 'finnhub'
+                source_map(entry)['roe'] = 'finnhub'
+                updated = True
+            if fh.get('marketCap') is not None and not entry.get('marketCap'):
+                entry['marketCap'] = fh['marketCap']
+                entry['marketCapStr'] = format_market_cap(fh['marketCap'])
+                source_map(entry)['marketCap'] = 'finnhub'
                 updated = True
             if fh.get('52weekHigh') is not None:
                 entry['52weekHigh'] = fh['52weekHigh']
@@ -665,16 +677,16 @@ def main():
                 updated = False
                 if av.get('forwardPE') is not None and entry.get('peFwd') is None:
                     entry['peFwd'] = av['forwardPE']
-                    entry.setdefault('source', {})['peFwd'] = 'alphavantage'
+                    source_map(entry)['peFwd'] = 'alphavantage'
                     updated = True
                 if av.get('pb') is not None and entry.get('pb') is None:
                     entry['pb'] = av['pb']
-                    entry.setdefault('source', {})['pb'] = 'alphavantage'
+                    source_map(entry)['pb'] = 'alphavantage'
                     updated = True
                 if av.get('roe_raw') is not None and entry.get('roe') is None:
                     roe = av['roe_raw']
                     entry['roe'] = round(roe * 100, 2) if roe < 5 else round(roe, 2)
-                    entry.setdefault('source', {})['roe'] = 'alphavantage'
+                    source_map(entry)['roe'] = 'alphavantage'
                     updated = True
                 if av.get('analystTargetPrice'):
                     entry['analystTargetPrice'] = av['analystTargetPrice']

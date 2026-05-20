@@ -23,8 +23,16 @@ function fallback(ticker: string) {
   return { id: ticker.toLowerCase(), name: ticker, nameZh: ticker, ticker, type: ticker.includes('.') ? 'ADR' : 'US', marketCap: 'N/A', price: null, peTtm: null, peFwd: null, pb: null, peg: null, roe: null, pePercentile10y: null, pe10yMin: null, pe10yMax: null, pe10yMedian: null, pePercentile5y: null, pePercentileAllHistory: null, priceChange10y: null, status: 'Neutral' as const };
 }
 
+function formatMarketCapValue(marketCap: number | null | undefined) {
+  if (marketCap == null || marketCap <= 0) return 'N/A';
+  if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(2)}T`;
+  if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`;
+  if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`;
+  return `$${marketCap.toFixed(0)}`;
+}
+
 function mapCompany(c: any) {
-  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||'N/A', price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, pe10yMin: c.pe10yMin??null, pe10yMax: c.pe10yMax??null, pe10yMedian: c.pe10yMedian??null, pePercentile5y: c.pePercentile5y??null, pePercentileAllHistory: c.pePercentileAllHistory??null, priceChange10y: c.priceChange10y??null, status: c.status||'Neutral' };
+  return { id: c.ticker.toLowerCase(), name: c.name||c.ticker, nameZh: c.name||c.ticker, ticker: c.ticker, type: c.ticker.includes('.')?'ADR':'US', marketCap: c.marketCapStr||formatMarketCapValue(c.marketCap), price: c.price??null, peTtm: c.peTtm??null, peFwd: c.peFwd??null, pb: c.pb??null, peg: c.peg??null, roe: c.roe??null, pePercentile10y: c.pePercentile??null, pe10yMin: c.pe10yMin??null, pe10yMax: c.pe10yMax??null, pe10yMedian: c.pe10yMedian??null, pePercentile5y: c.pePercentile5y??null, pePercentileAllHistory: c.pePercentileAllHistory??null, priceChange10y: c.priceChange10y??null, status: c.status||'Neutral' };
 }
 
 function mapIndex(c: any) {

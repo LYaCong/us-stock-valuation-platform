@@ -15,7 +15,7 @@ export function StatCard({ label, value, color, theme, lang }: StatCardProps) {
   return (
     <div
       className={cn(
-        'border rounded-xl p-3 transition-colors min-w-0',
+        'border rounded-xl p-3 transition-colors min-w-0 min-h-[64px] flex flex-col justify-center',
         theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200'
       )}
     >

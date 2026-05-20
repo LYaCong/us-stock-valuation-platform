@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceDot,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -39,6 +40,28 @@ interface RangePeStats {
   priceChange: number | null;
 }
 
+type DetailChartType = 'pe' | 'price' | 'marketCap';
+type DetailTimeRange = 'MAX' | '20Y' | '10Y' | '5Y' | '3Y' | '1Y';
+
+interface LinkedPointLabelProps {
+  viewBox?: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  };
+  parentViewBox?: {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  };
+  title: string;
+  value: string;
+  color: string;
+  theme: Theme;
+}
+
 function isValidNumber(value: number | null | undefined): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
@@ -60,6 +83,22 @@ function computePercentile(value: number | null, values: number[]): number | nul
     : countBelow / lastIndex * 100;
 
   return Number(percentile.toFixed(1));
+}
+
+function filterByTimeRange(data: HistoricalDataPoint[], timeRange: DetailTimeRange) {
+  if (data.length === 0) return [];
+
+  let monthsToKeep = data.length;
+  switch (timeRange) {
+    case '1Y': monthsToKeep = 12; break;
+    case '3Y': monthsToKeep = 36; break;
+    case '5Y': monthsToKeep = 60; break;
+    case '10Y': monthsToKeep = 120; break;
+    case '20Y': monthsToKeep = 240; break;
+    case 'MAX': monthsToKeep = data.length; break;
+  }
+
+  return data.slice(-monthsToKeep);
 }
 
 function computeRangePeStats(data: HistoricalDataPoint[]): RangePeStats {
@@ -88,6 +127,40 @@ function computeRangePeStats(data: HistoricalDataPoint[]): RangePeStats {
   };
 }
 
+function LinkedPointLabel({ viewBox, parentViewBox, title, value, color, theme }: LinkedPointLabelProps) {
+  if (!viewBox || viewBox.x == null || viewBox.y == null || viewBox.width == null) return null;
+
+  const width = 172;
+  const height = 46;
+  const centerX = viewBox.x + viewBox.width / 2;
+  const minX = parentViewBox?.x ?? 4;
+  const maxX = parentViewBox?.width != null ? minX + parentViewBox.width - width : Number.POSITIVE_INFINITY;
+  const x = Math.min(Math.max(minX + 4, centerX - width / 2), Math.max(minX + 4, maxX - 4));
+  const y = Math.max(4, viewBox.y - height - 10);
+
+  return (
+    <g pointerEvents="none">
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx={8}
+        fill={theme === 'dark' ? '#0f172a' : '#ffffff'}
+        stroke={theme === 'dark' ? '#334155' : '#e2e8f0'}
+        strokeWidth={1}
+        filter="drop-shadow(0 8px 18px rgba(15, 23, 42, 0.18))"
+      />
+      <text x={x + 10} y={y + 17} fill="#64748b" fontSize={10} fontWeight={600}>
+        {title}
+      </text>
+      <text x={x + 10} y={y + 34} fill={color} fontSize={12} fontWeight={700}>
+        {value}
+      </text>
+    </g>
+  );
+}
+
 export function DetailsView({
   company,
   historicalData,
@@ -98,13 +171,19 @@ export function DetailsView({
   t,
   lang,
 }: DetailsViewProps) {
-  const [timeRange, setTimeRange] = useState('10Y');
-  const [chartType, setChartType] = useState<'pe' | 'price' | 'marketCap'>('pe');
+  const [timeRanges, setTimeRanges] = useState<Record<DetailChartType, DetailTimeRange>>({
+    pe: '10Y',
+    price: '10Y',
+    marketCap: '10Y',
+  });
+  const [chartType, setChartType] = useState<DetailChartType>('pe');
   const [activeDate, setActiveDate] = useState<string | null>(null);
 
   const hasPeHistory = historicalMetadata?.availableFields?.includes('peTtm') || historicalData.some((item) => item.peTtm != null);
   const hasPercentileHistory = historicalMetadata?.availableFields?.includes('percentile') || historicalData.some((item) => item.percentile != null);
   const hasMarketCapHistory = historicalMetadata?.availableFields?.includes('marketCap') || historicalData.some((item) => item.marketCap != null);
+  const isPeChart = chartType === 'pe';
+  const enableLinkedCharts = isPeChart && hasPercentileHistory;
 
   useEffect(() => {
     if (!hasPeHistory && chartType === 'pe') {
@@ -121,20 +200,10 @@ export function DetailsView({
   }, [hasMarketCapHistory, hasPeHistory]);
 
   const filteredData = useMemo(() => {
-    if (historicalData.length === 0) return [];
+    return filterByTimeRange(historicalData, timeRanges[chartType]);
+  }, [chartType, historicalData, timeRanges]);
 
-    let monthsToKeep = historicalData.length;
-    switch (timeRange) {
-      case '1Y': monthsToKeep = 12; break;
-      case '3Y': monthsToKeep = 36; break;
-      case '5Y': monthsToKeep = 60; break;
-      case '10Y': monthsToKeep = 120; break;
-      case '20Y': monthsToKeep = 240; break;
-      case 'MAX': monthsToKeep = historicalData.length; break;
-    }
-
-    return historicalData.slice(-monthsToKeep);
-  }, [historicalData, timeRange]);
+  const peRangeData = useMemo(() => filterByTimeRange(historicalData, timeRanges.pe), [historicalData, timeRanges.pe]);
 
   const chartConfig = useMemo(() => {
     switch (chartType) {
@@ -152,7 +221,7 @@ export function DetailsView({
     }
   }, [chartType, lang]);
 
-  const rangeStats = useMemo(() => computeRangePeStats(filteredData), [filteredData]);
+  const rangeStats = useMemo(() => computeRangePeStats(peRangeData), [peRangeData]);
 
   const fallbackActivePoint = useMemo(() => (
     [...filteredData].reverse().find((item) => item.percentile != null) ?? filteredData[filteredData.length - 1] ?? null
@@ -164,6 +233,11 @@ export function DetailsView({
 
   const highlightedDate = activeDataPoint?.date;
   const highlightedPercentile = activeDataPoint?.percentile ?? null;
+  const highlightedMainValue = activeDataPoint?.[chartConfig.key as keyof HistoricalDataPoint];
+  const highlightedMainNumber = isValidNumber(highlightedMainValue as number | null | undefined) ? highlightedMainValue as number : null;
+  const highlightedPercentileNumber = isValidNumber(highlightedPercentile) ? highlightedPercentile : null;
+  const canHighlightMainPoint = enableLinkedCharts && highlightedDate != null && highlightedMainNumber != null;
+  const canHighlightPercentilePoint = enableLinkedCharts && highlightedDate != null && highlightedPercentileNumber != null;
 
   useEffect(() => {
     if (activeDate && !filteredData.some((item) => item.date === activeDate)) {
@@ -172,6 +246,7 @@ export function DetailsView({
   }, [activeDate, filteredData]);
 
   const handleChartMouseMove = (state: MouseHandlerDataParam) => {
+    if (!enableLinkedCharts) return;
     if (typeof state.activeLabel === 'string') {
       setActiveDate(state.activeLabel);
     }
@@ -185,6 +260,13 @@ export function DetailsView({
 
   const startDateStr = filteredData.length > 0 ? filteredData[0].date : 'N/A';
   const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : 'N/A';
+  const currentTimeRange = timeRanges[chartType];
+  const mainLinkedLabel = highlightedDate && highlightedMainNumber != null
+    ? `${chartConfig.label}: ${chartConfig.format(highlightedMainNumber)}`
+    : '';
+  const percentileLinkedLabel = highlightedDate && highlightedPercentileNumber != null
+    ? `${lang === 'zh' ? '百分位' : 'Percentile'}: ${highlightedPercentileNumber}%`
+    : '';
 
   return (
     <div className="space-y-6">
@@ -208,7 +290,7 @@ export function DetailsView({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className={cn(hasPercentileHistory ? 'lg:col-span-2' : 'lg:col-span-3', 'border rounded-2xl p-6', theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200')}>
+        <div className={cn(enableLinkedCharts ? 'lg:col-span-2' : 'lg:col-span-3', 'border rounded-2xl p-6', theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200')}>
           <div className="flex items-center justify-between mb-6">
             <div className="flex gap-2">
               {availableChartTypes.map((type) => (
@@ -230,10 +312,10 @@ export function DetailsView({
               {['MAX', '20Y', '10Y', '5Y', '3Y', '1Y'].map((range) => (
                 <button
                   key={range}
-                  onClick={() => setTimeRange(range)}
+                  onClick={() => setTimeRanges((prev) => ({ ...prev, [chartType]: range as DetailTimeRange }))}
                   className={cn(
                     'px-3 py-1 rounded text-[10px] font-bold transition-all',
-                    range === timeRange
+                    range === currentTimeRange
                       ? 'bg-blue-500 text-white'
                       : theme === 'dark' ? 'text-slate-500 hover:text-slate-300' : 'text-slate-500 hover:text-slate-700'
                   )}
@@ -247,19 +329,21 @@ export function DetailsView({
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={filteredData}
-                syncId="detailsChart"
-                syncMethod="index"
-                onMouseMove={handleChartMouseMove}
-                onMouseLeave={handleChartMouseLeave}
+                syncId={enableLinkedCharts ? 'detailsChart' : undefined}
+                syncMethod={enableLinkedCharts ? 'index' : undefined}
+                onMouseMove={enableLinkedCharts ? handleChartMouseMove : undefined}
+                onMouseLeave={enableLinkedCharts ? handleChartMouseLeave : undefined}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#ffffff05' : '#e2e8f0'} vertical={false} />
                 <XAxis dataKey="date" stroke="#475569" fontSize={10} tickFormatter={(value) => value.split('-')[0]} axisLine={false} tickLine={false} minTickGap={60} />
                 <YAxis stroke="#475569" fontSize={10} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                  itemStyle={{ color: chartConfig.color }}
-                  formatter={(value: number | null) => (value == null ? ['N/A', chartConfig.label] : [chartConfig.format(value), chartConfig.label])}
-                />
+                {!enableLinkedCharts && (
+                  <Tooltip
+                    contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
+                    itemStyle={{ color: chartConfig.color }}
+                    formatter={(value: number | null) => (value == null ? ['N/A', chartConfig.label] : [chartConfig.format(value), chartConfig.label])}
+                  />
+                )}
                 {chartType === 'marketCap' && historicalSplits.map((split, index) => (
                   <ReferenceLine
                     key={index}
@@ -270,8 +354,29 @@ export function DetailsView({
                     label={{ value: `Split ${split.label}`, position: 'insideTopRight', fill: '#ef4444', fontSize: 11, fontWeight: 'bold', offset: 10 }}
                   />
                 ))}
-                {highlightedDate && (
+                {enableLinkedCharts && highlightedDate && (
                   <ReferenceLine x={highlightedDate} stroke="#94a3b8" strokeDasharray="4 4" strokeWidth={1} />
+                )}
+                {canHighlightMainPoint && (
+                  <ReferenceDot
+                    x={highlightedDate}
+                    y={highlightedMainNumber}
+                    r={5}
+                    fill={chartConfig.color}
+                    stroke={theme === 'dark' ? '#0f172a' : '#ffffff'}
+                    strokeWidth={2}
+                    label={{
+                      content: (props: any) => (
+                        <LinkedPointLabel
+                          {...props}
+                          title={highlightedDate ?? ''}
+                          value={mainLinkedLabel}
+                          color={chartConfig.color}
+                          theme={theme}
+                        />
+                      ),
+                    }}
+                  />
                 )}
                 <Line type="monotone" dataKey={chartConfig.key} stroke={chartConfig.color} strokeWidth={2} dot={false} activeDot={{ r: 4, strokeWidth: 0 }} />
               </LineChart>
@@ -279,7 +384,7 @@ export function DetailsView({
           </div>
         </div>
 
-        {hasPercentileHistory && (
+        {enableLinkedCharts && (
           <div className={cn('border rounded-2xl p-6', theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200')}>
             <h3 className={cn('text-lg font-bold mb-6', theme === 'dark' ? 'text-white' : 'text-slate-900')}>{t.pePercentileTrend}</h3>
             <div className="h-[300px] mb-6">
@@ -300,12 +405,29 @@ export function DetailsView({
                   <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#ffffff05' : '#e2e8f0'} vertical={false} />
                   <XAxis dataKey="date" stroke="#475569" fontSize={10} tickFormatter={(value) => value.split('-')[0]} axisLine={false} tickLine={false} minTickGap={60} />
                   <YAxis stroke="#475569" fontSize={10} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff', border: theme === 'dark' ? 'none' : '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
-                    formatter={(value: number | null) => (value == null ? ['N/A', t.pePercentileTrend] : [`${value}%`, t.pePercentileTrend])}
-                  />
                   {highlightedDate && (
                     <ReferenceLine x={highlightedDate} stroke="#94a3b8" strokeDasharray="4 4" strokeWidth={1} />
+                  )}
+                  {canHighlightPercentilePoint && (
+                    <ReferenceDot
+                      x={highlightedDate}
+                      y={highlightedPercentileNumber}
+                      r={5}
+                      fill="#3b82f6"
+                      stroke={theme === 'dark' ? '#0f172a' : '#ffffff'}
+                      strokeWidth={2}
+                      label={{
+                        content: (props: any) => (
+                          <LinkedPointLabel
+                            {...props}
+                            title={highlightedDate ?? ''}
+                            value={percentileLinkedLabel}
+                            color="#3b82f6"
+                            theme={theme}
+                          />
+                        ),
+                      }}
+                    />
                   )}
                   <Area type="monotone" dataKey="percentile" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPct)" />
                   <Brush dataKey="date" height={30} stroke="#3b82f6" fill={theme === 'dark' ? '#1e293b' : '#f8fafc'} tickFormatter={(value) => value.split('-')[0]}>
@@ -338,6 +460,9 @@ export function DetailsView({
         )}
       </div>
 
+      {chartType !== 'pe' && (
+        <p className="text-xs text-slate-500">{lang === 'zh' ? `下方 PE 指标区间：${timeRanges.pe}` : `PE stats range below: ${timeRanges.pe}`}</p>
+      )}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
         <StatCard label={t.currentValue} value={rangeStats.currentPe != null ? rangeStats.currentPe.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
         <StatCard label={t.percentileCurrentRange} value={rangeStats.currentPercentile != null ? `${rangeStats.currentPercentile}%` : 'N/A'} theme={theme} lang={lang} />

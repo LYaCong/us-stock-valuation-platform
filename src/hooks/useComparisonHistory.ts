@@ -3,18 +3,28 @@ import { fetchHistorical } from '../services/financeService';
 import { type CompanyValuation, type HistoricalDataPoint, type TranslationMap } from '../types';
 
 export type ComparisonMetricKey = 'peTtm' | 'price' | 'marketCap';
+export type ComparisonTimeRange = 'MAX' | '20Y' | '10Y' | '5Y' | '3Y' | '1Y';
 
-function median(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-  if (sorted.length % 2 === 0) {
-    return (sorted[middle - 1] + sorted[middle]) / 2;
+function filterHistoryByRange(history: HistoricalDataPoint[], timeRange: ComparisonTimeRange) {
+  let monthsToKeep = history.length;
+  switch (timeRange) {
+    case '1Y': monthsToKeep = 12; break;
+    case '3Y': monthsToKeep = 36; break;
+    case '5Y': monthsToKeep = 60; break;
+    case '10Y': monthsToKeep = 120; break;
+    case '20Y': monthsToKeep = 240; break;
+    case 'MAX': monthsToKeep = history.length; break;
   }
-  return sorted[middle];
+
+  return history.slice(-monthsToKeep);
 }
 
-export function useComparisonHistory(selectedCompanies: CompanyValuation[], t: TranslationMap) {
+export function useComparisonHistory(
+  selectedCompanies: CompanyValuation[],
+  t: TranslationMap,
+  selectedMetric: ComparisonMetricKey,
+  timeRange: ComparisonTimeRange,
+) {
   const [historicalById, setHistoricalById] = useState<Record<string, HistoricalDataPoint[]>>({});
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
@@ -64,13 +74,7 @@ export function useComparisonHistory(selectedCompanies: CompanyValuation[], t: T
   }, [selectedCompanies]);
 
   const comparisonData = useMemo(() => {
-    const metricPriority: ComparisonMetricKey[] = ['peTtm', 'price', 'marketCap'];
     const hasValue = (point: HistoricalDataPoint, metric: ComparisonMetricKey) => point[metric] != null;
-
-    const selectedMetric = metricPriority.find((metric) => (
-      selectedCompanies.length > 0 &&
-      selectedCompanies.every((company) => (historicalById[company.id] || []).some((point) => hasValue(point, metric)))
-    )) ?? 'price';
 
     const metricLabels: Record<ComparisonMetricKey, string> = {
       peTtm: t.peComparison,
@@ -79,7 +83,7 @@ export function useComparisonHistory(selectedCompanies: CompanyValuation[], t: T
     };
 
     const dateSets = selectedCompanies.map((company) => {
-      const history = historicalById[company.id] || [];
+      const history = filterHistoryByRange(historicalById[company.id] || [], timeRange);
       return new Set<string>(
         history
           .filter((point) => hasValue(point, selectedMetric))
@@ -91,15 +95,7 @@ export function useComparisonHistory(selectedCompanies: CompanyValuation[], t: T
       ? []
       : Array.from(dateSets[0]).filter((date) => dateSets.every((dateSet) => dateSet.has(date))).sort();
 
-    const allDates = Array.from<string>(new Set(
-      selectedCompanies.flatMap((company) => (
-        (historicalById[company.id] || [])
-          .filter((point) => hasValue(point, selectedMetric))
-          .map((point) => point.date)
-      ))
-    )).sort();
-
-    const rows = allDates.map((date) => {
+    const rows = overlapDates.map((date) => {
       const row: Record<string, string | number | null> = { date };
       selectedCompanies.forEach((company) => {
         const matched = (historicalById[company.id] || []).find((point) => point.date === date);
@@ -114,19 +110,10 @@ export function useComparisonHistory(selectedCompanies: CompanyValuation[], t: T
       rows,
       overlapDates,
     };
-  }, [historicalById, selectedCompanies, t.marketCapComparison, t.peComparison, t.priceComparison]);
-
-  const medianPercentileValue = useMemo(() => {
-    const values = selectedCompanies
-      .map((company) => company.pePercentile10y)
-      .filter((value): value is number => value != null);
-
-    return median(values);
-  }, [selectedCompanies]);
+  }, [historicalById, selectedCompanies, selectedMetric, t.marketCapComparison, t.peComparison, t.priceComparison, timeRange]);
 
   return {
     isLoadingHistory,
     comparisonData,
-    medianPercentileValue,
   };
 }

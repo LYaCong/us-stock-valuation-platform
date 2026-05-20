@@ -44,16 +44,18 @@
 
 ## Latest Optimization (2026-05-20)
 
-This release focuses on making valuation data complete, refreshable, and deploy-safe without relying on Yahoo APIs:
+This release focuses on making valuation data complete, refreshable, deploy-safe, and easier to inspect in the detail and comparison workflows:
 
 - **Company overview fixes**: BRK-B and INTC now get PE(TTM) from the latest price divided by the latest rolling 4-quarter EPS, so their PE and 10-year PE percentile are no longer blank when supplier PE fields are missing.
+- **BRK-B market cap fallback**: Finnhub `marketCapitalization` is now used to fill missing market cap values, with million-USD values converted to display-ready dollars.
 - **Daily PE refresh**: `fetch_quotes.py` now runs `calculate_pe_history.py` after daily quotes are saved, ensuring PE(TTM), 10-year percentile, 5-year percentile, all-history percentile, and 10-year range stats refresh every day.
-- **Company details range stats**: the bottom metric cards now recalculate from the selected chart range (1Y/3Y/5Y/10Y/20Y/MAX), so PE current value, range percentile, low/high, rolling percentiles, and range price change stay aligned with the visible period.
-- **Two-way chart sync**: the company detail PE/price/market-cap chart and the PE percentile trend chart now synchronize on hover in both directions, highlighting the same month across both charts.
-- **Clearer percentile labeling**: the right-side trend chart is explicitly labeled as **PE Percentile Trend** to avoid confusing it with a price percentile chart.
+- **Company details PE stats**: the bottom metric cards are now explicitly PE valuation stats and follow only the PE chart range, even when the main chart is switched to price or market cap.
+- **PE-only chart sync**: the right-side **PE Percentile Trend** appears only when the main detail chart is set to PE. PE chart hover is synchronized both ways, with matching reference lines, dots, and value labels on both charts.
+- **Comparison workflow controls**: comparison analysis now supports MAX/20Y/10Y/5Y/3Y/1Y range selection, PE vs. price metric switching, shared-date alignment, visible X-axis dates, and a narrower current cross-section panel.
+- **Comparison add-company entry**: the previous median-percentile card was replaced with an add-company search dropdown, avoiding a confusing metric that did not match the selected comparison chart.
 - **Index / ETF fundamentals**: index valuation uses provider-direct EODHD fields only, including PE, forward PE, PB, dividend yield, expense ratio, and AUM where available. Missing supplier fields are not fabricated.
 - **No Yahoo API dependency**: runtime code and dependency manifests no longer use `yahoo-finance2`; old Yahoo fallback code was removed to avoid accidental rate-limit issues.
-- **Verification**: `npm run test`, `npm run lint`, and `npm run build` pass with Node.js 24.
+- **Verification**: `npm run test`, `npm run lint`, and `npm run build` pass with WSL2 Node.js 22.
 
 ## Quick Start
 
@@ -312,16 +314,18 @@ MIT
 
 ### 最近优化（2026-05-20）
 
-这次更新重点修复估值数据缺失和每日刷新问题，并且全链路不再依赖 Yahoo API：
+这次更新重点修复估值数据缺失、每日刷新和详情页/对比分析交互问题，并且全链路不再依赖 Yahoo API：
 
 - **公司总览修复**：BRK-B、INTC 在供应商 PE 字段缺失时，会用“最新股价 ÷ 最新滚动 4 季度 EPS”计算 PE(TTM)，因此市盈率和 10 年 PE 百分位不再空白。
+- **BRK-B 市值补齐**：当缓存市值缺失时，使用 Finnhub `marketCapitalization` 补齐，并按百万美元口径转换成展示用美元市值。
 - **PE 每日刷新**：`fetch_quotes.py` 保存每日行情后会继续执行 `calculate_pe_history.py`，确保 PE(TTM)、10 年百分位、5 年百分位、全历史百分位和 10 年区间统计每天更新。
-- **公司详情页区间统计**：详情页下方 8 个指标框现在会跟随 1Y/3Y/5Y/10Y/20Y/MAX 当前图表区间重新计算，当前 PE、当前区间百分位、区间最低/最高、滚动百分位和区间涨跌幅都与可见区间一致。
-- **双图双向联动**：公司估值时序图和右侧 PE 百分位走势图现在支持双向 hover 联动，鼠标停在任意一张图上，另一张图都会高亮同一个月份。
-- **百分位标题更清晰**：右侧趋势图标题明确改为“市盈率百分位走势”，避免误解成股价百分位走势。
+- **公司详情页 PE 指标口径**：详情页下方 8 个指标框明确作为 PE 估值统计，只跟随 PE 图的 1Y/3Y/5Y/10Y/20Y/MAX 区间变化，切到股价或市值图时不再误变。
+- **PE 图专属双向联动**：右侧“市盈率百分位走势”只在主图为市盈率时展示；PE 双图 hover 时，两张图都会显示同一月份的竖线、圆点和数据框。
+- **对比分析交互优化**：对比分析支持 MAX/20Y/10Y/5Y/3Y/1Y 区间选择、PE/股价指标切换、共同日期对齐、X 轴时间显示，并缩窄右侧当前横截面区域。
+- **添加对比公司入口**：“中位百分位”卡片已替换成添加对比公司的搜索下拉框，避免与当前 PE/股价趋势图口径不一致。
 - **指数 / ETF 估值修复**：指数估值只使用 EODHD 直给字段，包括 PE、Forward PE、PB、股息率、费率、资产规模等；供应商没有给的数据不会伪造。
 - **移除 Yahoo 依赖**：运行代码和依赖清单已移除 `yahoo-finance2`，旧 Yahoo 备用脚本也已删除，避免再次遇到访问限制。
-- **验证结果**：已通过 `npm run test`、`npm run lint` 和 `npm run build`。
+- **验证结果**：已在 WSL2 Node.js 22 环境通过 `npm run test`、`npm run lint` 和 `npm run build`。
 
 ### PE 百分位计算方法
 

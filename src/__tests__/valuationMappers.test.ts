@@ -47,6 +47,18 @@ test('缓存公司映射应保留已有字段并标准化返回结构', () => {
   assert.equal(mapped.status, 'High');
 });
 
+test('缓存公司映射应在 marketCapStr 缺失时格式化数值市值', () => {
+  const mapped = mapCachedCompanyToValuation({
+    ticker: 'BRK-B',
+    name: 'Berkshire Hathaway',
+    marketCap: 1034567000000,
+    marketCapStr: null,
+    status: 'Neutral',
+  });
+
+  assert.equal(mapped.marketCap, '$1.03T');
+});
+
 test('历史数据映射应返回 metadata 和可用字段', () => {
   const payload = mapHistoricalPayload({
     history: [
