@@ -48,10 +48,12 @@ This release focuses on making valuation data complete, refreshable, and deploy-
 
 - **Company overview fixes**: BRK-B and INTC now get PE(TTM) from the latest price divided by the latest rolling 4-quarter EPS, so their PE and 10-year PE percentile are no longer blank when supplier PE fields are missing.
 - **Daily PE refresh**: `fetch_quotes.py` now runs `calculate_pe_history.py` after daily quotes are saved, ensuring PE(TTM), 10-year percentile, 5-year percentile, all-history percentile, and 10-year range stats refresh every day.
-- **Company details stats**: the detail page now receives and displays 10-year PE low/high/median, 5-year rolling percentile, 10-year price change, and all-history percentile from the API instead of leaving the bottom metric cards empty.
+- **Company details range stats**: the bottom metric cards now recalculate from the selected chart range (1Y/3Y/5Y/10Y/20Y/MAX), so PE current value, range percentile, low/high, rolling percentiles, and range price change stay aligned with the visible period.
+- **Two-way chart sync**: the company detail PE/price/market-cap chart and the PE percentile trend chart now synchronize on hover in both directions, highlighting the same month across both charts.
+- **Clearer percentile labeling**: the right-side trend chart is explicitly labeled as **PE Percentile Trend** to avoid confusing it with a price percentile chart.
 - **Index / ETF fundamentals**: index valuation uses provider-direct EODHD fields only, including PE, forward PE, PB, dividend yield, expense ratio, and AUM where available. Missing supplier fields are not fabricated.
 - **No Yahoo API dependency**: runtime code and dependency manifests no longer use `yahoo-finance2`; old Yahoo fallback code was removed to avoid accidental rate-limit issues.
-- **Verification**: `npm run test` and `npm run lint` pass with Node.js 24.
+- **Verification**: `npm run test`, `npm run lint`, and `npm run build` pass with Node.js 24.
 
 ## Quick Start
 
@@ -314,10 +316,12 @@ MIT
 
 - **公司总览修复**：BRK-B、INTC 在供应商 PE 字段缺失时，会用“最新股价 ÷ 最新滚动 4 季度 EPS”计算 PE(TTM)，因此市盈率和 10 年 PE 百分位不再空白。
 - **PE 每日刷新**：`fetch_quotes.py` 保存每日行情后会继续执行 `calculate_pe_history.py`，确保 PE(TTM)、10 年百分位、5 年百分位、全历史百分位和 10 年区间统计每天更新。
-- **公司详情页修复**：详情页下方指标框现在会正确显示区间最低、区间最高、5 年滚动百分位、10 年区间变动、全历史百分位等字段。
+- **公司详情页区间统计**：详情页下方 8 个指标框现在会跟随 1Y/3Y/5Y/10Y/20Y/MAX 当前图表区间重新计算，当前 PE、当前区间百分位、区间最低/最高、滚动百分位和区间涨跌幅都与可见区间一致。
+- **双图双向联动**：公司估值时序图和右侧 PE 百分位走势图现在支持双向 hover 联动，鼠标停在任意一张图上，另一张图都会高亮同一个月份。
+- **百分位标题更清晰**：右侧趋势图标题明确改为“市盈率百分位走势”，避免误解成股价百分位走势。
 - **指数 / ETF 估值修复**：指数估值只使用 EODHD 直给字段，包括 PE、Forward PE、PB、股息率、费率、资产规模等；供应商没有给的数据不会伪造。
 - **移除 Yahoo 依赖**：运行代码和依赖清单已移除 `yahoo-finance2`，旧 Yahoo 备用脚本也已删除，避免再次遇到访问限制。
-- **验证结果**：已通过 `npm run test` 和 `npm run lint`。
+- **验证结果**：已通过 `npm run test`、`npm run lint` 和 `npm run build`。
 
 ### PE 百分位计算方法
 
