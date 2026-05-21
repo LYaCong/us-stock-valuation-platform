@@ -12,7 +12,7 @@
 
 ## Features
 
-- 🔍 **100+ US Stocks Tracking** — Covers mega-cap, large-cap, and ADRs including NVDA, AAPL, GOOGL, MSFT, AMZN, TSM, BABA, etc.
+- 🔍 **Top 100 US-Listed Companies Tracking** — Refreshed by market cap, covering mega-cap US stocks and ADRs including NVDA, GOOGL, AAPL, MSFT, AMZN, AVGO, TSM, etc.
 - 📈 **26 Major Indices & ETFs** — SPY, QQQ, DIA, IWM, sector ETFs (XLK, XLF, XLV...), and thematic ETFs (ARKK, KWEB, GDX...)
 - 📐 **Multi-dimensional Valuation** — PE (TTM/Forward), PB, ROE ratios with real historical percentile ranking
 - 📊 **10-Year PE Percentile** — Calculated from rolling TTM EPS × monthly prices, showing where current PE stands historically
@@ -31,7 +31,7 @@
 | Frontend | React 19, TypeScript, Tailwind CSS 4, Recharts |
 | Backend | Vercel Serverless Functions |
 | Primary Data Source | Sina Finance API (新浪财经) |
-| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), Finnhub (EPS fallback), EODHD (ETF/index fundamentals) |
+| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), EODHD (ETF/index fundamentals) |
 | AI | Google Gemini API (`@google/genai`) |
 | Build | Vite 6 |
 | Deployment | Vercel (CI/CD via GitHub push) |
@@ -42,10 +42,14 @@
 
 🌐 **[https://us-stock-valuation-platform.vercel.app](https://us-stock-valuation-platform.vercel.app)**
 
-## Latest Optimization (2026-05-20)
+## Latest Optimization (2026-05-21)
 
-This release focuses on making valuation data complete, refreshable, deploy-safe, and easier to inspect in the detail and comparison workflows:
+This release refreshes the company universe to the latest top 100 US-listed companies by market cap and keeps the valuation pipeline deploy-safe:
 
+- **Top 100 refresh**: `DEFAULT_TICKERS` and all data scripts now use the refreshed 100-company list, adding MU, XOM, LRCX, PLTR, GEV, ARM, RY, WFC, MUFG, BHP, SNDK, TTE, TMUS, TD, SAN, ANET, RIO, BLK, STX, CRWD, MRVL, APP, BUD, WDC, DELL, SCHW, GLW, WELL, UBER, and APH.
+- **Dropped company cleanup**: daily quote merging and historical/EPS cache loading now retain only the active tracking universe, preventing old top-100 constituents from reappearing after a refresh.
+- **Current data refresh**: Twelve Data historical prices and daily quote caches have been refreshed for 100 companies + 26 indices. Historical EPS is currently available for 92/100 companies; BUD, WDC, DELL, SCHW, GLW, WELL, UBER, and APH will fill after the next Alpha Vantage daily quota window.
+- **Secret-safe logs**: Alpha Vantage and other API keys are redacted from future script limit/error messages.
 - **Company overview fixes**: BRK-B and INTC now get PE(TTM) from the latest price divided by the latest rolling 4-quarter EPS, so their PE and 10-year PE percentile are no longer blank when supplier PE fields are missing.
 - **BRK-B market cap fallback**: Finnhub `marketCapitalization` is now used to fill missing market cap values, with million-USD values converted to display-ready dollars.
 - **Daily PE refresh**: `fetch_quotes.py` now runs `calculate_pe_history.py` after daily quotes are saved, ensuring PE(TTM), 10-year percentile, 5-year percentile, all-history percentile, and 10-year range stats refresh every day.
@@ -107,9 +111,9 @@ npm run test
 └──────────────────────┘     └──────────────────────────────────────┘
 
 ┌──────────────────────┐     ┌──────────────────────────────────────┐
-│  Finnhub API          │────▶│  Valuation Supplement + EPS Fallback  │
+│  Finnhub API          │────▶│  Valuation Supplement                  │
 │  Free, 60 req/min     │     │  Forward PE, PB, ROE, 52-week H/L,   │
-│                       │     │  Beta, Dividend Yield, EPS (4Q)      │
+│                       │     │  Beta, Dividend Yield, market cap     │
 │                       │     │  + Full data for BRK-B (Sina N/A)    │
 └──────────────────────┘     └──────────────────────────────────────┘
 
@@ -122,8 +126,8 @@ npm run test
 ┌──────────────────────┐     ┌──────────────────────────────────────┐
 │  Alpha Vantage API    │────▶│  Historical Earnings (EPS)            │
 │  Free, 25 req/day     │     │  Quarterly & Annual EPS               │
-│                       │     │  90/100 tickers covered               │
-│                       │     │  (9 fallback to Finnhub)              │
+│                       │     │  92/100 tickers covered               │
+│                       │     │  Backfilled across daily quota windows│
 └──────────────────────┘     └──────────────────────────────────────┘
 
 ┌──────────────────────┐     ┌──────────────────────────────────────┐
@@ -166,7 +170,7 @@ The core metric — **10-Year PE Percentile** — is calculated as follows:
 
 Additional metrics: **5-Year percentile**, **10-Year PE min/max/median**, **10-Year price change**
 
-Coverage: **99/100 tickers** with PE history, **91% monthly data point coverage**
+Coverage after the 2026-05-21 refresh: **92/100 tickers** with PE history, **94% monthly data point coverage**. The remaining 8 tickers are waiting for the next Alpha Vantage EPS quota window.
 
 ## Automated Data Pipeline (Cron Jobs)
 
@@ -199,7 +203,7 @@ All data updates are automated via OpenClaw cron jobs:
 → git push → Vercel auto-deploys
 ```
 
-**Coverage**: Price 100% | Forward PE 99/100 | PB 100/100 | ROE 100/100 | PE Percentile 99/100
+**Coverage after the 2026-05-21 refresh**: Price 100% | Forward PE 99/100 | PB 100/100 | ROE 100/100 | PE Percentile 92/100
 
 ## Project Structure
 
@@ -228,14 +232,14 @@ us-stock-valuation-platform/
 ├── scripts/
 │   ├── fetch_quotes.py              # Daily quotes + valuation snapshot
 │   ├── fetch_history.py             # Monthly K-line history (Twelve Data)
-│   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage + Finnhub fallback)
+│   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage)
 │   ├── calculate_pe_history.py      # PE percentile engine (rolling TTM EPS)
 │   └── prebuild-api-data.sh         # Copy cache to api/_data/ for Vercel
 ├── stock_cache/                     # Cached data files
 │   ├── daily_quotes.json            # Latest quotes + PE percentile stats
 │   ├── historical.json              # 20-year monthly data (price + PE + pct)
 │   ├── valuation_history.json       # Daily PE/PB/ROE timeline
-│   └── earnings.json                # Quarterly/annual EPS (99 tickers)
+│   └── earnings.json                # Quarterly/annual EPS (92 tickers)
 ├── vercel.json                      # Vercel deployment config
 └── vite.config.ts
 ```
@@ -243,7 +247,7 @@ us-stock-valuation-platform/
 ## How It Works
 
 1. **Data Fetching** — Python scripts fetch from multiple free APIs with rate-limit-aware concurrent requests
-2. **EPS Fallback** — Alpha Vantage primary + Finnhub fallback for tickers not supported (9 tickers)
+2. **EPS Backfill** — Alpha Vantage accumulates quarterly/annual EPS within the 25 requests/day free quota
 3. **PE Percentile Engine** — Rolling TTM EPS × monthly prices → 10-year empirical percentile
 4. **Serverless API** — Vercel Serverless Function serves cached data via REST endpoints, bundled at build time
 5. **Visualization** — Interactive charts showing PE trends, percentile bands, and comparison data
@@ -300,7 +304,7 @@ MIT
 
 </div>
 
-- 🔍 **100+ 美股追踪** — 覆盖超大盘、大盘股和 ADR，包括 NVDA、AAPL、GOOGL、MSFT、AMZN、TSM、BABA 等
+- 🔍 **美国上市市值前100追踪** — 按市值刷新，覆盖超大盘美股和 ADR，包括 NVDA、GOOGL、AAPL、MSFT、AMZN、AVGO、TSM 等
 - 📈 **26 个主流指数和 ETF** — SPY、QQQ、DIA、IWM，行业 ETF（XLK、XLF、XLV...）以及主题 ETF（ARKK、KWEB、GDX...）
 - 📐 **多维度估值分析** — PE（TTM/Forward）、PB、ROE 估值倍数，附带真实历史百分位排名
 - 📊 **10年PE百分位** — 基于滚动 TTM EPS × 月末价格计算，展示当前 PE 在历史中的位置
@@ -312,10 +316,14 @@ MIT
 - 🚀 **一键部署** — Vercel 部署，GitHub 推送自动上线
 - ⏰ **自动化数据管线** — 定时任务自动更新每日行情、PE百分位、历史数据
 
-### 最近优化（2026-05-20）
+### 最近优化（2026-05-21）
 
-这次更新重点修复估值数据缺失、每日刷新和详情页/对比分析交互问题，并且全链路不再依赖 Yahoo API：
+这次更新把公司池刷新为最新美国上市市值前100，并让估值数据管线继续保持可部署、可复用：
 
+- **市值前100刷新**：`DEFAULT_TICKERS` 和所有数据脚本已同步到新的 100 家公司名单，新增 MU、XOM、LRCX、PLTR、GEV、ARM、RY、WFC、MUFG、BHP、SNDK、TTE、TMUS、TD、SAN、ANET、RIO、BLK、STX、CRWD、MRVL、APP、BUD、WDC、DELL、SCHW、GLW、WELL、UBER、APH。
+- **旧公司清理**：每日行情合并、历史缓存和 EPS 缓存现在只保留当前跟踪名单，避免旧的前100成分在刷新后混回页面。
+- **当前数据刷新**：已刷新 100 家公司 + 26 个指数的 Twelve Data 历史月线和每日行情缓存。历史 EPS 当前覆盖 92/100；BUD、WDC、DELL、SCHW、GLW、WELL、UBER、APH 需要等下一次 Alpha Vantage 每日额度恢复后补齐。
+- **日志脱敏**：后续脚本遇到限额或错误提示时，会隐藏 API key。
 - **公司总览修复**：BRK-B、INTC 在供应商 PE 字段缺失时，会用“最新股价 ÷ 最新滚动 4 季度 EPS”计算 PE(TTM)，因此市盈率和 10 年 PE 百分位不再空白。
 - **BRK-B 市值补齐**：当缓存市值缺失时，使用 Finnhub `marketCapitalization` 补齐，并按百万美元口径转换成展示用美元市值。
 - **PE 每日刷新**：`fetch_quotes.py` 保存每日行情后会继续执行 `calculate_pe_history.py`，确保 PE(TTM)、10 年百分位、5 年百分位、全历史百分位和 10 年区间统计每天更新。
@@ -338,15 +346,15 @@ MIT
 
 额外指标：5年百分位、10年PE最小/最大/中位数、10年区间涨跌幅
 
-覆盖率：**99/100 家公司**有PE历史，**91% 月度数据点覆盖**
+覆盖率（2026-05-21 刷新后）：**92/100 家公司**有 PE 历史，**94% 月度数据点覆盖**。剩余 8 家等待下一次 Alpha Vantage EPS 每日额度恢复后补齐。
 
 ### 数据源架构
 
 ```
 新浪财经 API（主数据源）    → 价格、名称、PE(TTM)、市值、OHLCV（免费无限制，国内直连）
-Finnhub API（估值+EPS补充） → Forward PE、PB、ROE + 9只Alpha Vantage不支持个股的EPS
+Finnhub API（估值补充）     → Forward PE、PB、ROE、52周高低、Beta、市值补齐
 Twelve Data API（历史数据）  → 20年月线 OHLCV（免费，8次/分钟，800次/天）
-Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天，90/100只覆盖）
+Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天，当前92/100只覆盖）
 EODHD API（ETF/指数）       → ETF/指数供应商直给估值、股息率、费率、资产规模（不使用 Yahoo）
           ↓
   PE百分位引擎 (calculate_pe_history.py)

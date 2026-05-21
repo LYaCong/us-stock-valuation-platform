@@ -55,16 +55,16 @@ HEADERS_SINA = {
 }
 
 TICKERS = [
-    'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
-    'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
-    'COST', 'ABBV', 'CRM', 'ORCL', 'AMD', 'NFLX', 'CVX', 'MRK', 'BAC', 'PEP',
-    'KO', 'TMO', 'LIN', 'ADI', 'CSCO', 'MCD', 'ABT', 'DIS', 'INTU', 'QCOM',
-    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'NVS', 'BABA', 'PDD', 'HSBC',
-    'CAT', 'GE', 'IBM', 'AMAT', 'TXN', 'NOW', 'ISRG', 'BKNG', 'GS', 'MS',
-    'RTX', 'HON', 'PFE', 'AMGN', 'T', 'VZ', 'CMCSA', 'NEE', 'PM', 'UNP',
-    'LOW', 'SPGI', 'INTC', 'COP', 'SYK', 'UPS', 'ELV', 'BA', 'MDT', 'LMT',
-    'TJX', 'AXP', 'DE', 'C', 'PLD', 'CB', 'ABNB', 'MDLZ', 'CI', 'ZTS',
-    'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
+    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'TSM', 'TSLA', 'META', 'WMT',
+    'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML', 'JNJ',
+    'ORCL', 'COST', 'CSCO', 'MA', 'CAT', 'CVX', 'ABBV', 'NFLX', 'LRCX', 'BAC',
+    'KO', 'UNH', 'AMAT', 'PG', 'PLTR', 'HSBC', 'GE', 'MS', 'HD', 'BABA',
+    'GS', 'PM', 'AZN', 'NVS', 'MRK', 'TXN', 'GEV', 'ARM', 'RY', 'SHEL',
+    'TM', 'KLAC', 'RTX', 'LIN', 'WFC', 'MUFG', 'QCOM', 'C', 'IBM', 'AXP',
+    'BHP', 'SAP', 'SNDK', 'TTE', 'TMUS', 'PEP', 'PANW', 'VZ', 'MCD', 'NVO',
+    'ADI', 'NEE', 'TD', 'DIS', 'AMGN', 'SAN', 'ANET', 'TJX', 'RIO', 'BA',
+    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'ISRG',
+    'WDC', 'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'UBER', 'DE', 'APH',
 ]
 
 INDICES = [
@@ -124,6 +124,15 @@ def safe_int(val) -> Optional[int]:
     v = safe_float(val)
     return int(v) if v is not None else None
 
+def redact_secret(text):
+    if not text:
+        return text
+    text = str(text)
+    for secret in [FINNHUB_KEY, ALPHAVANTAGE_KEY, TWELVEDATA_KEY, EODHD_KEY]:
+        if secret:
+            text = text.replace(secret, '[REDACTED]')
+    return text
+
 def format_market_cap(mc) -> Optional[str]:
     if mc is None: return None
     if mc >= 1e12: return f"${mc/1e12:.2f}T"
@@ -147,12 +156,16 @@ def load_cache(filepath: str) -> Dict:
 def merge_and_save(new_c, new_i, filepath, rate, is_final=False):
     old = load_cache(filepath)
     mc, mi, sc, si = [], [], set(), set()
+    active_company_tickers = set(TICKERS)
+    active_index_tickers = {idx['ticker'] for idx in INDICES}
     for c in new_c: mc.append(c); sc.add(c['ticker'])
     for i in new_i: mi.append(i); si.add(i['ticker'])
     for c in old.get('companies', []):
-        if c['ticker'] not in sc: mc.append(c); sc.add(c['ticker'])
+        if c['ticker'] in active_company_tickers and c['ticker'] not in sc:
+            mc.append(c); sc.add(c['ticker'])
     for i in old.get('indices', []):
-        if i['ticker'] not in si: mi.append(i); si.add(i['ticker'])
+        if i['ticker'] in active_index_tickers and i['ticker'] not in si:
+            mi.append(i); si.add(i['ticker'])
     if is_final and rate < 0.3:
         print(f"  ⚠️ 成功率 {rate:.1%} < 30%, 保留旧缓存")
         return False
@@ -332,7 +345,7 @@ def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
             data = resp.json()
 
             if not data or 'Error Message' in data or 'Note' in data:
-                msg = data.get('Note', data.get('Error Message', 'empty response'))
+                msg = redact_secret(data.get('Note', data.get('Error Message', 'empty response')))
                 print(f"    ⚠️ {ticker} Alpha Vantage: {msg}")
                 if 'call frequency' in str(msg).lower() or 'thank you' in str(msg).lower():
                     print(f"    ⏹️ Alpha Vantage 限速，停止请求")

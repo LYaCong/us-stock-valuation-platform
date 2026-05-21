@@ -162,9 +162,6 @@ def main():
     five_years_ago = (now.year - 5, now.month)
 
     for ticker in sorted(common_tickers):
-        if ticker == 'MMC':
-            continue
-
         q_eps = earnings[ticker].get('quarterly', [])
         if len(q_eps) < 4:
             print(f"  ⚠️ {ticker}: 季度EPS不足4个，跳过")

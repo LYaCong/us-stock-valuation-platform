@@ -36,19 +36,27 @@ ENV = load_env()
 ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
 
 TICKERS = [
-    'NVDA', 'AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSM', 'META', 'AVGO', 'TSLA', 'BRK-B',
-    'WMT', 'LLY', 'JPM', 'V', 'MA', 'UNH', 'HD', 'PG', 'JNJ', 'ASML',
-    'COST', 'ABBV', 'CRM', 'ORCL', 'AMD', 'NFLX', 'CVX', 'MRK', 'BAC', 'PEP',
-    'KO', 'TMO', 'LIN', 'ADI', 'CSCO', 'MCD', 'ABT', 'DIS', 'INTU', 'QCOM',
-    'TM', 'NVO', 'SAP', 'AZN', 'HDB', 'SHEL', 'NVS', 'BABA', 'PDD', 'HSBC',
-    'CAT', 'GE', 'IBM', 'AMAT', 'TXN', 'NOW', 'ISRG', 'BKNG', 'GS', 'MS',
-    'RTX', 'HON', 'PFE', 'AMGN', 'T', 'VZ', 'CMCSA', 'NEE', 'PM', 'UNP',
-    'LOW', 'SPGI', 'INTC', 'COP', 'SYK', 'UPS', 'ELV', 'BA', 'MDT', 'LMT',
-    'TJX', 'AXP', 'DE', 'C', 'PLD', 'CB', 'ABNB', 'MDLZ', 'CI', 'ZTS',
-    'REGN', 'GILD', 'VRTX', 'MMC', 'AMT', 'BSX', 'PANW', 'SNPS', 'CDNS', 'KLAC',
+    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'TSM', 'TSLA', 'META', 'WMT',
+    'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML', 'JNJ',
+    'ORCL', 'COST', 'CSCO', 'MA', 'CAT', 'CVX', 'ABBV', 'NFLX', 'LRCX', 'BAC',
+    'KO', 'UNH', 'AMAT', 'PG', 'PLTR', 'HSBC', 'GE', 'MS', 'HD', 'BABA',
+    'GS', 'PM', 'AZN', 'NVS', 'MRK', 'TXN', 'GEV', 'ARM', 'RY', 'SHEL',
+    'TM', 'KLAC', 'RTX', 'LIN', 'WFC', 'MUFG', 'QCOM', 'C', 'IBM', 'AXP',
+    'BHP', 'SAP', 'SNDK', 'TTE', 'TMUS', 'PEP', 'PANW', 'VZ', 'MCD', 'NVO',
+    'ADI', 'NEE', 'TD', 'DIS', 'AMGN', 'SAN', 'ANET', 'TJX', 'RIO', 'BA',
+    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'ISRG',
+    'WDC', 'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'UBER', 'DE', 'APH',
 ]
 
 DAILY_LIMIT = 25  # 免费版25次/天
+
+
+def redact_secret(text):
+    if not text:
+        return text
+    if ALPHAVANTAGE_KEY:
+        text = str(text).replace(ALPHAVANTAGE_KEY, '[REDACTED]')
+    return text
 
 
 def load_existing():
@@ -78,7 +86,7 @@ def fetch_earnings(ticker):
 
         if 'quarterlyEarnings' not in data:
             msg = data.get('Information', data.get('Note', data.get('Error Message', 'unknown')))
-            return None, msg
+            return None, redact_secret(msg)
 
         quarterly = []
         for q in data['quarterlyEarnings']:
@@ -111,7 +119,7 @@ def fetch_earnings(ticker):
         }, None
 
     except Exception as e:
-        return None, str(e)[:100]
+        return None, redact_secret(str(e)[:100])
 
 
 def main():
@@ -122,7 +130,11 @@ def main():
         print("❌ ALPHA_VANTAGE_API_KEY 未配置")
         return 1
 
-    existing = load_existing()
+    existing = {
+        ticker: data
+        for ticker, data in load_existing().items()
+        if ticker in TICKERS
+    }
     already = [t for t in TICKERS if t in existing]
     remaining = [t for t in TICKERS if t not in existing]
 
