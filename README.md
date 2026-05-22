@@ -59,6 +59,7 @@ This release refreshes the company universe to the latest top 100 US-listed comp
 - **Comparison add-company entry**: the previous median-percentile card was replaced with an add-company search dropdown, avoiding a confusing metric that did not match the selected comparison chart.
 - **Index / ETF fundamentals**: index valuation uses provider-direct EODHD fields only, including PE, forward PE, PB, dividend yield, expense ratio, and AUM where available. Missing supplier fields are not fabricated.
 - **No Yahoo API dependency**: runtime code and dependency manifests no longer use `yahoo-finance2`; old Yahoo fallback code was removed to avoid accidental rate-limit issues.
+- **Cross-platform build scripts**: Vercel prebuild data copying now runs through `scripts/prebuild-api-data.mjs`, so local Windows development no longer needs Bash for this step. The npm scripts call local Node entrypoints directly and the `clean` script no longer uses `rm -rf`.
 - **Verification**: `npm run test`, `npm run lint`, and `npm run build` pass with WSL2 Node.js 22.
 
 ## Quick Start
@@ -88,12 +89,16 @@ npm run dev
 
 The app will be available at `http://localhost:3000`.
 
+On Windows, if PowerShell blocks `npm` because of execution policy, use `npm.cmd` for the same commands, for example `npm.cmd run dev`. If the checkout was previously installed from WSL and Vite reports a missing Rollup package such as `@rollup/rollup-win32-x64-msvc`, run `npm.cmd install` once from Windows so platform-specific optional dependencies are restored. Success sign: `node_modules/@rollup/rollup-win32-x64-msvc` exists.
+
 ### Build for Production
 
 ```bash
 npm run build
 npm run preview
 ```
+
+`npm run vercel-build` copies `stock_cache/` into `api/_data/` with a cross-platform Node script before building. Npm scripts call local Node entrypoints directly, which is more reliable when a checkout moves between WSL and Windows. `npm run clean` avoids recursive deletion and only removes an empty `dist` directory.
 
 ### Run Tests
 
@@ -234,7 +239,8 @@ us-stock-valuation-platform/
 │   ├── fetch_history.py             # Monthly K-line history (Twelve Data)
 │   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage)
 │   ├── calculate_pe_history.py      # PE percentile engine (rolling TTM EPS)
-│   └── prebuild-api-data.sh         # Copy cache to api/_data/ for Vercel
+│   ├── prebuild-api-data.mjs        # Copy cache to api/_data/ for Vercel
+│   └── clean-dist.mjs               # Safe cross-platform dist cleanup helper
 ├── stock_cache/                     # Cached data files
 │   ├── daily_quotes.json            # Latest quotes + PE percentile stats
 │   ├── historical.json              # 20-year monthly data (price + PE + pct)
@@ -333,6 +339,7 @@ MIT
 - **添加对比公司入口**：“中位百分位”卡片已替换成添加对比公司的搜索下拉框，避免与当前 PE/股价趋势图口径不一致。
 - **指数 / ETF 估值修复**：指数估值只使用 EODHD 直给字段，包括 PE、Forward PE、PB、股息率、费率、资产规模等；供应商没有给的数据不会伪造。
 - **移除 Yahoo 依赖**：运行代码和依赖清单已移除 `yahoo-finance2`，旧 Yahoo 备用脚本也已删除，避免再次遇到访问限制。
+- **跨平台构建脚本**：Vercel 预构建数据复制改为 `scripts/prebuild-api-data.mjs`，Windows 本地开发不再需要 Bash；npm scripts 直接调用本地 Node 入口，`clean` 脚本也不再使用 `rm -rf`。
 - **验证结果**：已在 WSL2 Node.js 22 环境通过 `npm run test`、`npm run lint` 和 `npm run build`。
 
 ### PE 百分位计算方法
@@ -383,6 +390,8 @@ cp .env.example .env.local   # 编辑 .env.local 添加你的 API keys
 npm run dev
 ```
 
+Windows PowerShell 如果因为执行策略拦截 `npm`，可以改用 `npm.cmd`，例如 `npm.cmd run dev`。如果这个项目之前在 WSL 里装过依赖，切回 Windows 后 Vite 可能提示缺少 `@rollup/rollup-win32-x64-msvc`，在 Windows 侧运行一次 `npm.cmd install` 即可恢复平台可选依赖。成功标志：`node_modules/@rollup/rollup-win32-x64-msvc` 存在。
+
 ### 部署（Vercel）
 
 1. 在 [Vercel](https://vercel.com) 导入 GitHub 仓库
@@ -390,6 +399,8 @@ npm run dev
 3. 点击部署即可
 
 `vercel-build` 脚本会自动：复制缓存数据 → `api/_data/` → 构建前端 → 上线
+
+本地 Windows、WSL 和 Vercel 都使用同一个 Node 预构建脚本；npm scripts 直接调用本地 Node 入口，减少 WSL/Windows `.bin` 链接差异带来的问题；`npm run clean` 遵守安全规则，不会递归批量删除非空目录。
 
 ### 开源协议
 

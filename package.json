@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts",
-    "build": "vite build",
-    "preview": "vite preview",
-    "clean": "rm -rf dist",
-    "lint": "tsc --noEmit",
+    "dev": "node ./node_modules/tsx/dist/cli.mjs server.ts",
+    "build": "node ./node_modules/vite/bin/vite.js build",
+    "preview": "node ./node_modules/vite/bin/vite.js preview",
+    "clean": "node scripts/clean-dist.mjs",
+    "lint": "node ./node_modules/typescript/bin/tsc --noEmit",
     "test": "node --experimental-strip-types --test src/__tests__/dcfCalculator.test.ts src/__tests__/valuationMappers.test.ts",
     "start": "node server.ts",
-    "vercel-build": "bash scripts/prebuild-api-data.sh && vite build"
+    "vercel-build": "node scripts/prebuild-api-data.mjs && node ./node_modules/vite/bin/vite.js build"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
