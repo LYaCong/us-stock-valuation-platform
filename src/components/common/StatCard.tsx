@@ -4,12 +4,13 @@ import { cn } from '../../utils/cn';
 interface StatCardProps {
   label: string;
   value: string;
+  description?: string;
   color?: string;
   theme: Theme;
   lang?: Lang;
 }
 
-export function StatCard({ label, value, color, theme, lang }: StatCardProps) {
+export function StatCard({ label, value, description, color, theme, lang }: StatCardProps) {
   const defaultColor = theme === 'dark' ? 'text-white' : 'text-slate-900';
 
   return (
@@ -18,13 +19,13 @@ export function StatCard({ label, value, color, theme, lang }: StatCardProps) {
         'border rounded-xl p-3 transition-colors min-w-0 min-h-[64px] flex flex-col justify-center',
         theme === 'dark' ? 'bg-white/[0.03] border-white/5' : 'bg-white border-slate-200'
       )}
+      title={description ? `${label}: ${description}` : label}
     >
       <span
         className={cn(
           'text-slate-500 font-bold uppercase tracking-wider block mb-0.5 truncate',
           lang === 'en' ? 'text-[9px]' : 'text-[10px]'
         )}
-        title={label}
       >
         {label}
       </span>

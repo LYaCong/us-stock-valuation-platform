@@ -55,6 +55,7 @@ This release refreshes the company universe to the latest top 100 US-listed comp
 - **Daily PE refresh**: `fetch_quotes.py` now runs `calculate_pe_history.py` after daily quotes are saved, ensuring PE(TTM), 10-year percentile, 5-year percentile, all-history percentile, and 10-year range stats refresh every day.
 - **Company details PE stats**: the bottom metric cards are now explicitly PE valuation stats and follow only the PE chart range, even when the main chart is switched to price or market cap.
 - **PE-only chart sync**: the right-side **PE Percentile Trend** appears only when the main detail chart is set to PE. PE chart hover is synchronized both ways, with matching reference lines, dots, and value labels on both charts.
+- **Detail chart clarity**: linked value labels now move away from right-edge data points, and the bottom cards explicitly say they show the latest PE and latest PE percentile rather than the hovered point.
 - **Comparison workflow controls**: comparison analysis now supports MAX/20Y/10Y/5Y/3Y/1Y range selection, PE vs. price metric switching, shared-date alignment, visible X-axis dates, and a narrower current cross-section panel.
 - **Comparison add-company entry**: the previous median-percentile card was replaced with an add-company search dropdown, avoiding a confusing metric that did not match the selected comparison chart.
 - **Index / ETF fundamentals**: index valuation uses provider-direct EODHD fields only, including PE, forward PE, PB, dividend yield, expense ratio, and AUM where available. Missing supplier fields are not fabricated.
@@ -335,6 +336,7 @@ MIT
 - **PE 每日刷新**：`fetch_quotes.py` 保存每日行情后会继续执行 `calculate_pe_history.py`，确保 PE(TTM)、10 年百分位、5 年百分位、全历史百分位和 10 年区间统计每天更新。
 - **公司详情页 PE 指标口径**：详情页下方 8 个指标框明确作为 PE 估值统计，只跟随 PE 图的 1Y/3Y/5Y/10Y/20Y/MAX 区间变化，切到股价或市值图时不再误变。
 - **PE 图专属双向联动**：右侧“市盈率百分位走势”只在主图为市盈率时展示；PE 双图 hover 时，两张图都会显示同一月份的竖线、圆点和数据框。
+- **详情页图表说明优化**：联动数据框在靠近图表右边缘时会自动避开数据点；下方指标卡也明确展示“最新 PE / 最新 PE 分位”，避免误解为鼠标悬停点。
 - **对比分析交互优化**：对比分析支持 MAX/20Y/10Y/5Y/3Y/1Y 区间选择、PE/股价指标切换、共同日期对齐、X 轴时间显示，并缩窄右侧当前横截面区域。
 - **添加对比公司入口**：“中位百分位”卡片已替换成添加对比公司的搜索下拉框，避免与当前 PE/股价趋势图口径不一致。
 - **指数 / ETF 估值修复**：指数估值只使用 EODHD 直给字段，包括 PE、Forward PE、PB、股息率、费率、资产规模等；供应商没有给的数据不会伪造。

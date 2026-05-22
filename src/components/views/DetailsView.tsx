@@ -132,11 +132,17 @@ function LinkedPointLabel({ viewBox, parentViewBox, title, value, color, theme }
 
   const width = 172;
   const height = 46;
+  const gap = 12;
   const centerX = viewBox.x + viewBox.width / 2;
-  const minX = parentViewBox?.x ?? 4;
-  const maxX = parentViewBox?.width != null ? minX + parentViewBox.width - width : Number.POSITIVE_INFINITY;
-  const x = Math.min(Math.max(minX + 4, centerX - width / 2), Math.max(minX + 4, maxX - 4));
-  const y = Math.max(4, viewBox.y - height - 10);
+  const centerY = viewBox.y + (viewBox.height ?? 0) / 2;
+  const plotLeft = parentViewBox?.x ?? 4;
+  const plotRight = parentViewBox?.width != null ? plotLeft + parentViewBox.width : Number.POSITIVE_INFINITY;
+  const minX = plotLeft + 4;
+  const maxX = Number.isFinite(plotRight) ? plotRight - width - 4 : Number.POSITIVE_INFINITY;
+  const hasRoomOnRight = centerX + gap + width <= plotRight;
+  const preferredX = hasRoomOnRight ? centerX + gap : centerX - width - gap;
+  const x = Math.min(Math.max(minX, preferredX), Math.max(minX, maxX));
+  const y = Math.max(4, centerY - height / 2);
 
   return (
     <g pointerEvents="none">
@@ -261,6 +267,40 @@ export function DetailsView({
   const startDateStr = filteredData.length > 0 ? filteredData[0].date : 'N/A';
   const endDateStr = filteredData.length > 0 ? filteredData[filteredData.length - 1].date : 'N/A';
   const currentTimeRange = timeRanges[chartType];
+  const peStatsRangeLabel = timeRanges.pe;
+  const statCopy = lang === 'zh'
+    ? {
+        note: `下方指标固定按 ${peStatsRangeLabel} 区间内最新一个有 PE 数据的月份计算，不随鼠标悬停变化。右侧百分位走势图的“当前百分位位置”会跟随鼠标悬停日期变化。`,
+        latestPe: '最新PE',
+        latestPeDescription: `所选 PE 区间 ${peStatsRangeLabel} 内，最新一个有 PE 数据月份的市盈率。`,
+        rangePercentile: '最新PE分位(区间)',
+        rangePercentileDescription: `最新PE在当前 ${peStatsRangeLabel} 区间内所有历史PE里的位置。`,
+        rangeMinDescription: `当前 ${peStatsRangeLabel} 区间内的最低PE。`,
+        rangeMaxDescription: `当前 ${peStatsRangeLabel} 区间内的最高PE。`,
+        fiveYearPercentile: '最新PE分位(5年)',
+        fiveYearPercentileDescription: '最新PE在最近5年历史PE里的位置。',
+        tenYearPercentile: '最新PE分位(10年)',
+        tenYearPercentileDescription: '最新PE在最近10年历史PE里的位置。',
+        rangeChangeDescription: `当前 ${peStatsRangeLabel} 区间内股价从起点到终点的涨跌幅。`,
+        allHistoryPercentile: '最新PE分位(全历史)',
+        allHistoryPercentileDescription: '最新PE在可用全历史PE里的位置。',
+      }
+    : {
+        note: `The cards below are fixed to the latest month with PE data in the ${peStatsRangeLabel} PE range; they do not follow the hovered point. The percentile position on the right chart follows the hovered date.`,
+        latestPe: 'Latest PE',
+        latestPeDescription: `P/E from the latest month with PE data in the selected ${peStatsRangeLabel} PE range.`,
+        rangePercentile: 'Latest PE Percentile',
+        rangePercentileDescription: `Where the latest PE sits among all PE values in the selected ${peStatsRangeLabel} range.`,
+        rangeMinDescription: `Lowest PE in the selected ${peStatsRangeLabel} range.`,
+        rangeMaxDescription: `Highest PE in the selected ${peStatsRangeLabel} range.`,
+        fiveYearPercentile: 'Latest PE Percentile (5Y)',
+        fiveYearPercentileDescription: 'Where the latest PE sits among PE values from the last 5 years.',
+        tenYearPercentile: 'Latest PE Percentile (10Y)',
+        tenYearPercentileDescription: 'Where the latest PE sits among PE values from the last 10 years.',
+        rangeChangeDescription: `Price change from the first to last point in the selected ${peStatsRangeLabel} range.`,
+        allHistoryPercentile: 'Latest PE Percentile (All)',
+        allHistoryPercentileDescription: 'Where the latest PE sits among all available historical PE values.',
+      };
   const mainLinkedLabel = highlightedDate && highlightedMainNumber != null
     ? `${chartConfig.label}: ${chartConfig.format(highlightedMainNumber)}`
     : '';
@@ -463,15 +503,16 @@ export function DetailsView({
       {chartType !== 'pe' && (
         <p className="text-xs text-slate-500">{lang === 'zh' ? `下方 PE 指标区间：${timeRanges.pe}` : `PE stats range below: ${timeRanges.pe}`}</p>
       )}
+      <p className="text-xs text-slate-500 leading-relaxed">{statCopy.note}</p>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-        <StatCard label={t.currentValue} value={rangeStats.currentPe != null ? rangeStats.currentPe.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.percentileCurrentRange} value={rangeStats.currentPercentile != null ? `${rangeStats.currentPercentile}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeMin} value={rangeStats.min != null ? rangeStats.min.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeMax} value={rangeStats.max != null ? rangeStats.max.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rollingPercentile5Y} value={rangeStats.percentile5y != null ? `${rangeStats.percentile5y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rollingPercentile10Y} value={rangeStats.percentile10y != null ? `${rangeStats.percentile10y}%` : 'N/A'} theme={theme} lang={lang} />
-        <StatCard label={t.rangeChange} value={rangeStats.priceChange != null ? `${rangeStats.priceChange > 0 ? '+' : ''}${rangeStats.priceChange.toFixed(2)}%` : 'N/A'} color={rangeStats.priceChange != null ? (rangeStats.priceChange >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
-        <StatCard label={t.percentileAllHistory} value={company.pePercentileAllHistory != null ? `${company.pePercentileAllHistory}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={statCopy.latestPe} description={statCopy.latestPeDescription} value={rangeStats.currentPe != null ? rangeStats.currentPe.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={statCopy.rangePercentile} description={statCopy.rangePercentileDescription} value={rangeStats.currentPercentile != null ? `${rangeStats.currentPercentile}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeMin} description={statCopy.rangeMinDescription} value={rangeStats.min != null ? rangeStats.min.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeMax} description={statCopy.rangeMaxDescription} value={rangeStats.max != null ? rangeStats.max.toFixed(2) : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={statCopy.fiveYearPercentile} description={statCopy.fiveYearPercentileDescription} value={rangeStats.percentile5y != null ? `${rangeStats.percentile5y}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={statCopy.tenYearPercentile} description={statCopy.tenYearPercentileDescription} value={rangeStats.percentile10y != null ? `${rangeStats.percentile10y}%` : 'N/A'} theme={theme} lang={lang} />
+        <StatCard label={t.rangeChange} description={statCopy.rangeChangeDescription} value={rangeStats.priceChange != null ? `${rangeStats.priceChange > 0 ? '+' : ''}${rangeStats.priceChange.toFixed(2)}%` : 'N/A'} color={rangeStats.priceChange != null ? (rangeStats.priceChange >= 0 ? 'text-red-400' : 'text-green-400') : undefined} theme={theme} lang={lang} />
+        <StatCard label={statCopy.allHistoryPercentile} description={statCopy.allHistoryPercentileDescription} value={company.pePercentileAllHistory != null ? `${company.pePercentileAllHistory}%` : 'N/A'} theme={theme} lang={lang} />
       </div>
     </div>
   );
