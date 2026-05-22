@@ -134,15 +134,14 @@ function LinkedPointLabel({ viewBox, parentViewBox, title, value, color, theme }
   const height = 46;
   const gap = 12;
   const centerX = viewBox.x + viewBox.width / 2;
-  const centerY = viewBox.y + (viewBox.height ?? 0) / 2;
   const plotLeft = parentViewBox?.x ?? 4;
-  const plotRight = parentViewBox?.width != null ? plotLeft + parentViewBox.width : Number.POSITIVE_INFINITY;
+  const plotRight = parentViewBox?.width != null ? plotLeft + parentViewBox.width : 760;
   const minX = plotLeft + 4;
-  const maxX = Number.isFinite(plotRight) ? plotRight - width - 4 : Number.POSITIVE_INFINITY;
-  const hasRoomOnRight = centerX + gap + width <= plotRight;
-  const preferredX = hasRoomOnRight ? centerX + gap : centerX - width - gap;
+  const maxX = plotRight - width - 4;
+  const hasRoomOnLeft = centerX - gap - width >= minX;
+  const preferredX = hasRoomOnLeft ? centerX - width - gap : centerX + gap;
   const x = Math.min(Math.max(minX, preferredX), Math.max(minX, maxX));
-  const y = Math.max(4, centerY - height / 2);
+  const y = Math.max(4, viewBox.y - height - 10);
 
   return (
     <g pointerEvents="none">
@@ -186,10 +185,9 @@ export function DetailsView({
   const [activeDate, setActiveDate] = useState<string | null>(null);
 
   const hasPeHistory = historicalMetadata?.availableFields?.includes('peTtm') || historicalData.some((item) => item.peTtm != null);
-  const hasPercentileHistory = historicalMetadata?.availableFields?.includes('percentile') || historicalData.some((item) => item.percentile != null);
   const hasMarketCapHistory = historicalMetadata?.availableFields?.includes('marketCap') || historicalData.some((item) => item.marketCap != null);
   const isPeChart = chartType === 'pe';
-  const enableLinkedCharts = isPeChart && hasPercentileHistory;
+  const enableLinkedCharts = isPeChart && hasPeHistory;
 
   useEffect(() => {
     if (!hasPeHistory && chartType === 'pe') {
@@ -210,6 +208,15 @@ export function DetailsView({
   }, [chartType, historicalData, timeRanges]);
 
   const peRangeData = useMemo(() => filterByTimeRange(historicalData, timeRanges.pe), [historicalData, timeRanges.pe]);
+  const displayData = useMemo(() => {
+    if (!enableLinkedCharts) return filteredData;
+
+    const peValues = filteredData.map((item) => item.peTtm).filter(isValidNumber);
+    return filteredData.map((item) => ({
+      ...item,
+      percentile: computePercentile(item.peTtm, peValues),
+    }));
+  }, [enableLinkedCharts, filteredData]);
 
   const chartConfig = useMemo(() => {
     switch (chartType) {
@@ -230,12 +237,12 @@ export function DetailsView({
   const rangeStats = useMemo(() => computeRangePeStats(peRangeData), [peRangeData]);
 
   const fallbackActivePoint = useMemo(() => (
-    [...filteredData].reverse().find((item) => item.percentile != null) ?? filteredData[filteredData.length - 1] ?? null
-  ), [filteredData]);
+    [...displayData].reverse().find((item) => item.percentile != null) ?? displayData[displayData.length - 1] ?? null
+  ), [displayData]);
 
   const activeDataPoint = useMemo(() => (
-    filteredData.find((item) => item.date === activeDate) ?? fallbackActivePoint
-  ), [activeDate, fallbackActivePoint, filteredData]);
+    displayData.find((item) => item.date === activeDate) ?? fallbackActivePoint
+  ), [activeDate, displayData, fallbackActivePoint]);
 
   const highlightedDate = activeDataPoint?.date;
   const highlightedPercentile = activeDataPoint?.percentile ?? null;
@@ -430,7 +437,7 @@ export function DetailsView({
             <div className="h-[300px] mb-6">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={filteredData}
+                  data={displayData}
                   syncId="detailsChart"
                   syncMethod="index"
                   onMouseMove={handleChartMouseMove}
