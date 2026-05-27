@@ -15,11 +15,10 @@ import os
 import re
 import shutil
 import time
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-
-import requests
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +30,7 @@ SEC_COMPANYFACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json
 
 DEFAULT_USER_AGENT = (
     "LiYacong us-stock-valuation-platform dcf-data "
+    "LYaCong@users.noreply.github.com "
     "https://github.com/LYaCong/us-stock-valuation-platform"
 )
 
@@ -96,15 +96,23 @@ def read_default_tickers() -> List[str]:
     return re.findall(r"'([^']+)'", match.group(1))
 
 
-def request_json(session: requests.Session, url: str, delay_seconds: float) -> Any:
+def request_json(url: str, delay_seconds: float, user_agent: str) -> Any:
     time.sleep(delay_seconds)
-    response = session.get(url, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": user_agent,
+            "Accept": "application/json",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        if response.status >= 400:
+            raise RuntimeError(f"HTTP {response.status} for {url}")
+        return json.loads(response.read().decode("utf-8"))
 
 
-def load_sec_ticker_map(session: requests.Session, delay_seconds: float) -> Dict[str, Dict[str, Any]]:
-    payload = request_json(session, SEC_TICKERS_URL, delay_seconds)
+def load_sec_ticker_map(delay_seconds: float, user_agent: str) -> Dict[str, Dict[str, Any]]:
+    payload = request_json(SEC_TICKERS_URL, delay_seconds, user_agent)
     result: Dict[str, Dict[str, Any]] = {}
     for item in payload.values():
         ticker = str(item.get("ticker", "")).upper()
@@ -263,14 +271,8 @@ def main() -> None:
 
     env = load_env()
     user_agent = env.get("SEC_USER_AGENT") or os.environ.get("SEC_USER_AGENT") or DEFAULT_USER_AGENT
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": user_agent,
-        "Accept-Encoding": "gzip, deflate",
-    })
-
     tickers = [ticker.strip().upper() for ticker in args.tickers.split(",")] if args.tickers else read_default_tickers()
-    ticker_map = load_sec_ticker_map(session, args.delay)
+    ticker_map = load_sec_ticker_map(args.delay, user_agent)
 
     data: Dict[str, Any] = {}
     skipped: Dict[str, str] = {}
@@ -284,7 +286,7 @@ def main() -> None:
         cik = sec_entry["cik"]
         url = SEC_COMPANYFACTS_URL.format(cik=cik)
         try:
-            facts_payload = request_json(session, url, args.delay)
+            facts_payload = request_json(url, args.delay, user_agent)
             data[ticker] = build_record(ticker, cik, sec_entry.get("title") or ticker, facts_payload)
             print(f"OK {ticker}: {data[ticker]['coverageStatus']}")
         except Exception as exc:

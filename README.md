@@ -280,6 +280,8 @@ us-stock-valuation-platform/
 - `stock_cache/dcf_assumptions.json`: project-level per-company DCF assumptions. Commit this file to make saved assumptions available online.
 - `api/_data/dcf_fundamentals.json` and `api/_data/dcf_assumptions.json`: Vercel runtime copies used by the serverless API.
 
+Run the SEC fetcher with Python standard library only; it does not require `requests` or extra packages. For best reliability, set `SEC_USER_AGENT` to a descriptive value with contact info before OpenClaw runs it, for example `LiYacong us-stock-valuation-platform dcf-data your-email@example.com`. A vague or missing SEC user agent can return HTTP 403.
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/valuation?tickers=AAPL,NVDA` | GET | Company valuations with PE/PB/ROE + percentile stats |
