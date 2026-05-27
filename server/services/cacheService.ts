@@ -35,6 +35,9 @@ export interface DcfFundamentalRecord {
   totalDebt?: number | null;
   netDebt?: number | null;
   sharesOutstanding?: number | null;
+  annualCashFlow?: Record<string, any>;
+  latestBalanceSheet?: Record<string, any>;
+  latestShares?: Record<string, any>;
   sourceTags?: Record<string, string | null>;
   missingFields?: string[];
   coverageStatus?: string;

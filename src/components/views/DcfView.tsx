@@ -41,11 +41,15 @@ interface DcfRealData {
   sharesB: number | null;
   initialFcfB: number | null;
   netDebtB: number | null;
+  currency: string | null;
   fiscalYear: number | null;
   filedDate: string | null;
   accessionNumber: string | null;
   coverageStatus: string | null;
   missingFields: string[];
+  fcfSource: string | null;
+  balanceSheetSource: string | null;
+  sharesSource: string | null;
 }
 
 const FALLBACK_ASSUMPTIONS: DcfAssumption = {
@@ -84,6 +88,10 @@ const copy = {
     terminalContribution: '终值贡献',
     sourceTitle: '财报来源',
     sourceEmpty: '暂无 SEC 来源信息',
+    sourceFcf: 'FCF：最近年报',
+    sourceNetDebt: '净债务：最近披露期',
+    sourceShares: '总股本：最近披露期',
+    sourceCurrency: '财报货币',
     fiscalYear: '财年',
     filedDate: '提交日期',
     accession: 'SEC 编号',
@@ -131,6 +139,10 @@ const copy = {
     terminalContribution: 'Terminal Contribution',
     sourceTitle: 'Filing Source',
     sourceEmpty: 'No SEC source yet',
+    sourceFcf: 'FCF: latest annual filing',
+    sourceNetDebt: 'Net debt: latest reported period',
+    sourceShares: 'Shares: latest reported period',
+    sourceCurrency: 'Filing currency',
     fiscalYear: 'Fiscal year',
     filedDate: 'Filed',
     accession: 'SEC accession',
@@ -192,6 +204,17 @@ function normalizeAssumptions(value: any): DcfAssumption {
   };
 }
 
+function formatSourceLine(source: any, label: string) {
+  if (!source) return null;
+  const details = [
+    source.fiscalYear ? `FY${source.fiscalYear}` : null,
+    source.fiscalPeriod || null,
+    source.form || null,
+    source.filedDate || null,
+  ].filter(Boolean);
+  return details.length > 0 ? `${label}: ${details.join(' / ')}` : label;
+}
+
 export function DcfView({ company, theme, t, lang }: DcfViewProps) {
   const ui = copy[lang];
   const [realData, setRealData] = useState<DcfRealData | null>(null);
@@ -236,11 +259,24 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
           sharesB: sharesRaw != null && sharesRaw > 0 ? sharesRaw / 1e9 : null,
           initialFcfB: fcfRaw != null && fcfRaw > 0 ? fcfRaw / 1e9 : null,
           netDebtB: netDebtRaw != null ? netDebtRaw / 1e9 : null,
+          currency: source?.currency ?? source?.annualCashFlow?.currency ?? source?.latestBalanceSheet?.currency ?? null,
           fiscalYear: source?.fiscalYear ?? null,
           filedDate: source?.filedDate ?? null,
           accessionNumber: source?.accessionNumber ?? null,
           coverageStatus: source?.coverageStatus ?? null,
           missingFields: Array.isArray(source?.missingFields) ? source.missingFields : [],
+          fcfSource: formatSourceLine(
+            source?.annualCashFlow?.freeCashFlow ?? source?.annualCashFlow,
+            ui.sourceFcf,
+          ),
+          balanceSheetSource: formatSourceLine(
+            source?.latestBalanceSheet?.netDebt ?? source?.latestBalanceSheet,
+            ui.sourceNetDebt,
+          ),
+          sharesSource: formatSourceLine(
+            source?.latestShares,
+            ui.sourceShares,
+          ),
         });
       } catch (error) {
         if (!cancelled) {
@@ -259,7 +295,7 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
     return () => {
       cancelled = true;
     };
-  }, [company]);
+  }, [company, ui.sourceFcf, ui.sourceNetDebt, ui.sourceShares]);
 
   function updateAssumption(setter: (value: number) => void, value: number) {
     setter(value);
@@ -374,8 +410,10 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
       ? `${calculation.result.marginOfSafety > 0 ? '+' : ''}${calculation.result.marginOfSafety.toFixed(1)}%`
       : 'N/A';
   const sourceItems = [
-    realData?.fiscalYear ? `${ui.fiscalYear}: ${realData.fiscalYear}` : null,
-    realData?.filedDate ? `${ui.filedDate}: ${realData.filedDate}` : null,
+    realData?.fcfSource,
+    realData?.balanceSheetSource,
+    realData?.sharesSource,
+    realData?.currency ? `${ui.sourceCurrency}: ${realData.currency}` : null,
     realData?.accessionNumber ? `${ui.accession}: ${realData.accessionNumber}` : null,
   ].filter(Boolean) as string[];
 
