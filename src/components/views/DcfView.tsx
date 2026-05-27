@@ -28,6 +28,7 @@ interface DcfViewProps {
 }
 
 type DcfFieldSource = 'real' | 'missing';
+type DcfAssumptionSource = 'company' | 'browser' | 'global';
 
 interface DcfFieldState {
   label: string;
@@ -70,15 +71,32 @@ const copy = {
     dataReady: '真实财报输入已就绪',
     dataMissing: '缺少关键财报输入，DCF 暂停计算',
     savedCompany: '已保存为该公司默认假设',
+    savedBrowser: '已保存到当前浏览器。线上环境不能写项目文件，但下次在这台设备打开该公司时会自动套用。',
     unsavedCompany: '有未保存的公司假设',
     saveCompany: '保存为该公司默认假设',
-    saveFailed: '保存失败：当前环境可能不允许写项目文件',
+    saving: '保存中...',
+    saveFailed: '保存失败：项目文件和浏览器本地存储都不可写',
     globalDefault: '使用全局默认假设',
     projectDefault: '使用该公司项目默认假设',
+    browserDefault: '使用当前浏览器保存的假设',
     beginnerTitle: '小白计算顺序',
     beginnerStep1: '1. 先看数据质量：自由现金流、总股本、净债务必须来自真实财报。',
     beginnerStep2: '2. 再调增长率：1-5 年看业务高增长，6-10 年要逐步保守。',
     beginnerStep3: '3. 最后看安全边际：内在价值高于股价越多，容错空间越大。',
+    beginnerDataTitle: '先确认这 4 个输入',
+    beginnerDataFcf: '自由现金流：公司一年真正能留下来的现金，是估值的起点。',
+    beginnerDataShares: '总股本：把整家公司价值除成每股价值。',
+    beginnerDataNetDebt: '净债务：债务会扣减股东价值，净现金会增加股东价值。',
+    beginnerDataPrice: '当前股价：只用来比较贵不贵，不参与算内在价值。',
+    beginnerAssumptionTitle: '再理解 4 个假设',
+    beginnerAssumptionGrowth: '前 5 年增长率越高，代表你越相信公司近期扩张。',
+    beginnerAssumptionFade: '第 6-10 年增长率要更保守，因为高增长通常会放慢。',
+    beginnerAssumptionWacc: 'WACC 是你要求的回报率，越高估值越低。',
+    beginnerAssumptionTerminal: '永续增长率是 10 年后的长期增速，必须低于 WACC。',
+    beginnerResultTitle: '最后读这 3 个结果',
+    beginnerResultIntrinsic: '每股内在价值：模型认为这家公司每股大概值多少。',
+    beginnerResultMargin: '安全边际：内在价值比当前股价高多少，越高容错越大。',
+    beginnerResultSensitivity: '敏感性表：检查估值是不是被某个乐观假设撑起来的。',
     presets: '情景假设',
     conservative: '保守',
     base: '基准',
@@ -122,15 +140,32 @@ const copy = {
     dataReady: 'Real filing inputs are ready',
     dataMissing: 'Key filing inputs are missing, so DCF is paused',
     savedCompany: 'Saved as this company default',
+    savedBrowser: 'Saved in this browser. Deployed builds cannot write project files, but this device will reuse it next time.',
     unsavedCompany: 'Unsaved company assumptions',
     saveCompany: 'Save as company default',
-    saveFailed: 'Save failed: this environment may not allow project-file writes',
+    saving: 'Saving...',
+    saveFailed: 'Save failed: neither project files nor browser storage are writable',
     globalDefault: 'Using global default assumptions',
     projectDefault: 'Using company project defaults',
+    browserDefault: 'Using browser-saved assumptions',
     beginnerTitle: 'Beginner Flow',
     beginnerStep1: '1. Check data quality first: FCF, shares, and net debt must come from filings.',
     beginnerStep2: '2. Tune growth next: years 1-5 can reflect momentum, years 6-10 should fade.',
     beginnerStep3: '3. Read margin of safety last: more upside means more room for error.',
+    beginnerDataTitle: 'Confirm these 4 inputs first',
+    beginnerDataFcf: 'FCF: cash the company can keep after operating needs and capital spending.',
+    beginnerDataShares: 'Shares: turns whole-company value into per-share value.',
+    beginnerDataNetDebt: 'Net debt: debt lowers equity value, while net cash raises it.',
+    beginnerDataPrice: 'Current price: used only to judge cheap or expensive, not to compute intrinsic value.',
+    beginnerAssumptionTitle: 'Understand these 4 assumptions',
+    beginnerAssumptionGrowth: 'Years 1-5 growth reflects your near-term business view.',
+    beginnerAssumptionFade: 'Years 6-10 growth should fade because high growth usually slows.',
+    beginnerAssumptionWacc: 'WACC is your required return. Higher WACC means lower valuation.',
+    beginnerAssumptionTerminal: 'Terminal growth is the long-run rate after year 10 and must stay below WACC.',
+    beginnerResultTitle: 'Read these 3 results last',
+    beginnerResultIntrinsic: 'Intrinsic value per share: what the model thinks one share is worth.',
+    beginnerResultMargin: 'Margin of safety: how much intrinsic value exceeds current price.',
+    beginnerResultSensitivity: 'Sensitivity table: checks whether the valuation depends on optimistic assumptions.',
     presets: 'Scenarios',
     conservative: 'Conservative',
     base: 'Base',
@@ -204,6 +239,7 @@ function normalizeAssumptions(value: any): DcfAssumption {
     terminalGrowth: Number.isFinite(value?.terminalGrowth) ? value.terminalGrowth : FALLBACK_ASSUMPTIONS.terminalGrowth,
     updatedAt: value?.updatedAt,
     note: value?.note,
+    storage: value?.storage === 'browser' || value?.storage === 'project' ? value.storage : undefined,
   };
 }
 
@@ -233,7 +269,7 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
   const ui = copy[lang];
   const [realData, setRealData] = useState<DcfRealData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [assumptionSource, setAssumptionSource] = useState<'company' | 'global'>('global');
+  const [assumptionSource, setAssumptionSource] = useState<DcfAssumptionSource>('global');
   const [saveState, setSaveState] = useState<'saved' | 'dirty' | 'saving' | 'failed'>('saved');
   const [g1, setG1] = useState(FALLBACK_ASSUMPTIONS.growth1to5);
   const [g2, setG2] = useState(FALLBACK_ASSUMPTIONS.growth6to10);
@@ -253,10 +289,13 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
         const fundamentals = await fetchFundamentals(company.ticker);
         if (!fundamentals || cancelled) return;
 
-        const assumptions = fundamentals.dcfAssumptions?.company
-          ? normalizeAssumptions(fundamentals.dcfAssumptions.company)
+        const companyAssumptions = fundamentals.dcfAssumptions?.company;
+        const assumptions = companyAssumptions
+          ? normalizeAssumptions(companyAssumptions)
           : normalizeAssumptions(fundamentals.dcfAssumptions?.defaults);
-        setAssumptionSource(fundamentals.dcfAssumptions?.company ? 'company' : 'global');
+        setAssumptionSource(companyAssumptions
+          ? (assumptions.storage === 'browser' ? 'browser' : 'company')
+          : 'global');
         setG1(assumptions.growth1to5);
         setG2(assumptions.growth6to10);
         setWacc(assumptions.wacc);
@@ -341,7 +380,7 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
       note: 'Saved from DCF model page',
     });
     if (saved) {
-      setAssumptionSource('company');
+      setAssumptionSource(saved.storage === 'browser' ? 'browser' : 'company');
       setSaveState('saved');
     } else {
       setSaveState('failed');
@@ -448,10 +487,16 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
             'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium',
             assumptionSource === 'company'
               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
-              : 'bg-slate-500/10 text-slate-600 dark:text-slate-300',
+              : assumptionSource === 'browser'
+                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-300'
+                : 'bg-slate-500/10 text-slate-600 dark:text-slate-300',
           )}>
             <SlidersHorizontal size={14} />
-            {assumptionSource === 'company' ? ui.projectDefault : ui.globalDefault}
+            {assumptionSource === 'company'
+              ? ui.projectDefault
+              : assumptionSource === 'browser'
+                ? ui.browserDefault
+                : ui.globalDefault}
           </span>
           <button
             type="button"
@@ -465,13 +510,14 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
             )}
           >
             {saveState === 'saved' ? <CheckCircle2 size={14} /> : <Save size={14} />}
-            {saveState === 'saving' ? 'Saving...' : ui.saveCompany}
+            {saveState === 'saving' ? ui.saving : ui.saveCompany}
           </button>
         </div>
       </div>
 
       {saveState === 'dirty' && <InlineNotice text={ui.unsavedCompany} tone="warning" theme={theme} />}
       {saveState === 'saved' && assumptionSource === 'company' && <InlineNotice text={ui.savedCompany} tone="success" theme={theme} />}
+      {saveState === 'saved' && assumptionSource === 'browser' && <InlineNotice text={ui.savedBrowser} tone="success" theme={theme} />}
       {saveState === 'failed' && <InlineNotice text={ui.saveFailed} tone="error" theme={theme} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
@@ -552,6 +598,23 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
               <StepBox text={ui.beginnerStep1} theme={theme} />
               <StepBox text={ui.beginnerStep2} theme={theme} />
               <StepBox text={ui.beginnerStep3} theme={theme} />
+            </div>
+            <div className="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <GuideColumn
+                title={ui.beginnerDataTitle}
+                items={[ui.beginnerDataFcf, ui.beginnerDataShares, ui.beginnerDataNetDebt, ui.beginnerDataPrice]}
+                theme={theme}
+              />
+              <GuideColumn
+                title={ui.beginnerAssumptionTitle}
+                items={[ui.beginnerAssumptionGrowth, ui.beginnerAssumptionFade, ui.beginnerAssumptionWacc, ui.beginnerAssumptionTerminal]}
+                theme={theme}
+              />
+              <GuideColumn
+                title={ui.beginnerResultTitle}
+                items={[ui.beginnerResultIntrinsic, ui.beginnerResultMargin, ui.beginnerResultSensitivity]}
+                theme={theme}
+              />
             </div>
           </div>
 
@@ -778,6 +841,22 @@ function StepBox({ text, theme }: { text: string; theme: Theme }) {
   return (
     <div className={cn('rounded-lg border p-4 leading-6', theme === 'dark' ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50')}>
       {text}
+    </div>
+  );
+}
+
+function GuideColumn({ title, items, theme }: { title: string; items: string[]; theme: Theme }) {
+  return (
+    <div className={cn('rounded-lg border p-4', theme === 'dark' ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50')}>
+      <div className={cn('text-sm font-semibold', theme === 'dark' ? 'text-slate-100' : 'text-slate-800')}>{title}</div>
+      <div className="mt-3 space-y-2 text-xs leading-5 text-slate-500 dark:text-slate-300">
+        {items.map((item) => (
+          <div key={item} className="flex gap-2">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

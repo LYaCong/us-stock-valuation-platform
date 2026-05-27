@@ -51,8 +51,8 @@ This release makes the DCF page stricter and easier to use for beginners:
 - **Supplemental DCF fallback**: `scripts/enrich_dcf_alpha_vantage.py` fills only fields that SEC `companyfacts` leaves missing, using Alpha Vantage `CASH_FLOW`, `BALANCE_SHEET`, and `OVERVIEW`. Supplemental values are marked in `supplementalSources` and do not overwrite SEC values. After the 2026-05-27 run, DCF input coverage is **99/100 companies**; `ISRG` still lacks a supported total-debt / net-debt field.
 - **Chinese DCF terminology**: the Chinese UI now spells out free cash flow as `自由现金流` instead of using the English acronym `FCF`, while the English UI keeps the standard abbreviation where appropriate.
 - **No silent DCF estimates**: the DCF page no longer backs into FCF from PE, shares from market cap / price, or net debt from market-cap heuristics. Missing filing data stays missing and blocks the calculation when it is required.
-- **Project-level company assumptions**: `dcf_assumptions.json` stores per-ticker default DCF assumptions (`growth1to5`, `growth6to10`, `wacc`, `terminalGrowth`). Local development can save company defaults from the DCF page; deployed Vercel builds read the committed project defaults.
-- **Beginner guidance**: the page now explains each DCF term with help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, and shows formula breakdowns for enterprise value, equity value, and implied price.
+- **Company assumptions with browser fallback**: `dcf_assumptions.json` stores committed per-ticker defaults for deployed builds. Local development can still write project defaults from the DCF page; if a deployed serverless environment rejects project-file writes, the UI now saves the assumption in the current browser and reuses it for that ticker on the same device.
+- **Beginner guidance**: the page now explains each DCF term with help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, shows formula breakdowns for enterprise value / equity value / implied price, and adds plain-language sections for inputs, assumptions, and result interpretation.
 - **Refresh cadence**: market quotes remain daily data; SEC DCF fundamentals are quarterly / filing-driven and should be refreshed after new 10-Q / 10-K filings; DCF assumptions are human judgments and only change when saved or edited. Cache metadata keeps the SEC generation time separate from any local schema backfill time.
 
 ## Latest Optimization (2026-05-27)
@@ -64,6 +64,7 @@ This release adds the DCF supplemental-data layer while keeping SEC as the prima
 - **Transparent supplemental lineage**: supplemental fields are recorded in `supplementalSources`, and the DCF page displays the supplemental provider so Alpha Vantage values are not mistaken for SEC originals.
 - **DCF coverage improved**: DCF input coverage is now **99/100 companies**. `BAC` is backfilled, while `ISRG` still lacks a supported total-debt / net-debt field.
 - **Chinese DCF terminology**: the Chinese UI spells out free cash flow as `自由现金流` instead of showing the English acronym `FCF`.
+- **DCF page usability**: beginner guidance now walks through filing inputs, assumptions, and result interpretation in plain language. Saving company assumptions also falls back to browser-local storage when deployed serverless builds cannot write project files.
 
 ## Latest Optimization (2026-05-21)
 
@@ -293,7 +294,7 @@ us-stock-valuation-platform/
 - `scripts/fetch_sec_dcf_fundamentals.py`: OpenClaw-facing SEC companyfacts fetcher. It writes real DCF inputs and does not estimate missing fields.
 - `scripts/enrich_dcf_alpha_vantage.py`: optional supplemental fetcher. Run it after the SEC fetcher to fill missing DCF fields from Alpha Vantage without overwriting SEC-sourced values.
 - `stock_cache/dcf_fundamentals.json`: local cache for SEC filing-based FCF, debt, cash, shares, filing dates, source tags, and field-level period metadata. FCF uses the latest annual filing; cash, total debt, and net debt use the latest reported instant; shares use the latest disclosure.
-- `stock_cache/dcf_assumptions.json`: project-level per-company DCF assumptions. Commit this file to make saved assumptions available online.
+- `stock_cache/dcf_assumptions.json`: project-level per-company DCF assumptions. Commit this file to make saved assumptions available online. In deployed read-only environments, the DCF page falls back to browser-local saved assumptions for the current device.
 - `api/_data/dcf_fundamentals.json` and `api/_data/dcf_assumptions.json`: Vercel runtime copies used by the serverless API.
 
 Run the SEC fetcher with Python standard library only; it does not require `requests` or extra packages. For best reliability, set `SEC_USER_AGENT` to a descriptive value with contact info before OpenClaw runs it, for example `LiYacong us-stock-valuation-platform dcf-data your-email@example.com`. A vague or missing SEC user agent can return HTTP 403.
@@ -304,7 +305,7 @@ Run the SEC fetcher with Python standard library only; it does not require `requ
 | `/api/index-valuations` | GET | Index & ETF valuations |
 | `/api/quotes?symbols=AAPL` | GET | Real-time quotes (from cache) |
 | `/api/fundamentals?symbol=AAPL` | GET | Company fundamentals + SEC DCF inputs + project DCF assumptions (from cache) |
-| `/api/dcf-assumptions` | POST | Local-dev only: save project-level company DCF assumptions |
+| `/api/dcf-assumptions` | POST | Local-dev only: save project-level company DCF assumptions; deployed UI falls back to browser-local storage |
 | `/api/historical?symbol=AAPL` | GET | Historical price + PE + percentile data |
 
 ## Environment Variables
@@ -368,6 +369,7 @@ MIT
 - **来源透明**：所有补充字段都会写入 `supplementalSources`，页面会显示补充来源，例如 `Alpha Vantage supplemental`，避免把补充数据误认为 SEC 原始数据。
 - **DCF 覆盖率提升**：补充后 DCF 输入覆盖率提升到 **99/100 家公司**，`BAC` 已补回完整记录，目前仅 `ISRG` 仍缺可支持的总债务 / 净债务字段。
 - **中文术语优化**：中文页面不再直接显示 `FCF`，统一改为“自由现金流”，包括来源、图例、现值和计算说明。
+- **DCF 页面更适合小白**：新增“输入、假设、结果”三段式解释，说明自由现金流、总股本、净债务、当前股价、增长率、WACC、永续增长率和安全边际各自的作用；线上环境不能写项目文件时，保存公司默认假设会自动落到当前浏览器，下次在同一设备打开该公司会继续使用。
 
 ### 最近优化（2026-05-21）
 

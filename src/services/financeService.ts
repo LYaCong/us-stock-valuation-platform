@@ -13,6 +13,60 @@ export interface DcfAssumption {
   terminalGrowth: number;
   updatedAt?: string;
   note?: string;
+  storage?: 'project' | 'browser';
+}
+
+const LOCAL_DCF_ASSUMPTIONS_KEY = 'us-stock-valuation-platform:dcf-assumptions';
+
+function normalizeSymbol(symbol: string) {
+  return symbol.trim().toUpperCase();
+}
+
+function getBrowserStorage() {
+  try {
+    return typeof window !== 'undefined' ? window.localStorage : null;
+  } catch (error) {
+    console.warn('Browser storage is unavailable:', error);
+    return null;
+  }
+}
+
+function readLocalDcfAssumptions(): Record<string, DcfAssumption> {
+  const storage = getBrowserStorage();
+  if (!storage) return {};
+  try {
+    const raw = storage.getItem(LOCAL_DCF_ASSUMPTIONS_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (error) {
+    console.warn('Unable to read local DCF assumptions:', error);
+    return {};
+  }
+}
+
+function getLocalDcfAssumption(symbol: string): DcfAssumption | null {
+  const assumption = readLocalDcfAssumptions()[normalizeSymbol(symbol)];
+  return assumption ? { ...assumption, storage: 'browser' } : null;
+}
+
+function saveLocalDcfAssumption(symbol: string, assumptions: DcfAssumption): DcfAssumption | null {
+  const storage = getBrowserStorage();
+  if (!storage) return null;
+  try {
+    const saved: DcfAssumption = {
+      ...assumptions,
+      updatedAt: new Date().toISOString(),
+      storage: 'browser',
+    };
+    const existing = readLocalDcfAssumptions();
+    existing[normalizeSymbol(symbol)] = saved;
+    storage.setItem(LOCAL_DCF_ASSUMPTIONS_KEY, JSON.stringify(existing));
+    return saved;
+  } catch (error) {
+    console.error('Unable to save local DCF assumptions:', error);
+    return null;
+  }
 }
 
 export async function fetchQuotes(symbols: string[]): Promise<any[]> {
@@ -33,7 +87,15 @@ export async function fetchFundamentals(symbol: string): Promise<any> {
     const response = await fetch(`/api/fundamentals?symbol=${symbol}`);
     if (!response.ok) throw new Error('Failed to fetch fundamentals');
     const data = await response.json();
-    return data.quoteSummary?.result?.[0] || null;
+    const result = data.quoteSummary?.result?.[0] || null;
+    const localAssumption = getLocalDcfAssumption(symbol);
+    if (result && localAssumption) {
+      result.dcfAssumptions = {
+        ...(result.dcfAssumptions || {}),
+        company: localAssumption,
+      };
+    }
+    return result;
   } catch (error) {
     console.error('Error fetching fundamentals:', error);
     return null;
@@ -52,11 +114,13 @@ export async function saveDcfAssumptions(
     });
     if (!response.ok) throw new Error('Failed to save DCF assumptions');
     const data = await response.json();
-    return data.assumption || null;
+    if (data.assumption) {
+      return { ...data.assumption, storage: 'project' };
+    }
   } catch (error) {
-    console.error('Error saving DCF assumptions:', error);
-    return null;
+    console.info('Project-file DCF save unavailable, falling back to browser storage:', error);
   }
+  return saveLocalDcfAssumption(symbol, assumptions);
 }
 
 export async function fetchHistorical(symbol: string): Promise<HistoricalResponse> {
