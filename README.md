@@ -347,6 +347,16 @@ MIT
 - 🚀 **一键部署** — Vercel 部署，GitHub 推送自动上线
 - ⏰ **自动化数据管线** — 定时任务自动更新每日行情、PE百分位、历史数据
 
+### 最近优化（2026-05-27）
+
+这次更新把 DCF 数据链路改成“SEC 主源 + Alpha Vantage 补充层”，在不伪造数据的前提下补齐绝大多数缺口：
+
+- **SEC 仍是主口径**：`scripts/fetch_sec_dcf_fundamentals.py` 继续优先使用 SEC `companyfacts`，并保留字段级期间信息。自由现金流来自最近年报；现金、总债务、净债务来自最近披露期；总股本来自最近披露期。
+- **Alpha Vantage 只做补缺**：新增 `scripts/enrich_dcf_alpha_vantage.py`，只在 SEC 缺字段时调用 Alpha Vantage `CASH_FLOW`、`BALANCE_SHEET`、`OVERVIEW`，不会覆盖 SEC 已有值。
+- **来源透明**：所有补充字段都会写入 `supplementalSources`，页面会显示补充来源，例如 `Alpha Vantage supplemental`，避免把补充数据误认为 SEC 原始数据。
+- **DCF 覆盖率提升**：补充后 DCF 输入覆盖率提升到 **99/100 家公司**，`BAC` 已补回完整记录，目前仅 `ISRG` 仍缺可支持的总债务 / 净债务字段。
+- **中文术语优化**：中文页面不再直接显示 `FCF`，统一改为“自由现金流”，包括来源、图例、现值和计算说明。
+
 ### 最近优化（2026-05-21）
 
 这次更新把公司池刷新为最新美国上市市值前100，并让估值数据管线继续保持可部署、可复用：
@@ -387,7 +397,7 @@ MIT
 新浪财经 API（主数据源）    → 价格、名称、PE(TTM)、市值、OHLCV（免费无限制，国内直连）
 Finnhub API（估值补充）     → Forward PE、PB、ROE、52周高低、Beta、市值补齐
 Twelve Data API（历史数据）  → 20年月线 OHLCV（免费，8次/分钟，800次/天）
-Alpha Vantage API（EPS）    → 季度/年度 EPS（免费，25次/天，当前92/100只覆盖）
+Alpha Vantage API（EPS + DCF补缺） → 季度/年度 EPS；补充 SEC 缺失的 DCF 现金流、债务和股本字段
 EODHD API（ETF/指数）       → ETF/指数供应商直给估值、股息率、费率、资产规模（不使用 Yahoo）
           ↓
   PE百分位引擎 (calculate_pe_history.py)
@@ -405,6 +415,7 @@ EODHD API（ETF/指数）       → ETF/指数供应商直给估值、股息率�
 | **每日行情+PE** | 每天 05:00 | `fetch_quotes.py` → `calculate_pe_history.py` | 行情 + PE百分位 → 自动部署 |
 | **历史月线** | 每月1号 05:30 | `fetch_history.py` | Twelve Data 20年月线 |
 | **历史EPS** | 每天 02:00 | `fetch_earnings.py` | Alpha Vantage 季度EPS（每天25只）|
+| **DCF 补缺** | SEC DCF 刷新后按需运行 | `enrich_dcf_alpha_vantage.py` | 只补 SEC 缺失字段，并标记 `supplementalSources` |
 
 ### 快速开始
 
