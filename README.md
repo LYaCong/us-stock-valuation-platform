@@ -55,6 +55,16 @@ This release makes the DCF page stricter and easier to use for beginners:
 - **Beginner guidance**: the page now explains each DCF term with help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, and shows formula breakdowns for enterprise value, equity value, and implied price.
 - **Refresh cadence**: market quotes remain daily data; SEC DCF fundamentals are quarterly / filing-driven and should be refreshed after new 10-Q / 10-K filings; DCF assumptions are human judgments and only change when saved or edited. Cache metadata keeps the SEC generation time separate from any local schema backfill time.
 
+## Latest Optimization (2026-05-27)
+
+This release adds the DCF supplemental-data layer while keeping SEC as the primary source of truth:
+
+- **SEC remains the primary DCF source**: `scripts/fetch_sec_dcf_fundamentals.py` still uses SEC `companyfacts` first and preserves field-level reporting periods. Free cash flow uses the latest annual filing; cash, total debt, and net debt use the latest reported instant; shares use the latest disclosure.
+- **Alpha Vantage only fills gaps**: `scripts/enrich_dcf_alpha_vantage.py` fills fields that SEC leaves missing with Alpha Vantage `CASH_FLOW`, `BALANCE_SHEET`, and `OVERVIEW`, without overwriting SEC-sourced values.
+- **Transparent supplemental lineage**: supplemental fields are recorded in `supplementalSources`, and the DCF page displays the supplemental provider so Alpha Vantage values are not mistaken for SEC originals.
+- **DCF coverage improved**: DCF input coverage is now **99/100 companies**. `BAC` is backfilled, while `ISRG` still lacks a supported total-debt / net-debt field.
+- **Chinese DCF terminology**: the Chinese UI spells out free cash flow as `自由现金流` instead of showing the English acronym `FCF`.
+
 ## Latest Optimization (2026-05-21)
 
 This release refreshes the company universe to the latest top 100 US-listed companies by market cap and keeps the valuation pipeline deploy-safe:
@@ -200,6 +210,7 @@ All data updates are automated via OpenClaw cron jobs:
 | **Daily Quotes + PE** | Every day 05:00 CST | `fetch_quotes.py` → `calculate_pe_history.py` | Sina (price) + Finnhub (PE/PB/ROE) → PE percentile → git push → Vercel deploy |
 | **Monthly History** | 1st of month 05:30 CST | `fetch_history.py` | Twelve Data monthly K-line (20 years, 240 pts) |
 | **Historical EPS** | Every day 02:00 CST | `fetch_earnings.py` | Alpha Vantage quarterly/annual EPS (25 tickers/day) |
+| **DCF supplemental fallback** | After SEC DCF refresh, as needed | `enrich_dcf_alpha_vantage.py` | Fill only SEC-missing DCF fields and mark `supplementalSources` |
 
 ### Daily Pipeline Flow
 
@@ -252,6 +263,7 @@ us-stock-valuation-platform/
 │   ├── fetch_quotes.py              # Daily quotes + valuation snapshot
 │   ├── fetch_history.py             # Monthly K-line history (Twelve Data)
 │   ├── fetch_earnings.py            # Quarterly EPS (Alpha Vantage)
+│   ├── enrich_dcf_alpha_vantage.py  # DCF supplemental fallback (Alpha Vantage)
 │   ├── calculate_pe_history.py      # PE percentile engine (rolling TTM EPS)
 │   ├── prebuild-api-data.mjs        # Copy cache to api/_data/ for Vercel
 │   └── clean-dist.mjs               # Safe cross-platform dist cleanup helper
@@ -300,7 +312,7 @@ Run the SEC fetcher with Python standard library only; it does not require `requ
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `FINNHUB_API_KEY` | Yes | Finnhub API key (PE/PB/ROE + EPS fallback) |
-| `ALPHA_VANTAGE_API_KEY` | Yes | Alpha Vantage API key (historical EPS) |
+| `ALPHA_VANTAGE_API_KEY` | Yes | Alpha Vantage API key (historical EPS + DCF supplemental fallback) |
 | `TWELVE_DATA_API_KEY` | Yes | Twelve Data API key (historical monthly data) |
 | `EODHD_API_TOKEN` | No | EODHD API token for provider-direct ETF/index fundamentals |
 | `GEMINI_API_KEY` | No | Google Gemini API key for AI analysis features |
