@@ -50,6 +50,7 @@ interface DcfRealData {
   fcfSource: string | null;
   balanceSheetSource: string | null;
   sharesSource: string | null;
+  supplementalSourceText: string | null;
 }
 
 const FALLBACK_ASSUMPTIONS: DcfAssumption = {
@@ -92,6 +93,7 @@ const copy = {
     sourceNetDebt: '净债务：最近披露期',
     sourceShares: '总股本：最近披露期',
     sourceCurrency: '财报货币',
+    supplementalSource: '补充来源',
     fiscalYear: '财年',
     filedDate: '提交日期',
     accession: 'SEC 编号',
@@ -143,6 +145,7 @@ const copy = {
     sourceNetDebt: 'Net debt: latest reported period',
     sourceShares: 'Shares: latest reported period',
     sourceCurrency: 'Filing currency',
+    supplementalSource: 'Supplemental source',
     fiscalYear: 'Fiscal year',
     filedDate: 'Filed',
     accession: 'SEC accession',
@@ -211,8 +214,19 @@ function formatSourceLine(source: any, label: string) {
     source.fiscalPeriod || null,
     source.form || null,
     source.filedDate || null,
+    source.sourceProvider ? `${source.sourceProvider} supplemental` : null,
   ].filter(Boolean);
   return details.length > 0 ? `${label}: ${details.join(' / ')}` : label;
+}
+
+function formatSupplementalSources(sources: any, label: string) {
+  if (!sources || typeof sources !== 'object') return null;
+  const providers = Array.from(new Set(
+    Object.values(sources)
+      .map((item: any) => item?.provider)
+      .filter(Boolean),
+  ));
+  return providers.length > 0 ? `${label}: ${providers.join(', ')}` : null;
 }
 
 export function DcfView({ company, theme, t, lang }: DcfViewProps) {
@@ -277,6 +291,7 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
             source?.latestShares,
             ui.sourceShares,
           ),
+          supplementalSourceText: formatSupplementalSources(source?.supplementalSources, ui.supplementalSource),
         });
       } catch (error) {
         if (!cancelled) {
@@ -413,6 +428,7 @@ export function DcfView({ company, theme, t, lang }: DcfViewProps) {
     realData?.fcfSource,
     realData?.balanceSheetSource,
     realData?.sharesSource,
+    realData?.supplementalSourceText,
     realData?.currency ? `${ui.sourceCurrency}: ${realData.currency}` : null,
     realData?.accessionNumber ? `${ui.accession}: ${realData.accessionNumber}` : null,
   ].filter(Boolean) as string[];

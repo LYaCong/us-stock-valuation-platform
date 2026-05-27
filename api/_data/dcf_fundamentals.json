@@ -4,20 +4,113 @@
     "source": "SEC companyfacts",
     "userAgent": "LiYacong us-stock-valuation-platform dcf-data contact@example.com",
     "requestedTickers": 100,
-    "records": 99,
-    "completeRecords": 85,
-    "coverage": 0.8585858585858586,
+    "records": 100,
+    "completeRecords": 99,
+    "coverage": 0.99,
     "policies": {
       "freeCashFlow": "Latest annual filing.",
       "cashDebtNetDebt": "Latest reported balance-sheet instant.",
       "sharesOutstanding": "Latest reported shares fact."
     },
     "refreshCadence": "Refresh after new quarterly or annual filings; daily refresh is not needed.",
-    "skipped": {
-      "BAC": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>"
-    },
+    "skipped": {},
     "schemaUpdatedAt": "2026-05-27T07:03:09.649Z",
-    "schemaUpdateNote": "Local metadata backfill only; SEC full refresh was blocked before ticker map fetch."
+    "schemaUpdateNote": "Local metadata backfill only; SEC full refresh was blocked before ticker map fetch.",
+    "supplementalUpdatedAt": "2026-05-27T07:24:05.220042+00:00",
+    "supplementalSources": {
+      "Alpha Vantage": {
+        "endpoints": [
+          "CASH_FLOW",
+          "BALANCE_SHEET",
+          "OVERVIEW"
+        ],
+        "policy": "Only fills fields missing from SEC companyfacts; never overwrites SEC values."
+      }
+    },
+    "supplementalRun": {
+      "changed": [],
+      "unchanged": [
+        "BAC"
+      ],
+      "failed": {}
+    },
+    "supplementalSummary": {
+      "supplementedRecords": 14,
+      "records": {
+        "LLY": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "JPM": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "BABA": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "ARM": [
+          "netDebt",
+          "shortTermDebt",
+          "totalDebt"
+        ],
+        "RY": [
+          "capitalExpenditures",
+          "freeCashFlow",
+          "longTermDebt",
+          "netDebt",
+          "shortTermDebt",
+          "totalDebt"
+        ],
+        "SHEL": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "WFC": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "SAP": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "TTE": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "NEE": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "TD": [
+          "capitalExpenditures",
+          "freeCashFlow",
+          "longTermDebt",
+          "netDebt",
+          "shortTermDebt",
+          "totalDebt"
+        ],
+        "RIO": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "WELL": [
+          "capitalExpenditures",
+          "freeCashFlow"
+        ],
+        "BAC": [
+          "capitalExpenditures",
+          "cashAndEquivalents",
+          "freeCashFlow",
+          "longTermDebt",
+          "netDebt",
+          "operatingCashFlow",
+          "sharesOutstanding",
+          "shortTermDebt",
+          "totalDebt"
+        ]
+      }
+    }
   },
   "data": {
     "NVDA": {
@@ -2303,10 +2396,10 @@
       "accessionNumber": "0000059478-26-000013",
       "operatingCashFlow": 16813000000,
       "operatingCashFlowB": 16.81,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 7841000000.0,
+      "capitalExpendituresB": 7.84,
+      "freeCashFlow": 8972000000.0,
+      "freeCashFlowB": 8.97,
       "cashAndEquivalents": 5282000000,
       "cashAndEquivalentsB": 5.28,
       "shortTermDebt": 0,
@@ -2346,37 +2439,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 7841000000.0,
+          "valueB": 7.84,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "10-K",
-          "filedDate": "2026-02-12",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0000059478-26-000013",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 8972000000.0,
+          "valueB": 8.97,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -2496,11 +2598,28 @@
         "longTermDebt": "us-gaap:LongTermDebtNoncurrent",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "MU": {
       "ticker": "MU",
@@ -2719,10 +2838,10 @@
       "accessionNumber": "0001628280-26-008131",
       "operatingCashFlow": -147782000000,
       "operatingCashFlowB": -147.78,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 0.0,
+      "capitalExpendituresB": 0.0,
+      "freeCashFlow": -147782000000.0,
+      "freeCashFlowB": -147.78,
       "cashAndEquivalents": 312142000000,
       "cashAndEquivalentsB": 312.14,
       "shortTermDebt": 68048000000,
@@ -2762,37 +2881,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 0.0,
+          "valueB": 0.0,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "10-K",
-          "filedDate": "2026-02-13",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0001628280-26-008131",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": -147782000000.0,
+          "valueB": -147.78,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -2911,11 +3039,28 @@
         "longTermDebt": "us-gaap:LongTermDebt",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "AMD": {
       "ticker": "AMD",
@@ -7885,10 +8030,10 @@
       "accessionNumber": "0001193125-26-231755",
       "operatingCashFlow": 11049000000,
       "operatingCashFlowB": 11.05,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 126937000000.0,
+      "capitalExpendituresB": 126.94,
+      "freeCashFlow": -115888000000.0,
+      "freeCashFlowB": -115.89,
       "cashAndEquivalents": 19068000000,
       "cashAndEquivalentsB": 19.07,
       "shortTermDebt": 1096000000,
@@ -7928,37 +8073,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 126937000000.0,
+          "valueB": 126.94,
           "periodType": "annual",
           "fiscalYear": 2026,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-05-20",
+          "form": null,
+          "filedDate": "2026-03-31",
           "endDate": "2026-03-31",
-          "accessionNumber": "0001193125-26-231755",
+          "accessionNumber": null,
+          "currency": "CNY",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": -115888000000.0,
+          "valueB": -115.89,
+          "periodType": "annual",
+          "fiscalYear": 2026,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "CNY",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -8078,11 +8232,28 @@
         "longTermDebt": null,
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "GS": {
       "ticker": "GS",
@@ -9545,14 +9716,14 @@
       "freeCashFlowB": 0.98,
       "cashAndEquivalents": 2751000000,
       "cashAndEquivalentsB": 2.75,
-      "shortTermDebt": null,
-      "shortTermDebtB": null,
+      "shortTermDebt": 39000000.0,
+      "shortTermDebtB": 0.04,
       "longTermDebt": null,
       "longTermDebtB": null,
-      "totalDebt": null,
-      "totalDebtB": null,
-      "netDebt": null,
-      "netDebtB": null,
+      "totalDebt": 432000000.0,
+      "totalDebtB": 0.43,
+      "netDebt": -2319000000.0,
+      "netDebtB": -2.32,
       "sharesOutstanding": 1064055252,
       "sharesOutstandingB": 1.06,
       "annualCashFlow": {
@@ -9642,17 +9813,23 @@
           }
         },
         "shortTermDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
+          "value": 39000000.0,
+          "valueB": 0.04,
           "periodType": "latestInstant",
-          "fiscalYear": null,
+          "fiscalYear": 2026,
           "fiscalPeriod": null,
           "form": null,
-          "filedDate": null,
-          "endDate": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
           "accessionNumber": null,
-          "currency": null
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
         },
         "longTermDebt": {
           "value": null,
@@ -9668,41 +9845,43 @@
           "currency": null
         },
         "totalDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
-        },
-        "netDebt": {
-          "value": null,
-          "valueB": null,
-          "formula": "totalDebt - cashAndEquivalents",
+          "value": 432000000.0,
+          "valueB": 0.43,
           "periodType": "latestInstant",
           "fiscalYear": 2026,
-          "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-05-26",
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
           "endDate": "2026-03-31",
-          "accessionNumber": "0001973239-26-000097",
+          "accessionNumber": null,
           "currency": "USD",
-          "sourceTags": {
-            "cashAndEquivalents": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortLongTermDebtTotal",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "value": -2319000000.0,
+          "valueB": -2.32,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "derivedNetDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "totalDebt - cashAndEquivalents"
         }
       },
       "latestShares": {
@@ -9731,11 +9910,37 @@
         "longTermDebt": null,
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "totalDebt: no supported latest instant SEC XBRL tag found",
-        "netDebt: no supported latest instant SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "shortTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortLongTermDebtTotal",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "derivedNetDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "RY": {
       "ticker": "RY",
@@ -9748,20 +9953,20 @@
       "accessionNumber": "0001193125-25-305927",
       "operatingCashFlow": 55220000000,
       "operatingCashFlowB": 55.22,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 2243000000.0,
+      "capitalExpendituresB": 2.24,
+      "freeCashFlow": 52977000000.0,
+      "freeCashFlowB": 52.98,
       "cashAndEquivalents": 46226000000,
       "cashAndEquivalentsB": 46.23,
-      "shortTermDebt": null,
-      "shortTermDebtB": null,
-      "longTermDebt": null,
-      "longTermDebtB": null,
-      "totalDebt": null,
-      "totalDebtB": null,
-      "netDebt": null,
-      "netDebtB": null,
+      "shortTermDebt": 278257663000.0,
+      "shortTermDebtB": 278.26,
+      "longTermDebt": 347208000000.0,
+      "longTermDebtB": 347.21,
+      "totalDebt": 362986931000.0,
+      "totalDebtB": 362.99,
+      "netDebt": 316760931000.0,
+      "netDebtB": 316.76,
       "sharesOutstanding": 1401884000,
       "sharesOutstandingB": 1.4,
       "annualCashFlow": {
@@ -9791,37 +9996,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 2243000000.0,
+          "valueB": 2.24,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "CAD",
           "fiscalPeriod": "FY",
-          "form": "40-F",
-          "filedDate": "2025-12-03",
+          "form": null,
+          "filedDate": "2025-10-31",
           "endDate": "2025-10-31",
-          "accessionNumber": "0001193125-25-305927",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 52977000000.0,
+          "valueB": 52.98,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-10-31",
+          "endDate": "2025-10-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -9851,67 +10065,81 @@
           }
         },
         "shortTermDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null
-        },
-        "longTermDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null
-        },
-        "totalDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
-        },
-        "netDebt": {
-          "value": null,
-          "valueB": null,
-          "formula": "totalDebt - cashAndEquivalents",
+          "value": 278257663000.0,
+          "valueB": 278.26,
           "periodType": "latestInstant",
           "fiscalYear": 2026,
-          "fiscalPeriod": "Q1",
-          "form": "6-K",
-          "filedDate": "2026-02-26",
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
           "endDate": "2026-01-31",
-          "accessionNumber": "0001193125-26-073265",
+          "accessionNumber": null,
           "currency": "CAD",
-          "sourceTags": {
-            "cashAndEquivalents": "ifrs-full:CashAndCashEquivalents",
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "value": 347208000000.0,
+          "valueB": 347.21,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "longTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "value": 362986931000.0,
+          "valueB": 362.99,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortLongTermDebtTotal",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "value": 316760931000.0,
+          "valueB": 316.76,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "derivedNetDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "totalDebt - cashAndEquivalents"
         }
       },
       "latestShares": {
@@ -9940,13 +10168,64 @@
         "longTermDebt": null,
         "sharesOutstanding": "ifrs-full:AdjustedWeightedAverageShares"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found",
-        "totalDebt: no supported latest instant SEC XBRL tag found",
-        "netDebt: no supported latest instant SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-10-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-10-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "shortTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "longTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortLongTermDebtTotal",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "derivedNetDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "SHEL": {
       "ticker": "SHEL",
@@ -9959,10 +10238,10 @@
       "accessionNumber": "0001628280-26-017024",
       "operatingCashFlow": 42863000000,
       "operatingCashFlowB": 42.86,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 18991277000.0,
+      "capitalExpendituresB": 18.99,
+      "freeCashFlow": 23871723000.0,
+      "freeCashFlowB": 23.87,
       "cashAndEquivalents": 30216000000,
       "cashAndEquivalentsB": 30.22,
       "shortTermDebt": 8622000000,
@@ -10002,37 +10281,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 18991277000.0,
+          "valueB": 18.99,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-03-12",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0001628280-26-017024",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 23871723000.0,
+          "valueB": 23.87,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -10151,11 +10439,28 @@
         "longTermDebt": "ifrs-full:LongtermBorrowings",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "TM": {
       "ticker": "TM",
@@ -10993,10 +11298,10 @@
       "accessionNumber": "0000072971-26-000133",
       "operatingCashFlow": -19001000000,
       "operatingCashFlowB": -19,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 0.0,
+      "capitalExpendituresB": 0.0,
+      "freeCashFlow": -19001000000.0,
+      "freeCashFlowB": -19.0,
       "cashAndEquivalents": 173273000000,
       "cashAndEquivalentsB": 173.27,
       "shortTermDebt": 32282000000,
@@ -11036,37 +11341,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 0.0,
+          "valueB": 0.0,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "10-K",
-          "filedDate": "2026-02-24",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0000072971-26-000133",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": -19001000000.0,
+          "valueB": -19.0,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -11186,11 +11500,28 @@
         "longTermDebt": "us-gaap:LongTermDebt",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "MUFG": {
       "ticker": "MUFG",
@@ -12442,10 +12773,10 @@
       "accessionNumber": "0001104659-26-020058",
       "operatingCashFlow": 9156000000,
       "operatingCashFlowB": 9.16,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 709833656.0,
+      "capitalExpendituresB": 0.71,
+      "freeCashFlow": 8446166344.0,
+      "freeCashFlowB": 8.45,
       "cashAndEquivalents": 8220000000,
       "cashAndEquivalentsB": 8.22,
       "shortTermDebt": null,
@@ -12485,37 +12816,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 709833656.0,
+          "valueB": 0.71,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "EUR",
           "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-02-26",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0001104659-26-020058",
+          "accessionNumber": null,
+          "currency": "EUR",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 8446166344.0,
+          "valueB": 8.45,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "EUR",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -12634,11 +12974,28 @@
         "longTermDebt": "ifrs-full:LongtermBorrowings",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "SNDK": {
       "ticker": "SNDK",
@@ -12858,10 +13215,10 @@
       "accessionNumber": "0001104659-26-035876",
       "operatingCashFlow": 27343000000,
       "operatingCashFlowB": 27.34,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 17642971000.0,
+      "capitalExpendituresB": 17.64,
+      "freeCashFlow": 9700029000.0,
+      "freeCashFlowB": 9.7,
       "cashAndEquivalents": 26202000000,
       "cashAndEquivalentsB": 26.2,
       "shortTermDebt": 2540000000,
@@ -12901,37 +13258,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 17642971000.0,
+          "valueB": 17.64,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-03-27",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0001104659-26-035876",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 9700029000.0,
+          "valueB": 9.7,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -13051,11 +13417,28 @@
         "longTermDebt": "ifrs-full:LongtermBorrowings",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "TMUS": {
       "ticker": "TMUS",
@@ -14513,10 +14896,10 @@
       "accessionNumber": "0000753308-26-000015",
       "operatingCashFlow": 12485000000,
       "operatingCashFlowB": 12.48,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 9274000000.0,
+      "capitalExpendituresB": 9.27,
+      "freeCashFlow": 3211000000.0,
+      "freeCashFlowB": 3.21,
       "cashAndEquivalents": 1998000000,
       "cashAndEquivalentsB": 2,
       "shortTermDebt": 3837000000,
@@ -14556,37 +14939,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 9274000000.0,
+          "valueB": 9.27,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "10-K",
-          "filedDate": "2026-02-13",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0000753308-26-000015",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 3211000000.0,
+          "valueB": 3.21,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -14706,11 +15098,28 @@
         "longTermDebt": "us-gaap:LongTermDebtNoncurrent",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "TD": {
       "ticker": "TD",
@@ -14723,20 +15132,20 @@
       "accessionNumber": "0001562762-25-000289",
       "operatingCashFlow": -69646000000,
       "operatingCashFlowB": -69.65,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 2145000000.0,
+      "capitalExpendituresB": 2.15,
+      "freeCashFlow": -71791000000.0,
+      "freeCashFlowB": -71.79,
       "cashAndEquivalents": 6287000000,
       "cashAndEquivalentsB": 6.29,
-      "shortTermDebt": null,
-      "shortTermDebtB": null,
-      "longTermDebt": null,
-      "longTermDebtB": null,
-      "totalDebt": null,
-      "totalDebtB": null,
-      "netDebt": null,
-      "netDebtB": null,
+      "shortTermDebt": 225465628000.0,
+      "shortTermDebtB": 225.47,
+      "longTermDebt": 225935000000.0,
+      "longTermDebtB": 225.94,
+      "totalDebt": 269648121000.0,
+      "totalDebtB": 269.65,
+      "netDebt": 263361121000.0,
+      "netDebtB": 263.36,
       "sharesOutstanding": 1684700000,
       "sharesOutstandingB": 1.68,
       "annualCashFlow": {
@@ -14766,37 +15175,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 2145000000.0,
+          "valueB": 2.15,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "CAD",
           "fiscalPeriod": "FY",
-          "form": "40-F",
-          "filedDate": "2025-12-04",
+          "form": null,
+          "filedDate": "2025-10-31",
           "endDate": "2025-10-31",
-          "accessionNumber": "0001562762-25-000289",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": -71791000000.0,
+          "valueB": -71.79,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-10-31",
+          "endDate": "2025-10-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -14826,67 +15244,81 @@
           }
         },
         "shortTermDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null
-        },
-        "longTermDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null
-        },
-        "totalDebt": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "latestInstant",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
-        },
-        "netDebt": {
-          "value": null,
-          "valueB": null,
-          "formula": "totalDebt - cashAndEquivalents",
+          "value": 225465628000.0,
+          "valueB": 225.47,
           "periodType": "latestInstant",
           "fiscalYear": 2026,
-          "fiscalPeriod": "Q1",
-          "form": "6-K",
-          "filedDate": "2026-02-26",
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
           "endDate": "2026-01-31",
-          "accessionNumber": "0000947263-26-000019",
+          "accessionNumber": null,
           "currency": "CAD",
-          "sourceTags": {
-            "cashAndEquivalents": "ifrs-full:CashAndCashEquivalents",
-            "totalDebt": null,
-            "shortTermDebt": null,
-            "longTermDebt": null
-          }
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "value": 225935000000.0,
+          "valueB": 225.94,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "longTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "value": 269648121000.0,
+          "valueB": 269.65,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortLongTermDebtTotal",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "value": 263361121000.0,
+          "valueB": 263.36,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-01-31",
+          "endDate": "2026-01-31",
+          "accessionNumber": null,
+          "currency": "CAD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "derivedNetDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "totalDebt - cashAndEquivalents"
         }
       },
       "latestShares": {
@@ -14915,13 +15347,64 @@
         "longTermDebt": null,
         "sharesOutstanding": "ifrs-full:AdjustedWeightedAverageShares"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found",
-        "totalDebt: no supported latest instant SEC XBRL tag found",
-        "netDebt: no supported latest instant SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-10-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-10-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "shortTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "longTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortLongTermDebtTotal",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "derivedNetDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-01-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "DIS": {
       "ticker": "DIS",
@@ -15967,10 +16450,10 @@
       "accessionNumber": "0001628280-26-009531",
       "operatingCashFlow": 16832000000,
       "operatingCashFlowB": 16.83,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 12363825304.0,
+      "capitalExpendituresB": 12.36,
+      "freeCashFlow": 4468174696.0,
+      "freeCashFlowB": 4.47,
       "cashAndEquivalents": 8872000000,
       "cashAndEquivalentsB": 8.87,
       "shortTermDebt": 313000000,
@@ -16010,37 +16493,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 12363825304.0,
+          "valueB": 12.36,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "20-F",
-          "filedDate": "2026-02-19",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0001628280-26-009531",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 4468174696.0,
+          "valueB": 4.47,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "ifrs-full:CashFlowsFromUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -16159,11 +16651,28 @@
         "longTermDebt": "ifrs-full:LongtermBorrowings",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "BA": {
       "ticker": "BA",
@@ -18434,10 +18943,11 @@
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
       "missingFields": [
-        "totalDebt: no supported latest instant SEC XBRL tag found",
-        "netDebt: no supported latest instant SEC XBRL tag found"
+        "totalDebt: no supported SEC or supplemental latest instant data found",
+        "netDebt: no supported SEC or supplemental latest instant data found"
       ],
-      "coverageStatus": "partial"
+      "coverageStatus": "partial",
+      "supplementalSources": {}
     },
     "WDC": {
       "ticker": "WDC",
@@ -19482,10 +19992,10 @@
       "accessionNumber": "0000766704-26-000010",
       "operatingCashFlow": 2881677000,
       "operatingCashFlowB": 2.88,
-      "capitalExpenditures": null,
-      "capitalExpendituresB": null,
-      "freeCashFlow": null,
-      "freeCashFlowB": null,
+      "capitalExpenditures": 33799000.0,
+      "capitalExpendituresB": 0.03,
+      "freeCashFlow": 2847878000.0,
+      "freeCashFlowB": 2.85,
       "cashAndEquivalents": 4703775000,
       "cashAndEquivalentsB": 4.7,
       "shortTermDebt": null,
@@ -19525,37 +20035,46 @@
           }
         },
         "capitalExpenditures": {
-          "value": null,
-          "valueB": null,
-          "sourceTag": null,
-          "periodType": "annual",
-          "fiscalYear": null,
-          "fiscalPeriod": null,
-          "form": null,
-          "filedDate": null,
-          "endDate": null,
-          "accessionNumber": null,
-          "currency": null,
-          "sourceTags": {
-            "capitalExpenditures": null
-          }
-        },
-        "freeCashFlow": {
-          "value": null,
-          "valueB": null,
-          "formula": "operatingCashFlow - capitalExpenditures",
+          "value": 33799000.0,
+          "valueB": 0.03,
           "periodType": "annual",
           "fiscalYear": 2025,
-          "currency": "USD",
           "fiscalPeriod": "FY",
-          "form": "10-K",
-          "filedDate": "2026-02-12",
+          "form": null,
+          "filedDate": "2025-12-31",
           "endDate": "2025-12-31",
-          "accessionNumber": "0000766704-26-000010",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 2847878000.0,
+          "valueB": 2.85,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
           "sourceTags": {
             "operatingCashFlow": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
             "capitalExpenditures": null
-          }
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
         }
       },
       "latestBalanceSheet": {
@@ -19675,11 +20194,28 @@
         "longTermDebt": "us-gaap:LongTermDebt",
         "sharesOutstanding": "dei:EntityCommonStockSharesOutstanding"
       },
-      "missingFields": [
-        "capitalExpenditures: no supported annual SEC XBRL tag found",
-        "freeCashFlow: no supported annual SEC XBRL tag found"
-      ],
-      "coverageStatus": "partial"
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "supplementalSources": {
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      }
     },
     "ABT": {
       "ticker": "ABT",
@@ -20507,6 +21043,309 @@
       },
       "missingFields": [],
       "coverageStatus": "complete"
+    },
+    "BAC": {
+      "ticker": "BAC",
+      "companyName": "BAC",
+      "currency": "USD",
+      "missingFields": [],
+      "coverageStatus": "complete",
+      "sourceTags": {},
+      "annualCashFlow": {
+        "periodType": "annual",
+        "operatingCashFlow": {
+          "value": 12613000000.0,
+          "valueB": 12.61,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "operatingCashflow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "capitalExpenditures": {
+          "value": 0.0,
+          "valueB": 0.0,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "capitalExpenditures",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "value": 12613000000.0,
+          "valueB": 12.61,
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "fiscalPeriod": "FY",
+          "form": null,
+          "filedDate": "2025-12-31",
+          "endDate": "2025-12-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {
+            "operatingCashFlow": null,
+            "capitalExpenditures": null
+          },
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "CASH_FLOW",
+          "sourceField": "derivedFreeCashFlow",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "operatingCashFlow - capitalExpenditures"
+        },
+        "policy": "FCF comes from the latest annual filing.",
+        "fiscalYear": 2025,
+        "fiscalPeriod": "FY",
+        "filedDate": "2025-12-31",
+        "endDate": "2025-12-31",
+        "currency": "USD"
+      },
+      "latestBalanceSheet": {
+        "periodType": "latestInstant",
+        "cashAndEquivalents": {
+          "value": 242479000000.0,
+          "valueB": 242.48,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "cashAndCashEquivalentsAtCarryingValue",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "shortTermDebt": {
+          "value": 57630000000.0,
+          "valueB": 57.63,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "value": 300757000000.0,
+          "valueB": 300.76,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "longTermDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "value": 383594000000.0,
+          "valueB": 383.59,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "shortLongTermDebtTotal",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "value": 141115000000.0,
+          "valueB": 141.12,
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "fiscalPeriod": null,
+          "form": null,
+          "filedDate": "2026-03-31",
+          "endDate": "2026-03-31",
+          "accessionNumber": null,
+          "currency": "USD",
+          "sourceTag": null,
+          "sourceTags": {},
+          "sourceType": "supplemental",
+          "sourceProvider": "Alpha Vantage",
+          "sourceEndpoint": "BALANCE_SHEET",
+          "sourceField": "derivedNetDebt",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00",
+          "formula": "totalDebt - cashAndEquivalents"
+        },
+        "policy": "Cash, debt, and net debt use the latest reported balance-sheet instant.",
+        "fiscalYear": 2026,
+        "filedDate": "2026-03-31",
+        "endDate": "2026-03-31",
+        "currency": "USD"
+      },
+      "latestShares": {
+        "policy": "Shares outstanding uses the latest reported shares fact.",
+        "value": 7096591000.0,
+        "valueB": 7.1,
+        "periodType": "latestDisclosure",
+        "fiscalYear": null,
+        "fiscalPeriod": null,
+        "form": null,
+        "filedDate": "2026-03-31",
+        "endDate": "2026-03-31",
+        "accessionNumber": null,
+        "currency": "shares",
+        "sourceTag": null,
+        "sourceTags": {},
+        "sourceType": "supplemental",
+        "sourceProvider": "Alpha Vantage",
+        "sourceEndpoint": "OVERVIEW",
+        "sourceField": "SharesOutstanding",
+        "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+      },
+      "supplementalSources": {
+        "operatingCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "operatingCashflow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "capitalExpenditures": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "capitalExpenditures",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "freeCashFlow": {
+          "provider": "Alpha Vantage",
+          "endpoint": "CASH_FLOW",
+          "field": "derivedFreeCashFlow",
+          "periodType": "annual",
+          "fiscalYear": 2025,
+          "endDate": "2025-12-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "cashAndEquivalents": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "cashAndCashEquivalentsAtCarryingValue",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "shortTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "longTermDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "longTermDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "totalDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "shortLongTermDebtTotal",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "netDebt": {
+          "provider": "Alpha Vantage",
+          "endpoint": "BALANCE_SHEET",
+          "field": "derivedNetDebt",
+          "periodType": "latestInstant",
+          "fiscalYear": 2026,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        },
+        "sharesOutstanding": {
+          "provider": "Alpha Vantage",
+          "endpoint": "OVERVIEW",
+          "field": "SharesOutstanding",
+          "periodType": "latestDisclosure",
+          "fiscalYear": null,
+          "endDate": "2026-03-31",
+          "supplementedAt": "2026-05-27T07:17:51.256474+00:00"
+        }
+      },
+      "operatingCashFlow": 12613000000.0,
+      "operatingCashFlowB": 12.61,
+      "capitalExpenditures": 0.0,
+      "capitalExpendituresB": 0.0,
+      "freeCashFlow": 12613000000.0,
+      "freeCashFlowB": 12.61,
+      "cashAndEquivalents": 242479000000.0,
+      "cashAndEquivalentsB": 242.48,
+      "shortTermDebt": 57630000000.0,
+      "shortTermDebtB": 57.63,
+      "longTermDebt": 300757000000.0,
+      "longTermDebtB": 300.76,
+      "totalDebt": 383594000000.0,
+      "totalDebtB": 383.59,
+      "netDebt": 141115000000.0,
+      "netDebtB": 141.12,
+      "sharesOutstanding": 7096591000.0,
+      "sharesOutstandingB": 7.1
     }
   }
 }

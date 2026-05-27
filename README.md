@@ -48,6 +48,7 @@ This release makes the DCF page stricter and easier to use for beginners:
 
 - **SEC filing-based DCF inputs**: `scripts/fetch_sec_dcf_fundamentals.py` fetches operating cash flow, capital expenditures, free cash flow, cash, debt, net debt, shares outstanding, fiscal year, filing date, accession number, and source tags from SEC `companyfacts`.
 - **Field-level DCF source periods**: `annualCashFlow.freeCashFlow` is explicitly tagged as `periodType: annual` for the latest annual filing, while `latestBalanceSheet.cashAndEquivalents`, `latestBalanceSheet.totalDebt`, and `latestBalanceSheet.netDebt` are tagged as `periodType: latestInstant`. `latestShares` uses `periodType: latestDisclosure`. Each field carries fiscal period metadata and source tags so the UI can say exactly which reporting period is being used.
+- **Supplemental DCF fallback**: `scripts/enrich_dcf_alpha_vantage.py` fills only fields that SEC `companyfacts` leaves missing, using Alpha Vantage `CASH_FLOW`, `BALANCE_SHEET`, and `OVERVIEW`. Supplemental values are marked in `supplementalSources` and do not overwrite SEC values. After the 2026-05-27 run, DCF input coverage is **99/100 companies**; `ISRG` still lacks a supported total-debt / net-debt field.
 - **Chinese DCF terminology**: the Chinese UI now spells out free cash flow as `自由现金流` instead of using the English acronym `FCF`, while the English UI keeps the standard abbreviation where appropriate.
 - **No silent DCF estimates**: the DCF page no longer backs into FCF from PE, shares from market cap / price, or net debt from market-cap heuristics. Missing filing data stays missing and blocks the calculation when it is required.
 - **Project-level company assumptions**: `dcf_assumptions.json` stores per-ticker default DCF assumptions (`growth1to5`, `growth6to10`, `wacc`, `terminalGrowth`). Local development can save company defaults from the DCF page; deployed Vercel builds read the committed project defaults.
@@ -278,6 +279,7 @@ us-stock-valuation-platform/
 ### DCF Data Files
 
 - `scripts/fetch_sec_dcf_fundamentals.py`: OpenClaw-facing SEC companyfacts fetcher. It writes real DCF inputs and does not estimate missing fields.
+- `scripts/enrich_dcf_alpha_vantage.py`: optional supplemental fetcher. Run it after the SEC fetcher to fill missing DCF fields from Alpha Vantage without overwriting SEC-sourced values.
 - `stock_cache/dcf_fundamentals.json`: local cache for SEC filing-based FCF, debt, cash, shares, filing dates, source tags, and field-level period metadata. FCF uses the latest annual filing; cash, total debt, and net debt use the latest reported instant; shares use the latest disclosure.
 - `stock_cache/dcf_assumptions.json`: project-level per-company DCF assumptions. Commit this file to make saved assumptions available online.
 - `api/_data/dcf_fundamentals.json` and `api/_data/dcf_assumptions.json`: Vercel runtime copies used by the serverless API.
