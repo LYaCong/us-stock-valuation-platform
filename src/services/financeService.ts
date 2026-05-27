@@ -6,6 +6,15 @@ export interface HistoricalResponse {
   metadata: ApiMetadata;
 }
 
+export interface DcfAssumption {
+  growth1to5: number;
+  growth6to10: number;
+  wacc: number;
+  terminalGrowth: number;
+  updatedAt?: string;
+  note?: string;
+}
+
 export async function fetchQuotes(symbols: string[]): Promise<any[]> {
   if (symbols.length === 0) return [];
   try {
@@ -27,6 +36,25 @@ export async function fetchFundamentals(symbol: string): Promise<any> {
     return data.quoteSummary?.result?.[0] || null;
   } catch (error) {
     console.error('Error fetching fundamentals:', error);
+    return null;
+  }
+}
+
+export async function saveDcfAssumptions(
+  symbol: string,
+  assumptions: DcfAssumption,
+): Promise<DcfAssumption | null> {
+  try {
+    const response = await fetch('/api/dcf-assumptions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol, ...assumptions }),
+    });
+    if (!response.ok) throw new Error('Failed to save DCF assumptions');
+    const data = await response.json();
+    return data.assumption || null;
+  } catch (error) {
+    console.error('Error saving DCF assumptions:', error);
     return null;
   }
 }

@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "updatedAt": null,
+    "description": "Company-level default DCF assumptions. These are human judgments, not market data."
+  },
+  "defaults": {
+    "growth1to5": 15,
+    "growth6to10": 10,
+    "wacc": 10,
+    "terminalGrowth": 2.5,
+    "note": "Global fallback defaults used when a company has no saved assumptions."
+  },
+  "companies": {}
+}

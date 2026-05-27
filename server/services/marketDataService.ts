@@ -5,13 +5,56 @@ import {
   mapCachedIndexToValuation,
   mapHistoricalPayload,
 } from '../mappers/valuationMappers';
-import { loadDailyQuoteCache, loadHistoricalCache } from './cacheService';
+import {
+  loadDailyQuoteCache,
+  loadDcfAssumptionsCache,
+  loadDcfFundamentalsCache,
+  loadHistoricalCache,
+  saveDcfAssumption,
+  type DcfAssumption,
+  type DcfFundamentalRecord,
+} from './cacheService';
 
 interface MarketDataServiceDeps {
   baseDir: string;
 }
 
 export function createMarketDataService({ baseDir }: MarketDataServiceDeps) {
+  function raw(value: number | null | undefined) {
+    return value == null || !Number.isFinite(value) ? null : { raw: value };
+  }
+
+  function buildDcfFinancialData(cached: any, dcfData?: DcfFundamentalRecord) {
+    return {
+      currentPrice: raw(cached?.price ?? null),
+      operatingCashflow: raw(dcfData?.operatingCashFlow),
+      capitalExpenditures: raw(
+        dcfData?.capitalExpenditures != null
+          ? -Math.abs(dcfData.capitalExpenditures)
+          : null,
+      ),
+      freeCashFlow: raw(dcfData?.freeCashFlow),
+      totalCash: raw(dcfData?.cashAndEquivalents),
+      shortTermDebt: raw(dcfData?.shortTermDebt),
+      longTermDebt: raw(dcfData?.longTermDebt),
+      totalDebt: raw(dcfData?.totalDebt),
+      netDebt: raw(dcfData?.netDebt),
+    };
+  }
+
+  function getDcfAssumptionForTicker(ticker: string) {
+    const assumptionCache = loadDcfAssumptionsCache(baseDir);
+    return {
+      defaults: assumptionCache.defaults || {
+        growth1to5: 15,
+        growth6to10: 10,
+        wacc: 10,
+        terminalGrowth: 2.5,
+      },
+      company: assumptionCache.companies?.[ticker] || null,
+      metadata: assumptionCache.metadata || {},
+    };
+  }
 
   async function getValuations(tickers: string[]) {
     const cacheData = loadDailyQuoteCache(baseDir);
@@ -53,7 +96,6 @@ export function createMarketDataService({ baseDir }: MarketDataServiceDeps) {
   }
 
   async function getQuotes(symbols: string[]) {
-    // 从缓存读取，避免外部行情 API 限速。
     const cacheData = loadDailyQuoteCache(baseDir);
     const cacheMap = new Map<string, any>();
 
@@ -89,14 +131,23 @@ export function createMarketDataService({ baseDir }: MarketDataServiceDeps) {
   }
 
   async function getFundamentals(symbol: string) {
-    // 从缓存读取，避免外部行情 API 限速。
     const cacheData = loadDailyQuoteCache(baseDir);
+    const dcfFundamentals = loadDcfFundamentalsCache(baseDir);
     const ticker = symbol.trim().toUpperCase();
     const cached = (cacheData.companies || []).find((c: any) => c.ticker === ticker) ||
                    (cacheData.indices || []).find((i: any) => i.ticker === ticker);
+    const dcfData = dcfFundamentals.data?.[ticker] || null;
+    const dcfAssumptions = getDcfAssumptionForTicker(ticker);
 
     if (!cached) {
-      return { quoteSummary: { result: [{}] } };
+      return {
+        quoteSummary: {
+          result: [{
+            dcfSource: dcfData,
+            dcfAssumptions,
+          }],
+        },
+      };
     }
 
     const quoteSummary = {
@@ -110,15 +161,23 @@ export function createMarketDataService({ baseDir }: MarketDataServiceDeps) {
         forwardPE: { raw: cached.peFwd },
         priceToBook: { raw: cached.pb },
         pegRatio: { raw: cached.peg || null },
+        sharesOutstanding: raw(dcfData?.sharesOutstanding),
       },
       summaryDetail: {
         trailingPE: { raw: cached.peTtm },
         forwardPE: { raw: cached.peFwd },
         priceToBook: { raw: cached.pb },
       },
+      financialData: buildDcfFinancialData(cached, dcfData || undefined),
+      dcfSource: dcfData,
+      dcfAssumptions,
     };
 
     return { quoteSummary: { result: [quoteSummary] } };
+  }
+
+  async function saveDcfAssumptions(symbol: string, assumption: DcfAssumption) {
+    return saveDcfAssumption(baseDir, symbol, assumption);
   }
 
   async function getHistorical(symbol: string) {
@@ -138,6 +197,7 @@ export function createMarketDataService({ baseDir }: MarketDataServiceDeps) {
     getIndexValuations,
     getQuotes,
     getFundamentals,
+    saveDcfAssumptions,
     getHistorical,
   };
 }

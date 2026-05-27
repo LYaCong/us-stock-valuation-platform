@@ -14,6 +14,8 @@ async function startServer() {
     baseDir: __dirname,
   });
 
+  app.use(express.json());
+
   app.get('/api/valuation', async (req, res) => {
     try {
       const tickersParam = req.query.tickers as string;
@@ -71,6 +73,41 @@ async function startServer() {
     } catch (error: any) {
       console.error('Error fetching fundamentals:', error.message || error);
       res.status(500).json({ error: 'Failed to fetch fundamentals', details: error.message });
+    }
+  });
+
+  app.post('/api/dcf-assumptions', async (req, res) => {
+    try {
+      const symbol = String(req.body?.symbol || '').trim().toUpperCase();
+      if (!symbol) {
+        return res.status(400).json({ error: 'Missing symbol' });
+      }
+
+      const assumption = {
+        growth1to5: Number(req.body?.growth1to5),
+        growth6to10: Number(req.body?.growth6to10),
+        wacc: Number(req.body?.wacc),
+        terminalGrowth: Number(req.body?.terminalGrowth),
+        note: typeof req.body?.note === 'string' ? req.body.note : undefined,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const values = [
+        assumption.growth1to5,
+        assumption.growth6to10,
+        assumption.wacc,
+        assumption.terminalGrowth,
+      ];
+
+      if (values.some((value) => !Number.isFinite(value))) {
+        return res.status(400).json({ error: 'Invalid DCF assumptions' });
+      }
+
+      const saved = await marketDataService.saveDcfAssumptions(symbol, assumption);
+      res.json({ symbol, assumption: saved });
+    } catch (error: any) {
+      console.error('Error saving DCF assumptions:', error.message || error);
+      res.status(500).json({ error: 'Failed to save DCF assumptions', details: error.message });
     }
   });
 

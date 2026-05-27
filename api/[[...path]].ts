@@ -8,6 +8,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Read JSON data at module load time
 const dailyQuotes = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'daily_quotes.json'), 'utf-8'));
 const historicalCache = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'historical.json'), 'utf-8'));
+const dcfFundamentals = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'dcf_fundamentals.json'), 'utf-8'));
+const dcfAssumptions = JSON.parse(fs.readFileSync(path.join(__dirname, '_data', 'dcf_assumptions.json'), 'utf-8'));
 
 // --- Helpers ---
 
@@ -42,6 +44,37 @@ function mapIndex(c: any) {
 function send(res: ServerResponse, data: any, code = 200) {
   res.writeHead(code, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(data));
+}
+
+function raw(value: number | null | undefined) {
+  return value == null || !Number.isFinite(value) ? null : { raw: value };
+}
+
+function dcfAssumptionFor(ticker: string) {
+  return {
+    defaults: dcfAssumptions.defaults || {
+      growth1to5: 15,
+      growth6to10: 10,
+      wacc: 10,
+      terminalGrowth: 2.5,
+    },
+    company: dcfAssumptions.companies?.[ticker] || null,
+    metadata: dcfAssumptions.metadata || {},
+  };
+}
+
+function dcfFinancialData(c: any, d: any) {
+  return {
+    currentPrice: raw(c?.price ?? null),
+    operatingCashflow: raw(d?.operatingCashFlow),
+    capitalExpenditures: raw(d?.capitalExpenditures != null ? -Math.abs(d.capitalExpenditures) : null),
+    freeCashFlow: raw(d?.freeCashFlow),
+    totalCash: raw(d?.cashAndEquivalents),
+    shortTermDebt: raw(d?.shortTermDebt),
+    longTermDebt: raw(d?.longTermDebt),
+    totalDebt: raw(d?.totalDebt),
+    netDebt: raw(d?.netDebt),
+  };
 }
 
 function qp(req: IncomingMessage) {
@@ -87,8 +120,22 @@ function handleFundamentals(req: IncomingMessage, res: ServerResponse) {
   if (!sym) return send(res, { error: 'Missing symbol' }, 400);
   const t = sym.trim().toUpperCase();
   const c = (dailyQuotes.companies||[]).find((x:any)=>x.ticker===t) || (dailyQuotes.indices||[]).find((x:any)=>x.ticker===t);
-  if (!c) return send(res, { quoteSummary: { result: [{}] } });
-  send(res, { quoteSummary: { result: [{ price: { regularMarketPrice: c.price||null, marketCap: c.marketCap||null, shortName: c.name||t }, defaultKeyStatistics: { trailingPE:{raw:c.peTtm}, forwardPE:{raw:c.peFwd}, priceToBook:{raw:c.pb}, pegRatio:{raw:c.peg||null} }, summaryDetail: { trailingPE:{raw:c.peTtm}, forwardPE:{raw:c.peFwd}, priceToBook:{raw:c.pb} } }] } });
+  const d = dcfFundamentals.data?.[t] || null;
+  const assumptions = dcfAssumptionFor(t);
+  if (!c) return send(res, { quoteSummary: { result: [{ dcfSource: d, dcfAssumptions: assumptions }] } });
+  send(res, { quoteSummary: { result: [{
+    price: { regularMarketPrice: c.price||null, marketCap: c.marketCap||null, shortName: c.name||t },
+    defaultKeyStatistics: { trailingPE:{raw:c.peTtm}, forwardPE:{raw:c.peFwd}, priceToBook:{raw:c.pb}, pegRatio:{raw:c.peg||null}, sharesOutstanding: raw(d?.sharesOutstanding) },
+    summaryDetail: { trailingPE:{raw:c.peTtm}, forwardPE:{raw:c.peFwd}, priceToBook:{raw:c.pb} },
+    financialData: dcfFinancialData(c, d),
+    dcfSource: d,
+    dcfAssumptions: assumptions,
+  }] } });
+}
+
+function handleDcfAssumptions(req: IncomingMessage, res: ServerResponse) {
+  if (req.method !== 'POST') return send(res, { error: 'Method not allowed' }, 405);
+  send(res, { error: 'DCF assumptions are project files and cannot be written from the deployed serverless API.' }, 405);
 }
 
 function handleHistorical(req: IncomingMessage, res: ServerResponse) {
@@ -109,6 +156,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     if (p.startsWith('/api/index-valuations')) return handleIndexValuations(req, res);
     if (p.startsWith('/api/quotes'))           return handleQuotes(req, res);
     if (p.startsWith('/api/fundamentals'))     return handleFundamentals(req, res);
+    if (p.startsWith('/api/dcf-assumptions'))  return handleDcfAssumptions(req, res);
     if (p.startsWith('/api/historical'))       return handleHistorical(req, res);
     send(res, { error: 'Not found' }, 404);
   } catch (e: any) {

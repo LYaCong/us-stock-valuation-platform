@@ -7,7 +7,12 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 const apiDataDir = path.join(projectRoot, 'api', '_data');
 
-const cacheFiles = ['daily_quotes.json', 'historical.json'];
+const cacheFiles = [
+  'daily_quotes.json',
+  'historical.json',
+  'dcf_fundamentals.json',
+  'dcf_assumptions.json',
+];
 
 await mkdir(apiDataDir, { recursive: true });
 

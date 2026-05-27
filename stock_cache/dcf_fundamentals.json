@@ -1,0 +1,8 @@
+{
+  "metadata": {
+    "generatedAt": null,
+    "source": "SEC companyfacts",
+    "description": "Run scripts/fetch_sec_dcf_fundamentals.py to populate real DCF inputs. Missing fields must remain null and must not be estimated."
+  },
+  "data": {}
+}

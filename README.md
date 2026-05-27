@@ -31,7 +31,7 @@
 | Frontend | React 19, TypeScript, Tailwind CSS 4, Recharts |
 | Backend | Vercel Serverless Functions |
 | Primary Data Source | Sina Finance API (新浪财经) |
-| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), EODHD (ETF/index fundamentals) |
+| Supplement Data Sources | Finnhub (PE/PB/ROE), Twelve Data (history), Alpha Vantage (EPS), EODHD (ETF/index fundamentals), SEC companyfacts (DCF fundamentals) |
 | AI | Google Gemini API (`@google/genai`) |
 | Build | Vite 6 |
 | Deployment | Vercel (CI/CD via GitHub push) |
@@ -41,6 +41,16 @@
 ## Live Demo
 
 🌐 **[https://us-stock-valuation-platform.vercel.app](https://us-stock-valuation-platform.vercel.app)**
+
+## Latest DCF Upgrade (2026-05-27)
+
+This release makes the DCF page stricter and easier to use for beginners:
+
+- **SEC filing-based DCF inputs**: `scripts/fetch_sec_dcf_fundamentals.py` fetches operating cash flow, capital expenditures, free cash flow, cash, debt, net debt, shares outstanding, fiscal year, filing date, accession number, and source tags from SEC `companyfacts`.
+- **No silent DCF estimates**: the DCF page no longer backs into FCF from PE, shares from market cap / price, or net debt from market-cap heuristics. Missing filing data stays missing and blocks the calculation when it is required.
+- **Project-level company assumptions**: `dcf_assumptions.json` stores per-ticker default DCF assumptions (`growth1to5`, `growth6to10`, `wacc`, `terminalGrowth`). Local development can save company defaults from the DCF page; deployed Vercel builds read the committed project defaults.
+- **Beginner guidance**: the page now explains each DCF term with help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, and shows formula breakdowns for enterprise value, equity value, and implied price.
+- **Refresh cadence**: market quotes remain daily data; SEC DCF fundamentals are quarterly / filing-driven and should be refreshed after new 10-Q / 10-K filings; DCF assumptions are human judgments and only change when saved or edited.
 
 ## Latest Optimization (2026-05-21)
 
@@ -263,12 +273,20 @@ us-stock-valuation-platform/
 
 ## API Endpoints
 
+### DCF Data Files
+
+- `scripts/fetch_sec_dcf_fundamentals.py`: OpenClaw-facing SEC companyfacts fetcher. It writes real DCF inputs and does not estimate missing fields.
+- `stock_cache/dcf_fundamentals.json`: local cache for SEC filing-based FCF, debt, cash, shares, filing dates, and source tags.
+- `stock_cache/dcf_assumptions.json`: project-level per-company DCF assumptions. Commit this file to make saved assumptions available online.
+- `api/_data/dcf_fundamentals.json` and `api/_data/dcf_assumptions.json`: Vercel runtime copies used by the serverless API.
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/valuation?tickers=AAPL,NVDA` | GET | Company valuations with PE/PB/ROE + percentile stats |
 | `/api/index-valuations` | GET | Index & ETF valuations |
 | `/api/quotes?symbols=AAPL` | GET | Real-time quotes (from cache) |
-| `/api/fundamentals?symbol=AAPL` | GET | Company fundamentals (from cache) |
+| `/api/fundamentals?symbol=AAPL` | GET | Company fundamentals + SEC DCF inputs + project DCF assumptions (from cache) |
+| `/api/dcf-assumptions` | POST | Local-dev only: save project-level company DCF assumptions |
 | `/api/historical?symbol=AAPL` | GET | Historical price + PE + percentile data |
 
 ## Environment Variables
