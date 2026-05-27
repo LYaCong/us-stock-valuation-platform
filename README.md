@@ -52,7 +52,7 @@ This release makes the DCF page stricter and easier to use for beginners:
 - **Chinese DCF terminology**: the Chinese UI now spells out free cash flow as `自由现金流` instead of using the English acronym `FCF`, while the English UI keeps the standard abbreviation where appropriate.
 - **No silent DCF estimates**: the DCF page no longer backs into FCF from PE, shares from market cap / price, or net debt from market-cap heuristics. Missing filing data stays missing and blocks the calculation when it is required.
 - **Company assumptions with browser fallback**: `dcf_assumptions.json` stores committed per-ticker defaults for deployed builds. Local development can still write project defaults from the DCF page; if a deployed serverless environment rejects project-file writes, the UI now saves the assumption in the current browser and reuses it for that ticker on the same device.
-- **Beginner guidance**: the page now explains each DCF term with help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, shows formula breakdowns for enterprise value / equity value / implied price, and adds plain-language sections for inputs, assumptions, and result interpretation.
+- **Beginner guidance**: the page now explains each DCF term with expanded help icons, adds scenario presets, shows a simple calculation flow, separates year 1-10 cash flow from terminal value, shows formula breakdowns for enterprise value / equity value / implied price, and adds plain-language sections for inputs, assumptions, and result interpretation.
 - **Refresh cadence**: market quotes remain daily data; SEC DCF fundamentals are quarterly / filing-driven and should be refreshed after new 10-Q / 10-K filings; DCF assumptions are human judgments and only change when saved or edited. Cache metadata keeps the SEC generation time separate from any local schema backfill time.
 
 ## Latest Optimization (2026-05-27)
@@ -64,7 +64,7 @@ This release adds the DCF supplemental-data layer while keeping SEC as the prima
 - **Transparent supplemental lineage**: supplemental fields are recorded in `supplementalSources`, and the DCF page displays the supplemental provider so Alpha Vantage values are not mistaken for SEC originals.
 - **DCF coverage improved**: DCF input coverage is now **99/100 companies**. `BAC` is backfilled, while `ISRG` still lacks a supported total-debt / net-debt field.
 - **Chinese DCF terminology**: the Chinese UI spells out free cash flow as `自由现金流` instead of showing the English acronym `FCF`.
-- **DCF page usability**: beginner guidance now walks through filing inputs, assumptions, and result interpretation in plain language. Saving company assumptions also falls back to browser-local storage when deployed serverless builds cannot write project files.
+- **DCF page usability**: beginner guidance now walks through filing inputs, assumptions, and result interpretation in plain language. Hover help explains what each input means, why it matters, and how higher / lower assumptions affect valuation. Saving company assumptions also falls back to browser-local storage when deployed serverless builds cannot write project files.
 
 ## Latest Optimization (2026-05-21)
 
@@ -369,7 +369,7 @@ MIT
 - **来源透明**：所有补充字段都会写入 `supplementalSources`，页面会显示补充来源，例如 `Alpha Vantage supplemental`，避免把补充数据误认为 SEC 原始数据。
 - **DCF 覆盖率提升**：补充后 DCF 输入覆盖率提升到 **99/100 家公司**，`BAC` 已补回完整记录，目前仅 `ISRG` 仍缺可支持的总债务 / 净债务字段。
 - **中文术语优化**：中文页面不再直接显示 `FCF`，统一改为“自由现金流”，包括来源、图例、现值和计算说明。
-- **DCF 页面更适合小白**：新增“输入、假设、结果”三段式解释，说明自由现金流、总股本、净债务、当前股价、增长率、WACC、永续增长率和安全边际各自的作用；线上环境不能写项目文件时，保存公司默认假设会自动落到当前浏览器，下次在同一设备打开该公司会继续使用。
+- **DCF 页面更适合小白**：新增“输入、假设、结果”三段式解释，问号悬停说明也扩展为“是什么、为什么重要、调高/调低会怎样”；线上环境不能写项目文件时，保存公司默认假设会自动落到当前浏览器，下次在同一设备打开该公司会继续使用。
 
 ### 最近优化（2026-05-21）
 

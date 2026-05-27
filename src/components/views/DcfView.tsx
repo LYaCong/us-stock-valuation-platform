@@ -117,18 +117,18 @@ const copy = {
     accession: 'SEC 编号',
     terminalNote: '终值是第 10 年之后所有现金流的合计现值，通常占 DCF 很大比例，所以单独展示。',
     help: {
-      growth1to5: '你对公司未来 1-5 年自由现金流增长的判断。越高越乐观。',
-      growth6to10: '第 6-10 年通常要比前 5 年更保守，因为高速增长很难长期持续。',
-      wacc: '折现率，也可以理解为你要求的最低回报率。越高，估值越低。',
-      terminalGrowth: '第 10 年之后的长期稳定增长率，通常不应高于长期经济增速，也必须低于 WACC。',
-      fcf: '自由现金流 = 经营现金流 - 资本开支，是 DCF 的起点。',
-      shares: '总股本用于把公司整体价值除成每股价值。',
-      netDebt: '净债务 = 总债务 - 现金。净债务越高，股权价值越低；如果为负，说明现金多于债务。',
-      price: '当前股价用于计算安全边际，不影响内在价值本身。',
-      impliedPrice: '模型算出来的每股内在价值，不是市场报价。',
-      margin: '安全边际 = 内在价值相对当前股价的折价空间。',
-      sensitivity: '同时改变 WACC 和永续增长率，观察内在价值对关键假设有多敏感。',
-      terminal: '第 10 年之后所有未来现金流的合计价值。',
+      growth1to5: '未来 1-5 年自由现金流增长率，代表你对公司近期业务扩张的判断。调高会明显抬高估值，适合收入、利润和现金流仍在快速增长的公司；如果行业成熟或周期下行，应更保守。',
+      growth6to10: '第 6-10 年自由现金流增长率，用来模拟公司从高速增长逐步回到稳定增长。它通常应低于前 5 年，因为规模变大后增长会变难；调得太高会让估值过度依赖长期乐观假设。',
+      wacc: '折现率，也可以理解为你要求这笔投资至少赚到的年化回报率。风险越高、利率越高，WACC 应越高；WACC 调高会把未来现金流打更大折扣，所以估值会下降。',
+      terminalGrowth: '第 10 年之后的长期稳定增长率，决定公司进入成熟期后的现金流增速。它必须低于 WACC，通常也不应高于长期经济增速；调得过高会让终值过大，估值看起来虚高。',
+      fcf: '自由现金流 = 经营现金流 - 资本开支，是公司在维持经营和必要投入后真正剩下的现金。DCF 从它开始往未来推算，所以这个数必须来自真实财报，不能用利润或市值反推。',
+      shares: '总股本用于把整家公司价值换算成每股价值。股本越多，每一股分到的价值越少；如果公司持续回购，未来每股价值可能提高，但这里先使用最近披露的真实股本。',
+      netDebt: '净债务 = 总债务 - 现金。计算股权价值时，要先从企业价值里扣掉债务；如果净债务为负，说明现金多于债务，会增加股东可分享的价值。',
+      price: '当前股价只用来和模型算出的内在价值比较，从而得到安全边际。它不会参与内在价值本身的计算，所以股价短期波动不会改变公司现金流估值，只会改变贵不贵的判断。',
+      impliedPrice: '每股内在价值是模型根据未来自由现金流、净债务和总股本算出的合理价格，不是目标价承诺。它对增长率、WACC 和永续增长率很敏感，所以要配合敏感性表一起看。',
+      margin: '安全边际 = 每股内在价值相对当前股价的折价空间。为正表示模型估值高于市场价，为负表示模型估值低于市场价；边际越大，假设出错时的缓冲越多。',
+      sensitivity: '敏感性表会同时改变 WACC 和永续增长率，观察每股内在价值如何变化。如果表格里的估值只在很乐观的一格才好看，说明结论比较脆弱；如果多数格都合理，结论更稳。',
+      terminal: '终值代表第 10 年之后所有未来现金流折现到今天的价值。很多 DCF 的大部分价值来自终值，所以要单独检查它占比是否过高，避免估值被远期假设主导。',
     },
   },
   en: {
@@ -186,18 +186,18 @@ const copy = {
     accession: 'SEC accession',
     terminalNote: 'Terminal value is the present value of cash flows after year 10. It is often a large part of DCF, so it is shown separately.',
     help: {
-      growth1to5: 'Your view of free-cash-flow growth for the next 1-5 years. Higher means more optimistic.',
-      growth6to10: 'Years 6-10 should usually be more conservative because high growth rarely lasts forever.',
-      wacc: 'The discount rate, similar to your required return. Higher WACC lowers valuation.',
-      terminalGrowth: 'Long-run steady growth after year 10. It must stay below WACC.',
-      fcf: 'Free cash flow = operating cash flow - capital expenditures. This is the DCF starting point.',
-      shares: 'Shares outstanding converts whole-company value into per-share value.',
-      netDebt: 'Net debt = total debt - cash. More debt lowers equity value; negative net debt means net cash.',
-      price: 'Current price is used for margin of safety, not for intrinsic value itself.',
-      impliedPrice: 'The model-implied intrinsic value per share, not a market quote.',
-      margin: 'Margin of safety compares intrinsic value with the current price.',
-      sensitivity: 'Shows how implied price changes when WACC and terminal growth move together.',
-      terminal: 'The value of all cash flows after year 10.',
+      growth1to5: 'Free-cash-flow growth for years 1-5, reflecting your near-term business view. Raising it lifts valuation quickly, so it fits companies with strong revenue, profit, and cash-flow momentum; mature or cyclical businesses deserve lower assumptions.',
+      growth6to10: 'Free-cash-flow growth for years 6-10, modeling the fade from high growth toward maturity. It should usually be below years 1-5 because growth gets harder at scale; setting it too high makes valuation depend on long-term optimism.',
+      wacc: 'The discount rate, similar to the annual return you require for taking this risk. Higher rates or higher business risk should push WACC up; a higher WACC discounts future cash flows more heavily and lowers valuation.',
+      terminalGrowth: 'The steady growth rate after year 10, when the company is assumed to be mature. It must stay below WACC and normally should not exceed long-run economic growth; setting it too high can make terminal value dominate the model.',
+      fcf: 'Free cash flow = operating cash flow - capital expenditures. It is the cash left after running the business and funding required investment, so DCF starts here and should use filing data rather than profit or market-cap estimates.',
+      shares: 'Shares outstanding converts whole-company value into per-share value. More shares dilute each share of value; buybacks can improve future per-share value, but this model starts with the latest disclosed share count.',
+      netDebt: 'Net debt = total debt - cash. Equity value is enterprise value minus net debt; positive net debt reduces shareholder value, while negative net debt means net cash and adds value to shareholders.',
+      price: 'Current price is only used to compare market price with model value and calculate margin of safety. It does not drive intrinsic value, so short-term price moves change cheap-versus-expensive judgment, not the cash-flow estimate.',
+      impliedPrice: 'Intrinsic value per share is the model output based on future free cash flow, net debt, and shares. It is not a promised target price and can move a lot when growth, WACC, or terminal growth assumptions change.',
+      margin: 'Margin of safety compares intrinsic value with current price. Positive means the model value is above the market price; negative means the model value is below it. A larger margin gives more room for assumption error.',
+      sensitivity: 'The sensitivity table changes WACC and terminal growth together to show how fragile the valuation is. If the stock only looks attractive in one optimistic cell, the thesis is weak; if many cells look reasonable, it is sturdier.',
+      terminal: 'Terminal value represents all cash flows after year 10 discounted back to today. It can be a large share of DCF value, so check whether the model is relying too much on distant assumptions.',
     },
   },
 };
@@ -737,7 +737,7 @@ function HelpTip({ text }: { text: string }) {
   return (
     <span className="relative inline-flex group">
       <HelpCircle size={14} className="text-slate-400 group-hover:text-blue-500" />
-      <span className="pointer-events-none absolute left-1/2 top-6 z-20 hidden w-64 -translate-x-1/2 rounded-lg border border-slate-200 bg-white p-3 text-xs leading-5 text-slate-600 shadow-lg group-hover:block dark:border-white/10 dark:bg-slate-900 dark:text-slate-200">
+      <span className="pointer-events-none absolute left-1/2 top-6 z-20 hidden w-80 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-slate-200 bg-white p-3 text-xs leading-5 text-slate-600 shadow-lg group-hover:block dark:border-white/10 dark:bg-slate-900 dark:text-slate-200">
         {text}
       </span>
     </span>
