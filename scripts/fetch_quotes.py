@@ -140,6 +140,19 @@ def format_market_cap(mc) -> Optional[str]:
     if mc >= 1e6:  return f"${mc/1e6:.2f}M"
     return f"${mc:.0f}"
 
+def normalize_sina_market_cap(price, market_cap, shares_outstanding) -> Optional[float]:
+    price = safe_float(price)
+    market_cap = safe_float(market_cap)
+    shares_outstanding = safe_float(shares_outstanding)
+    implied_market_cap = price * shares_outstanding if price and shares_outstanding else None
+    if implied_market_cap and implied_market_cap > 0:
+        if market_cap is None or market_cap <= 0:
+            return implied_market_cap
+        ratio = market_cap / implied_market_cap
+        if ratio > 3 or ratio < 1 / 3:
+            return implied_market_cap
+    return market_cap
+
 def source_map(entry: Dict) -> Dict:
     if not isinstance(entry.get('source'), dict):
         entry['source'] = {}
@@ -210,9 +223,11 @@ def _fetch_sina_batch_raw(tickers: List[str]) -> Dict[str, Dict]:
                 if not data_str: continue
                 f = data_str.split(',')
                 if len(f) < 2: continue
+                price = safe_float(f[1])
+                shares_outstanding = safe_float(f[19]) if len(f) > 19 else None
                 results[ticker] = {
                     'name': f[0],
-                    'price': safe_float(f[1]),
+                    'price': price,
                     'change_pct': safe_float(f[2]),
                     'change_time': f[3] if len(f) > 3 else None,
                     'change_amount': safe_float(f[4]),
@@ -222,7 +237,7 @@ def _fetch_sina_batch_raw(tickers: List[str]) -> Dict[str, Dict]:
                     'prev_close': safe_float(f[8]),
                     'volume': safe_float(f[9]),
                     'turnover': safe_float(f[10]),
-                    'market_cap': safe_float(f[12]),
+                    'market_cap': normalize_sina_market_cap(price, safe_float(f[12]), shares_outstanding),
                     'pe_ttm': safe_float(f[14]),
                 }
             except (IndexError, ValueError) as e:
