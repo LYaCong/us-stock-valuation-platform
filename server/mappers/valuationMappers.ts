@@ -2,6 +2,7 @@ import type { HistoricalTickerData } from '../services/cacheService.ts';
 
 interface CoverageItem {
   peTtm?: number | null;
+  peTtmComputed?: number | null;
 }
 
 export function buildMetadata(
@@ -26,6 +27,7 @@ export function createFallbackCompanyValuation(ticker: string) {
     marketCap: 'N/A',
     price: null,
     peTtm: null,
+    peTtmComputed: null,
     peFwd: null,
     pb: null,
     peg: null,
@@ -59,6 +61,7 @@ export function mapCachedCompanyToValuation(cached: any) {
     marketCap: cached.marketCapStr || formatMarketCapValue(cached.marketCap),
     price: cached.price ?? null,
     peTtm: cached.peTtm ?? null,
+    peTtmComputed: cached.peTtmComputed ?? null,
     peFwd: cached.peFwd ?? null,
     pb: cached.pb ?? null,
     peg: cached.peg ?? null,

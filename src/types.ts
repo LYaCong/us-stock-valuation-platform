@@ -6,6 +6,7 @@ export interface CompanyValuation {
   type: 'US' | 'ADR';
   marketCap: string | null;
   peTtm: number | null;
+  peTtmComputed: number | null;
   peFwd: number | null;
   pb: number | null;
   peg: number | null;

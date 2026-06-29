@@ -23,6 +23,7 @@ test('缓存公司映射应保留已有字段并标准化返回结构', () => {
     marketCapStr: '$2.34T',
     price: 900,
     peTtm: 70,
+    peTtmComputed: 65,
     peFwd: 40,
     pb: 20,
     pePercentile: 88,
@@ -37,6 +38,8 @@ test('缓存公司映射应保留已有字段并标准化返回结构', () => {
 
   assert.equal(mapped.id, 'nvda');
   assert.equal(mapped.marketCap, '$2.34T');
+  assert.equal(mapped.peTtm, 70);
+  assert.equal(mapped.peTtmComputed, 65);
   assert.equal(mapped.pePercentile10y, 88);
   assert.equal(mapped.pe10yMin, 10);
   assert.equal(mapped.pe10yMax, 90);

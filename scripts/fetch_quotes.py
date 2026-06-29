@@ -519,6 +519,7 @@ def append_valuation_history(companies, indices, cache_dir):
         snapshot[c['ticker']] = {
             'price': c.get('price'),
             'peTtm': c.get('peTtm'),
+            'peTtmComputed': c.get('peTtmComputed'),
             'peFwd': c.get('peFwd'),
             'pb': c.get('pb'),
             'roe': c.get('roe'),

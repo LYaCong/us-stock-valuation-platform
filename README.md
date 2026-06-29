@@ -195,8 +195,10 @@ The core metric — **10-Year PE Percentile** — is calculated as follows:
 
 1. **Rolling TTM EPS**: For each month, sum the most recent 4 quarters of reported EPS
 2. **Monthly PE(TTM)**: Month-end closing price ÷ Rolling TTM EPS
-3. **Percentile**: Where the current PE ranks among all monthly PEs in the past 10 years
+3. **Percentile**: Where the current computed PE ranks among all monthly PEs in the past 10 years
 4. **Status**: ≤25% = Low (undervalued) · 25-75% = Neutral · ≥75% = High (overvalued)
+
+Company cards display provider-sourced current `peTtm`; PE percentile uses `peTtmComputed` from the reported-EPS calculation so the historical percentile stays internally consistent.
 
 Additional metrics: **5-Year percentile**, **10-Year PE min/max/median**, **10-Year price change**
 
@@ -225,10 +227,10 @@ All data updates are automated via OpenClaw cron jobs:
 
 [PE] calculate_pe_history.py
 → Read earnings.json + historical.json
-→ Calculate rolling TTM EPS for each month and latest daily PE
-→ PE = latest price / latest TTM EPS → percentile ranking
+→ Calculate rolling TTM EPS for each month and latest computed daily PE
+→ peTtmComputed = latest price / latest TTM EPS → percentile ranking
 → Update historical.json (add peTtm, percentile fields)
-→ Update daily_quotes.json (add pe10yMin/Max/Median, pePercentile10y/5y/all-history)
+→ Update daily_quotes.json (add peTtmComputed, pe10yMin/Max/Median, pePercentile10y/5y/all-history)
 → append to valuation_history.json
 
 → git push → Vercel auto-deploys
