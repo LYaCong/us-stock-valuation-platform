@@ -17053,8 +17053,8 @@
           "high": 13.75,
           "low": 12.09,
           "volume": 1844851500,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 7.251876263977068e+18,
+          "percentile": 100.0
         },
         {
           "date": "2015-04",
@@ -17063,8 +17063,8 @@
           "high": 15.92,
           "low": 12.4,
           "volume": 1484176500,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 8.687263537212592e+18,
+          "percentile": 100.0
         },
         {
           "date": "2015-05",
@@ -17073,8 +17073,8 @@
           "high": 16.86,
           "low": 14.68,
           "volume": 1336917000,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 9.63842377851324e+18,
+          "percentile": 100.0
         },
         {
           "date": "2015-06",
@@ -17084,7 +17084,7 @@
           "low": 16.38,
           "volume": 982096500,
           "peTtm": -447.0,
-          "percentile": 6.2
+          "percentile": 5.9
         },
         {
           "date": "2015-07",
@@ -17094,7 +17094,7 @@
           "low": 16.72,
           "volume": 1200915000,
           "peTtm": -443.5,
-          "percentile": 8.2
+          "percentile": 7.7
         },
         {
           "date": "2015-08",
@@ -17104,7 +17104,7 @@
           "low": 13.0,
           "volume": 1728961500,
           "peTtm": -415.0,
-          "percentile": 10.0
+          "percentile": 9.4
         },
         {
           "date": "2015-09",
@@ -17114,7 +17114,7 @@
           "low": 15.8,
           "volume": 1204321500,
           "peTtm": -165.6,
-          "percentile": 11.8
+          "percentile": 11.1
         },
         {
           "date": "2015-10",
@@ -17124,7 +17124,7 @@
           "low": 13.47,
           "volume": 1512180000,
           "peTtm": -138.0,
-          "percentile": 15.4
+          "percentile": 14.5
         },
         {
           "date": "2015-11",
@@ -17134,7 +17134,7 @@
           "low": 13.72,
           "volume": 1177326000,
           "peTtm": -153.5,
-          "percentile": 13.2
+          "percentile": 12.5
         },
         {
           "date": "2015-12",
@@ -17144,7 +17144,7 @@
           "low": 14.32,
           "volume": 897682500,
           "peTtm": -106.67,
-          "percentile": 20.4
+          "percentile": 19.3
         },
         {
           "date": "2016-01",
@@ -17154,7 +17154,7 @@
           "low": 12.16,
           "volume": 1188708000,
           "peTtm": -85.0,
-          "percentile": 23.6
+          "percentile": 22.4
         },
         {
           "date": "2016-02",
@@ -17164,7 +17164,7 @@
           "low": 9.4,
           "volume": 2005587000,
           "peTtm": -85.33,
-          "percentile": 23.2
+          "percentile": 22.0
         },
         {
           "date": "2016-03",
@@ -17174,7 +17174,7 @@
           "low": 12.1,
           "volume": 1543830000,
           "peTtm": -90.12,
-          "percentile": 21.1
+          "percentile": 20.0
         },
         {
           "date": "2016-04",
@@ -17184,7 +17184,7 @@
           "low": 15.55,
           "volume": 2032609500,
           "peTtm": -94.41,
-          "percentile": 20.7
+          "percentile": 19.7
         },
         {
           "date": "2016-05",
@@ -17194,7 +17194,7 @@
           "low": 13.58,
           "volume": 1549612500,
           "peTtm": -87.53,
-          "percentile": 25.4
+          "percentile": 24.2
         },
         {
           "date": "2016-06",
@@ -17204,7 +17204,7 @@
           "low": 12.52,
           "volume": 1825092000,
           "peTtm": -67.38,
-          "percentile": 30.0
+          "percentile": 28.6
         },
         {
           "date": "2016-07",
@@ -17214,7 +17214,7 @@
           "low": 13.73,
           "volume": 1110958500,
           "peTtm": -74.52,
-          "percentile": 29.5
+          "percentile": 28.1
         },
         {
           "date": "2016-08",
@@ -17224,7 +17224,7 @@
           "low": 13.91,
           "volume": 934366500,
           "peTtm": -67.29,
-          "percentile": 32.3
+          "percentile": 30.8
         },
         {
           "date": "2016-09",
@@ -17234,7 +17234,7 @@
           "low": 12.9,
           "volume": 1059478500,
           "peTtm": -113.33,
-          "percentile": 15.9
+          "percentile": 15.2
         },
         {
           "date": "2016-10",
@@ -17244,7 +17244,7 @@
           "low": 12.8,
           "volume": 1381992000,
           "peTtm": -109.83,
-          "percentile": 18.8
+          "percentile": 17.9
         },
         {
           "date": "2016-11",
@@ -17254,7 +17254,7 @@
           "low": 11.88,
           "volume": 1483290000,
           "peTtm": -105.25,
-          "percentile": 21.5
+          "percentile": 20.6
         },
         {
           "date": "2016-12",
@@ -17264,7 +17264,7 @@
           "low": 12.0,
           "volume": 1319901000,
           "peTtm": -71.25,
-          "percentile": 33.3
+          "percentile": 31.9
         },
         {
           "date": "2017-01",
@@ -17274,7 +17274,7 @@
           "low": 14.06,
           "volume": 1510194000,
           "peTtm": -84.0,
-          "percentile": 31.3
+          "percentile": 30.0
         },
         {
           "date": "2017-02",
@@ -17284,7 +17284,7 @@
           "low": 16.13,
           "volume": 1793100000,
           "peTtm": -83.35,
-          "percentile": 32.4
+          "percentile": 31.0
         },
         {
           "date": "2017-03",
@@ -17294,7 +17294,7 @@
           "low": 16.19,
           "volume": 1605529500,
           "peTtm": -74.2,
-          "percentile": 34.8
+          "percentile": 33.3
         },
         {
           "date": "2017-04",
@@ -17304,7 +17304,7 @@
           "low": 18.97,
           "volume": 1754259000,
           "peTtm": -83.76,
-          "percentile": 31.4
+          "percentile": 30.1
         },
         {
           "date": "2017-05",
@@ -17314,7 +17314,7 @@
           "low": 19.38,
           "volume": 2220694500,
           "peTtm": -90.92,
-          "percentile": 22.5
+          "percentile": 21.6
         },
         {
           "date": "2017-06",
@@ -17324,7 +17324,7 @@
           "low": 22.28,
           "volume": 2789266500,
           "peTtm": -89.3,
-          "percentile": 26.4
+          "percentile": 25.3
         },
         {
           "date": "2017-07",
@@ -17334,7 +17334,7 @@
           "low": 20.21,
           "volume": 2724600000,
           "peTtm": -79.85,
-          "percentile": 35.6
+          "percentile": 34.2
         },
         {
           "date": "2017-08",
@@ -17344,7 +17344,7 @@
           "low": 20.75,
           "volume": 2054124000,
           "peTtm": -87.89,
-          "percentile": 27.0
+          "percentile": 26.0
         },
         {
           "date": "2017-09",
@@ -17354,7 +17354,7 @@
           "low": 22.36,
           "volume": 1672690500,
           "peTtm": -44.59,
-          "percentile": 44.0
+          "percentile": 42.3
         },
         {
           "date": "2017-10",
@@ -17364,7 +17364,7 @@
           "low": 21.11,
           "volume": 1845550500,
           "peTtm": -43.33,
-          "percentile": 46.1
+          "percentile": 44.3
         },
         {
           "date": "2017-11",
@@ -17374,7 +17374,7 @@
           "low": 19.51,
           "volume": 2232192000,
           "peTtm": -40.37,
-          "percentile": 46.8
+          "percentile": 45.0
         },
         {
           "date": "2017-12",
@@ -17384,7 +17384,7 @@
           "low": 20.0,
           "volume": 1648270500,
           "peTtm": -36.42,
-          "percentile": 47.4
+          "percentile": 45.7
         },
         {
           "date": "2018-01",
@@ -17394,7 +17394,7 @@
           "low": 20.38,
           "volume": 1864072500,
           "peTtm": -41.44,
-          "percentile": 45.6
+          "percentile": 43.9
         },
         {
           "date": "2018-02",
@@ -17404,7 +17404,7 @@
           "low": 19.65,
           "volume": 1637850000,
           "peTtm": -40.12,
-          "percentile": 47.5
+          "percentile": 45.8
         },
         {
           "date": "2018-03",
@@ -17414,7 +17414,7 @@
           "low": 16.55,
           "volume": 2359027500,
           "peTtm": -25.34,
-          "percentile": 49.4
+          "percentile": 47.6
         },
         {
           "date": "2018-04",
@@ -17424,7 +17424,7 @@
           "low": 16.31,
           "volume": 2854662000,
           "peTtm": -27.99,
-          "percentile": 48.8
+          "percentile": 47.1
         },
         {
           "date": "2018-05",
@@ -17434,7 +17434,7 @@
           "low": 18.23,
           "volume": 2333671500,
           "peTtm": -27.11,
-          "percentile": 49.4
+          "percentile": 47.7
         },
         {
           "date": "2018-06",
@@ -17444,7 +17444,7 @@
           "low": 18.92,
           "volume": 3201376500,
           "peTtm": -28.22,
-          "percentile": 47.6
+          "percentile": 46.0
         },
         {
           "date": "2018-07",
@@ -17454,7 +17454,7 @@
           "low": 19.08,
           "volume": 2584923000,
           "peTtm": -24.54,
-          "percentile": 51.8
+          "percentile": 50.0
         },
         {
           "date": "2018-08",
@@ -17464,7 +17464,7 @@
           "low": 19.21,
           "volume": 4160403000,
           "peTtm": -24.83,
-          "percentile": 51.2
+          "percentile": 49.4
         },
         {
           "date": "2018-09",
@@ -17474,7 +17474,7 @@
           "low": 16.82,
           "volume": 2941131000,
           "peTtm": -41.05,
-          "percentile": 42.5
+          "percentile": 41.1
         },
         {
           "date": "2018-10",
@@ -17484,7 +17484,7 @@
           "low": 16.52,
           "volume": 4295410500,
           "peTtm": -52.3,
-          "percentile": 37.5
+          "percentile": 36.3
         },
         {
           "date": "2018-11",
@@ -17494,7 +17494,7 @@
           "low": 21.67,
           "volume": 1995286500,
           "peTtm": -54.35,
-          "percentile": 37.1
+          "percentile": 35.9
         },
         {
           "date": "2018-12",
@@ -17504,7 +17504,7 @@
           "low": 19.61,
           "volume": 2196768000,
           "peTtm": -221.9,
-          "percentile": 6.7
+          "percentile": 6.5
         },
         {
           "date": "2019-01",
@@ -17514,7 +17514,7 @@
           "low": 18.62,
           "volume": 2634781500,
           "peTtm": -204.7,
-          "percentile": 7.7
+          "percentile": 7.4
         },
         {
           "date": "2019-02",
@@ -17524,7 +17524,7 @@
           "low": 19.25,
           "volume": 1928251500,
           "peTtm": -213.3,
-          "percentile": 7.6
+          "percentile": 7.4
         },
         {
           "date": "2019-03",
@@ -17534,7 +17534,7 @@
           "low": 16.96,
           "volume": 3206902500,
           "peTtm": -266.57,
-          "percentile": 6.5
+          "percentile": 6.2
         },
         {
           "date": "2019-04",
@@ -17544,7 +17544,7 @@
           "low": 15.41,
           "volume": 3461209500,
           "peTtm": -227.29,
-          "percentile": 7.4
+          "percentile": 7.2
         },
         {
           "date": "2019-05",
@@ -17554,7 +17554,7 @@
           "low": 12.27,
           "volume": 4238982000,
           "peTtm": -176.29,
-          "percentile": 11.6
+          "percentile": 11.2
         },
         {
           "date": "2019-06",
@@ -17564,7 +17564,7 @@
           "low": 11.8,
           "volume": 3224559000,
           "peTtm": 248.33,
-          "percentile": 86.5
+          "percentile": 83.8
         },
         {
           "date": "2019-07",
@@ -17574,7 +17574,7 @@
           "low": 14.81,
           "volume": 2990050500,
           "peTtm": 268.5,
-          "percentile": 87.1
+          "percentile": 84.5
         },
         {
           "date": "2019-08",
@@ -17584,7 +17584,7 @@
           "low": 14.07,
           "volume": 2006859000,
           "peTtm": 250.67,
-          "percentile": 85.7
+          "percentile": 83.2
         },
         {
           "date": "2019-09",
@@ -17654,7 +17654,7 @@
           "low": 23.37,
           "volume": 6314025000,
           "peTtm": 129.37,
-          "percentile": 82.4
+          "percentile": 80.0
         },
         {
           "date": "2020-04",
@@ -17664,7 +17664,7 @@
           "low": 29.76,
           "volume": 5722162500,
           "peTtm": 193.07,
-          "percentile": 82.5
+          "percentile": 80.2
         },
         {
           "date": "2020-05",
@@ -17674,7 +17674,7 @@
           "low": 45.54,
           "volume": 4090554000,
           "peTtm": 206.19,
-          "percentile": 83.7
+          "percentile": 81.3
         },
         {
           "date": "2020-06",
@@ -17684,7 +17684,7 @@
           "low": 56.94,
           "volume": 3836590500,
           "peTtm": 146.92,
-          "percentile": 81.0
+          "percentile": 78.7
         },
         {
           "date": "2020-07",
@@ -17694,7 +17694,7 @@
           "low": 72.03,
           "volume": 5679502500,
           "peTtm": 194.65,
-          "percentile": 82.1
+          "percentile": 79.8
         },
         {
           "date": "2020-08",
@@ -17704,7 +17704,7 @@
           "low": 91.0,
           "volume": 4672135200,
           "peTtm": 339.0,
-          "percentile": 96.3
+          "percentile": 93.6
         },
         {
           "date": "2020-09",
@@ -17714,7 +17714,7 @@
           "low": 109.96,
           "volume": 5208854400,
           "peTtm": 230.65,
-          "percentile": 83.3
+          "percentile": 81.1
         },
         {
           "date": "2020-10",
@@ -17724,7 +17724,7 @@
           "low": 126.37,
           "volume": 2500999200,
           "peTtm": 208.63,
-          "percentile": 82.6
+          "percentile": 80.4
         },
         {
           "date": "2020-11",
@@ -17734,7 +17734,7 @@
           "low": 130.77,
           "volume": 2347796400,
           "peTtm": 305.16,
-          "percentile": 93.6
+          "percentile": 91.2
         },
         {
           "date": "2020-12",
@@ -17744,7 +17744,7 @@
           "low": 180.4,
           "volume": 3589038000,
           "peTtm": 313.63,
-          "percentile": 93.7
+          "percentile": 91.2
         },
         {
           "date": "2021-01",
@@ -17754,7 +17754,7 @@
           "low": 239.06,
           "volume": 2117084400,
           "peTtm": 352.68,
-          "percentile": 96.4
+          "percentile": 93.9
         },
         {
           "date": "2021-02",
@@ -17764,7 +17764,7 @@
           "low": 206.33,
           "volume": 1568573700,
           "peTtm": 300.23,
-          "percentile": 91.2
+          "percentile": 88.8
         },
         {
           "date": "2021-03",
@@ -17774,7 +17774,7 @@
           "low": 179.83,
           "volume": 2827357200,
           "peTtm": 227.18,
-          "percentile": 79.8
+          "percentile": 77.8
         },
         {
           "date": "2021-04",
@@ -17784,7 +17784,7 @@
           "low": 219.81,
           "volume": 2035619100,
           "peTtm": 241.31,
-          "percentile": 80.9
+          "percentile": 78.8
         },
         {
           "date": "2021-05",
@@ -17794,7 +17794,7 @@
           "low": 182.33,
           "volume": 1875527400,
           "peTtm": 212.66,
-          "percentile": 78.4
+          "percentile": 76.5
         },
         {
           "date": "2021-06",
@@ -17804,7 +17804,7 @@
           "low": 190.41,
           "volume": 1559765700,
           "peTtm": 172.95,
-          "percentile": 73.5
+          "percentile": 71.7
         },
         {
           "date": "2021-07",
@@ -17814,7 +17814,7 @@
           "low": 206.82,
           "volume": 1345349400,
           "peTtm": 174.86,
-          "percentile": 73.7
+          "percentile": 71.9
         },
         {
           "date": "2021-08",
@@ -17824,7 +17824,7 @@
           "low": 216.28,
           "volume": 1143974700,
           "peTtm": 187.21,
-          "percentile": 73.9
+          "percentile": 72.1
         },
         {
           "date": "2021-09",
@@ -17834,7 +17834,7 @@
           "low": 236.28,
           "volume": 1170513900,
           "peTtm": 153.86,
-          "percentile": 71.7
+          "percentile": 69.9
         },
         {
           "date": "2021-10",
@@ -17844,7 +17844,7 @@
           "low": 254.53,
           "volume": 1586803800,
           "peTtm": 221.03,
-          "percentile": 79.3
+          "percentile": 77.4
         },
         {
           "date": "2021-11",
@@ -17854,7 +17854,7 @@
           "low": 326.2,
           "volume": 1947334500,
           "peTtm": 227.14,
-          "percentile": 79.5
+          "percentile": 77.6
         },
         {
           "date": "2021-12",
@@ -17864,7 +17864,7 @@
           "low": 295.37,
           "volume": 1530167700,
           "peTtm": 155.87,
-          "percentile": 70.7
+          "percentile": 69.0
         },
         {
           "date": "2022-01",
@@ -17874,7 +17874,7 @@
           "low": 264.0,
           "volume": 1916006400,
           "peTtm": 138.16,
-          "percentile": 68.5
+          "percentile": 66.9
         },
         {
           "date": "2022-02",
@@ -17884,7 +17884,7 @@
           "low": 233.33,
           "volume": 1391126700,
           "peTtm": 128.38,
-          "percentile": 67.2
+          "percentile": 65.6
         },
         {
           "date": "2022-03",
@@ -17894,7 +17894,7 @@
           "low": 252.01,
           "volume": 1729272900,
           "peTtm": 118.94,
-          "percentile": 66.7
+          "percentile": 65.1
         },
         {
           "date": "2022-04",
@@ -17904,7 +17904,7 @@
           "low": 273.9,
           "volume": 1520959800,
           "peTtm": 96.11,
-          "percentile": 66.1
+          "percentile": 64.6
         },
         {
           "date": "2022-05",
@@ -17914,7 +17914,7 @@
           "low": 206.86,
           "volume": 1948221600,
           "peTtm": 83.69,
-          "percentile": 65.6
+          "percentile": 64.1
         },
         {
           "date": "2022-06",
@@ -17924,7 +17924,7 @@
           "low": 208.69,
           "volume": 2011227900,
           "peTtm": 68.02,
-          "percentile": 65.1
+          "percentile": 63.6
         },
         {
           "date": "2022-07",
@@ -17934,7 +17934,7 @@
           "low": 216.17,
           "volume": 1744884000,
           "peTtm": 90.05,
-          "percentile": 66.2
+          "percentile": 64.7
         },
         {
           "date": "2022-08",
@@ -17944,7 +17944,7 @@
           "low": 271.81,
           "volume": 1695263200,
           "peTtm": 83.52,
-          "percentile": 64.9
+          "percentile": 63.4
         },
         {
           "date": "2022-09",
@@ -17954,7 +17954,7 @@
           "low": 262.47,
           "volume": 1299271000,
           "peTtm": 71.11,
-          "percentile": 64.4
+          "percentile": 63.0
         },
         {
           "date": "2022-10",
@@ -17964,7 +17964,7 @@
           "low": 198.59,
           "volume": 1735263100,
           "peTtm": 61.0,
-          "percentile": 63.2
+          "percentile": 61.8
         },
         {
           "date": "2022-11",
@@ -17974,7 +17974,7 @@
           "low": 166.19,
           "volume": 1885275300,
           "peTtm": 52.2,
-          "percentile": 62.7
+          "percentile": 61.3
         },
         {
           "date": "2022-12",
@@ -17984,7 +17984,7 @@
           "low": 108.24,
           "volume": 2944247700,
           "peTtm": 30.27,
-          "percentile": 62.2
+          "percentile": 60.9
         },
         {
           "date": "2023-01",
@@ -17994,7 +17994,7 @@
           "low": 101.81,
           "volume": 3897499400,
           "peTtm": 42.56,
-          "percentile": 62.5
+          "percentile": 61.2
         },
         {
           "date": "2023-02",
@@ -18004,7 +18004,7 @@
           "low": 169.93,
           "volume": 3624845100,
           "peTtm": 50.54,
-          "percentile": 62.8
+          "percentile": 61.4
         },
         {
           "date": "2023-03",
@@ -18014,7 +18014,7 @@
           "low": 163.91,
           "volume": 3311619900,
           "peTtm": 53.89,
-          "percentile": 63.8
+          "percentile": 62.4
         },
         {
           "date": "2023-04",
@@ -18024,7 +18024,7 @@
           "low": 152.37,
           "volume": 2505176300,
           "peTtm": 42.68,
-          "percentile": 61.9
+          "percentile": 60.6
         },
         {
           "date": "2023-05",
@@ -18034,7 +18034,7 @@
           "low": 158.83,
           "volume": 2681994800,
           "peTtm": 52.97,
-          "percentile": 63.6
+          "percentile": 62.2
         },
         {
           "date": "2023-06",
@@ -18044,7 +18044,7 @@
           "low": 199.37,
           "volume": 3440477900,
           "peTtm": 65.44,
-          "percentile": 65.2
+          "percentile": 63.9
         },
         {
           "date": "2023-07",
@@ -18054,7 +18054,7 @@
           "low": 254.12,
           "volume": 2392089000,
           "peTtm": 66.86,
-          "percentile": 65.5
+          "percentile": 64.1
         },
         {
           "date": "2023-08",
@@ -18064,7 +18064,7 @@
           "low": 212.36,
           "volume": 2501580900,
           "peTtm": 64.52,
-          "percentile": 64.3
+          "percentile": 63.0
         },
         {
           "date": "2023-09",
@@ -18074,7 +18074,7 @@
           "low": 234.58,
           "volume": 2439306100,
           "peTtm": 69.31,
-          "percentile": 66.7
+          "percentile": 65.3
         },
         {
           "date": "2023-10",
@@ -18084,7 +18084,7 @@
           "low": 194.07,
           "volume": 2590570100,
           "peTtm": 55.63,
-          "percentile": 62.8
+          "percentile": 61.5
         },
         {
           "date": "2023-11",
@@ -18094,7 +18094,7 @@
           "low": 197.85,
           "volume": 2650798400,
           "peTtm": 66.5,
-          "percentile": 65.1
+          "percentile": 63.8
         },
         {
           "date": "2023-12",
@@ -18104,7 +18104,7 @@
           "low": 228.2,
           "volume": 2294598400,
           "peTtm": 79.39,
-          "percentile": 68.0
+          "percentile": 66.7
         },
         {
           "date": "2024-01",
@@ -18114,7 +18114,7 @@
           "low": 180.06,
           "volume": 2343784600,
           "peTtm": 59.84,
-          "percentile": 62.2
+          "percentile": 60.9
         },
         {
           "date": "2024-02",
@@ -18124,7 +18124,7 @@
           "low": 175.01,
           "volume": 2019907700,
           "peTtm": 64.5,
-          "percentile": 63.1
+          "percentile": 61.8
         },
         {
           "date": "2024-03",
@@ -18134,7 +18134,7 @@
           "low": 160.51,
           "volume": 1898904200,
           "peTtm": 64.39,
-          "percentile": 62.7
+          "percentile": 61.4
         },
         {
           "date": "2024-04",
@@ -18144,7 +18144,7 @@
           "low": 138.8,
           "volume": 2478540800,
           "peTtm": 67.14,
-          "percentile": 66.2
+          "percentile": 64.9
         },
         {
           "date": "2024-05",
@@ -18154,7 +18154,7 @@
           "low": 167.75,
           "volume": 1668180900,
           "peTtm": 65.23,
-          "percentile": 63.8
+          "percentile": 62.6
         },
         {
           "date": "2024-06",
@@ -18164,7 +18164,7 @@
           "low": 167.41,
           "volume": 1407037300,
           "peTtm": 84.56,
-          "percentile": 70.6
+          "percentile": 69.2
         },
         {
           "date": "2024-07",
@@ -18174,7 +18174,7 @@
           "low": 200.85,
           "volume": 2946114300,
           "peTtm": 99.18,
-          "percentile": 72.1
+          "percentile": 70.7
         },
         {
           "date": "2024-08",
@@ -18184,7 +18184,7 @@
           "low": 182.0,
           "volume": 1618373100,
           "peTtm": 91.5,
-          "percentile": 71.0
+          "percentile": 69.6
         },
         {
           "date": "2024-09",
@@ -18194,7 +18194,7 @@
           "low": 209.64,
           "volume": 1611273300,
           "peTtm": 109.01,
-          "percentile": 72.4
+          "percentile": 71.1
         },
         {
           "date": "2024-10",
@@ -18204,7 +18204,7 @@
           "low": 212.11,
           "volume": 1910807800,
           "peTtm": 104.1,
-          "percentile": 72.0
+          "percentile": 70.6
         },
         {
           "date": "2024-11",
@@ -18214,7 +18214,7 @@
           "low": 238.88,
           "volume": 2091913900,
           "peTtm": 143.82,
-          "percentile": 75.3
+          "percentile": 73.9
         },
         {
           "date": "2024-12",
@@ -18224,7 +18224,7 @@
           "low": 348.2,
           "volume": 1903365900,
           "peTtm": 166.88,
-          "percentile": 77.4
+          "percentile": 75.9
         },
         {
           "date": "2025-01",
@@ -18234,7 +18234,7 @@
           "low": 373.04,
           "volume": 1510656500,
           "peTtm": 167.19,
-          "percentile": 77.5
+          "percentile": 76.1
         },
         {
           "date": "2025-02",
@@ -18244,7 +18244,7 @@
           "low": 273.6,
           "volume": 1581998600,
           "peTtm": 121.07,
-          "percentile": 72.0
+          "percentile": 70.7
         },
         {
           "date": "2025-03",
@@ -18254,7 +18254,7 @@
           "low": 217.02,
           "volume": 2718957500,
           "peTtm": 124.0,
-          "percentile": 72.2
+          "percentile": 70.9
         },
         {
           "date": "2025-04",
@@ -18264,7 +18264,7 @@
           "low": 214.25,
           "volume": 2957985600,
           "peTtm": 135.0,
-          "percentile": 73.6
+          "percentile": 72.3
         },
         {
           "date": "2025-05",
@@ -18274,7 +18274,7 @@
           "low": 271.0,
           "volume": 2195842800,
           "peTtm": 165.77,
-          "percentile": 76.8
+          "percentile": 75.4
         },
         {
           "date": "2025-06",
@@ -18284,7 +18284,7 @@
           "low": 273.21,
           "volume": 2428761900,
           "peTtm": 161.25,
-          "percentile": 76.4
+          "percentile": 75.0
         },
         {
           "date": "2025-07",
@@ -18294,7 +18294,7 @@
           "low": 288.77,
           "volume": 2157408700,
           "peTtm": 156.48,
-          "percentile": 75.9
+          "percentile": 74.6
         },
         {
           "date": "2025-08",
@@ -18304,7 +18304,7 @@
           "low": 297.82,
           "volume": 1603195500,
           "peTtm": 169.48,
-          "percentile": 78.4
+          "percentile": 77.1
         },
         {
           "date": "2025-09",
@@ -18314,7 +18314,7 @@
           "low": 325.6,
           "volume": 1973602100,
           "peTtm": 254.13,
-          "percentile": 88.7
+          "percentile": 87.1
         },
         {
           "date": "2025-10",
@@ -18324,7 +18324,7 @@
           "low": 411.45,
           "volume": 2032095000,
           "peTtm": 260.89,
-          "percentile": 88.8
+          "percentile": 87.2
         },
         {
           "date": "2025-11",
@@ -18334,7 +18334,7 @@
           "low": 382.78,
           "volume": 1628434400,
           "peTtm": 245.81,
-          "percentile": 86.5
+          "percentile": 85.0
         },
         {
           "date": "2025-12",
@@ -18344,7 +18344,7 @@
           "low": 422.12,
           "volume": 1635943900,
           "peTtm": 356.92,
-          "percentile": 97.7
+          "percentile": 96.0
         },
         {
           "date": "2026-01",
@@ -18354,7 +18354,7 @@
           "low": 414.62,
           "volume": 1275015600,
           "peTtm": 341.6,
-          "percentile": 96.5
+          "percentile": 94.9
         },
         {
           "date": "2026-02",
@@ -18364,7 +18364,7 @@
           "low": 387.53,
           "volume": 1123487600,
           "peTtm": 319.45,
-          "percentile": 94.2
+          "percentile": 92.6
         },
         {
           "date": "2026-03",
@@ -18374,7 +18374,7 @@
           "low": 352.14,
           "volume": 1362671900,
           "peTtm": 239.84,
-          "percentile": 83.3
+          "percentile": 81.9
         },
         {
           "date": "2026-04",
@@ -18384,7 +18384,7 @@
           "low": 337.24,
           "volume": 1416250300,
           "peTtm": 246.21,
-          "percentile": 85.1
+          "percentile": 83.7
         },
         {
           "date": "2026-05",
@@ -18394,7 +18394,7 @@
           "low": 378.8,
           "volume": 1051619600,
           "peTtm": 281.15,
-          "percentile": 91.5
+          "percentile": 89.9
         },
         {
           "date": "2026-06",
@@ -18404,7 +18404,7 @@
           "low": 368.6,
           "volume": 901195300,
           "peTtm": 244.97,
-          "percentile": 83.6
+          "percentile": 82.2
         }
       ],
       "splits": [],
@@ -33385,7 +33385,7 @@
           "high": 7.53,
           "low": 6.24,
           "volume": 869559700,
-          "peTtm": -30.13,
+          "peTtm": -30.12,
           "percentile": 6.5
         },
         {
@@ -33465,8 +33465,8 @@
           "high": 14.67,
           "low": 10.57,
           "volume": 2208152100,
-          "peTtm": -7.194230188746725e+18,
-          "percentile": 0.0
+          "peTtm": null,
+          "percentile": null
         },
         {
           "date": "2017-07",
@@ -33475,8 +33475,8 @@
           "high": 15.65,
           "low": 12.13,
           "volume": 1710461400,
-          "peTtm": -7.845630838849593e+18,
-          "percentile": 0.0
+          "peTtm": null,
+          "percentile": null
         },
         {
           "date": "2017-08",
@@ -33485,8 +33485,8 @@
           "high": 13.93,
           "low": 11.86,
           "volume": 1190382100,
-          "peTtm": -7.493989779944505e+18,
-          "percentile": 0.8
+          "peTtm": null,
+          "percentile": null
         },
         {
           "date": "2017-09",
@@ -33506,7 +33506,7 @@
           "low": 10.65,
           "volume": 1358068500,
           "peTtm": 157.0,
-          "percentile": 99.3
+          "percentile": 99.2
         },
         {
           "date": "2017-11",
@@ -33526,7 +33526,7 @@
           "low": 9.7,
           "volume": 795755000,
           "peTtm": 64.25,
-          "percentile": 95.6
+          "percentile": 95.5
         },
         {
           "date": "2018-01",
@@ -33536,7 +33536,7 @@
           "low": 10.34,
           "volume": 1335288900,
           "peTtm": 85.88,
-          "percentile": 95.7
+          "percentile": 95.6
         },
         {
           "date": "2018-02",
@@ -33546,7 +33546,7 @@
           "low": 10.63,
           "volume": 1103985800,
           "peTtm": 75.69,
-          "percentile": 95.0
+          "percentile": 94.9
         },
         {
           "date": "2018-03",
@@ -33556,7 +33556,7 @@
           "low": 9.79,
           "volume": 1483511900,
           "peTtm": 32.42,
-          "percentile": 93.6
+          "percentile": 93.4
         },
         {
           "date": "2018-04",
@@ -33566,7 +33566,7 @@
           "low": 9.04,
           "volume": 1163360900,
           "peTtm": 35.1,
-          "percentile": 93.6
+          "percentile": 93.5
         },
         {
           "date": "2018-05",
@@ -33576,7 +33576,7 @@
           "low": 10.77,
           "volume": 1020602700,
           "peTtm": 44.29,
-          "percentile": 93.7
+          "percentile": 93.5
         },
         {
           "date": "2018-06",
@@ -33586,7 +33586,7 @@
           "low": 13.92,
           "volume": 1632781900,
           "peTtm": 34.86,
-          "percentile": 92.3
+          "percentile": 92.1
         },
         {
           "date": "2018-07",
@@ -33596,7 +33596,7 @@
           "low": 14.74,
           "volume": 1456419400,
           "peTtm": 42.63,
-          "percentile": 93.1
+          "percentile": 92.9
         },
         {
           "date": "2018-08",
@@ -33606,7 +33606,7 @@
           "low": 18.0,
           "volume": 2201119100,
           "peTtm": 58.53,
-          "percentile": 93.8
+          "percentile": 93.7
         },
         {
           "date": "2018-09",
@@ -33616,7 +33616,7 @@
           "low": 25.57,
           "volume": 3063055900,
           "peTtm": 67.15,
-          "percentile": 94.5
+          "percentile": 94.4
         },
         {
           "date": "2018-10",
@@ -33626,7 +33626,7 @@
           "low": 16.17,
           "volume": 2655213100,
           "peTtm": 39.59,
-          "percentile": 91.2
+          "percentile": 91.0
         },
         {
           "date": "2018-11",
@@ -33636,7 +33636,7 @@
           "low": 17.18,
           "volume": 2140346900,
           "peTtm": 46.3,
-          "percentile": 92.6
+          "percentile": 92.4
         },
         {
           "date": "2018-12",
@@ -33646,7 +33646,7 @@
           "low": 16.03,
           "volume": 1981674300,
           "peTtm": 40.13,
-          "percentile": 90.6
+          "percentile": 90.4
         },
         {
           "date": "2019-01",
@@ -33656,7 +33656,7 @@
           "low": 16.94,
           "volume": 2311913200,
           "peTtm": 53.07,
-          "percentile": 92.7
+          "percentile": 92.5
         },
         {
           "date": "2019-02",
@@ -33666,7 +33666,7 @@
           "low": 22.27,
           "volume": 1301360800,
           "peTtm": 51.15,
-          "percentile": 92.1
+          "percentile": 91.9
         },
         {
           "date": "2019-03",
@@ -33676,7 +33676,7 @@
           "low": 21.04,
           "volume": 1499160400,
           "peTtm": 62.24,
-          "percentile": 93.4
+          "percentile": 93.3
         },
         {
           "date": "2019-04",
@@ -33686,7 +33686,7 @@
           "low": 25.83,
           "volume": 1275793800,
           "peTtm": 67.39,
-          "percentile": 94.8
+          "percentile": 94.7
         },
         {
           "date": "2019-05",
@@ -33696,7 +33696,7 @@
           "low": 26.03,
           "volume": 1675142900,
           "peTtm": 66.85,
-          "percentile": 93.5
+          "percentile": 93.4
         },
         {
           "date": "2019-06",
@@ -33716,7 +33716,7 @@
           "low": 30.1,
           "volume": 1155469400,
           "peTtm": 87.0,
-          "percentile": 96.2
+          "percentile": 96.1
         },
         {
           "date": "2019-08",
@@ -33726,7 +33726,7 @@
           "low": 27.65,
           "volume": 1645871800,
           "peTtm": 89.86,
-          "percentile": 96.2
+          "percentile": 96.1
         },
         {
           "date": "2019-09",
@@ -33736,7 +33736,7 @@
           "low": 28.35,
           "volume": 1012749700,
           "peTtm": 72.47,
-          "percentile": 93.0
+          "percentile": 92.9
         },
         {
           "date": "2019-10",
@@ -33746,7 +33746,7 @@
           "low": 27.43,
           "volume": 1067281800,
           "peTtm": 84.82,
-          "percentile": 93.7
+          "percentile": 93.6
         },
         {
           "date": "2019-11",
@@ -33766,7 +33766,7 @@
           "low": 37.15,
           "volume": 982440800,
           "peTtm": 71.66,
-          "percentile": 91.3
+          "percentile": 91.1
         },
         {
           "date": "2020-01",
@@ -33776,7 +33776,7 @@
           "low": 46.1,
           "volume": 1227882000,
           "peTtm": 73.44,
-          "percentile": 92.0
+          "percentile": 91.8
         },
         {
           "date": "2020-02",
@@ -33786,7 +33786,7 @@
           "low": 41.04,
           "volume": 1283146900,
           "peTtm": 71.06,
-          "percentile": 90.2
+          "percentile": 90.0
         },
         {
           "date": "2020-03",
@@ -33796,7 +33796,7 @@
           "low": 36.75,
           "volume": 2095887300,
           "peTtm": 59.84,
-          "percentile": 86.6
+          "percentile": 86.3
         },
         {
           "date": "2020-04",
@@ -33806,7 +33806,7 @@
           "low": 41.7,
           "volume": 1714615700,
           "peTtm": 68.93,
-          "percentile": 89.7
+          "percentile": 89.5
         },
         {
           "date": "2020-05",
@@ -33816,7 +33816,7 @@
           "low": 49.09,
           "volume": 1192698100,
           "peTtm": 70.79,
-          "percentile": 89.8
+          "percentile": 89.6
         },
         {
           "date": "2020-06",
@@ -33826,7 +33826,7 @@
           "low": 48.42,
           "volume": 1174606200,
           "peTtm": 61.17,
-          "percentile": 85.6
+          "percentile": 85.4
         },
         {
           "date": "2020-07",
@@ -33856,7 +33856,7 @@
           "low": 73.85,
           "volume": 1168263000,
           "peTtm": 75.22,
-          "percentile": 91.2
+          "percentile": 91.0
         },
         {
           "date": "2020-10",
@@ -33866,7 +33866,7 @@
           "low": 74.23,
           "volume": 1181118000,
           "peTtm": 69.07,
-          "percentile": 87.7
+          "percentile": 87.5
         },
         {
           "date": "2020-11",
@@ -33876,7 +33876,7 @@
           "low": 73.76,
           "volume": 907041400,
           "peTtm": 85.01,
-          "percentile": 92.4
+          "percentile": 92.3
         },
         {
           "date": "2020-12",
@@ -33886,7 +33886,7 @@
           "low": 89.03,
           "volume": 848701400,
           "peTtm": 71.09,
-          "percentile": 88.4
+          "percentile": 88.2
         },
         {
           "date": "2021-01",
@@ -33896,7 +33896,7 @@
           "low": 85.02,
           "volume": 997848700,
           "peTtm": 66.39,
-          "percentile": 83.9
+          "percentile": 83.6
         },
         {
           "date": "2021-02",
@@ -33906,7 +33906,7 @@
           "low": 79.36,
           "volume": 734954400,
           "peTtm": 65.51,
-          "percentile": 83.4
+          "percentile": 83.1
         },
         {
           "date": "2021-03",
@@ -33916,7 +33916,7 @@
           "low": 73.86,
           "volume": 1008228800,
           "peTtm": 48.16,
-          "percentile": 79.0
+          "percentile": 78.6
         },
         {
           "date": "2021-04",
@@ -33926,7 +33926,7 @@
           "low": 77.94,
           "volume": 986273800,
           "peTtm": 50.07,
-          "percentile": 79.1
+          "percentile": 78.7
         },
         {
           "date": "2021-05",
@@ -33936,7 +33936,7 @@
           "low": 72.5,
           "volume": 892921300,
           "peTtm": 49.13,
-          "percentile": 78.7
+          "percentile": 78.3
         },
         {
           "date": "2021-06",
@@ -33946,7 +33946,7 @@
           "low": 78.96,
           "volume": 812057600,
           "peTtm": 45.16,
-          "percentile": 77.1
+          "percentile": 76.7
         },
         {
           "date": "2021-07",
@@ -33956,7 +33956,7 @@
           "low": 84.24,
           "volume": 1138187300,
           "peTtm": 51.05,
-          "percentile": 79.4
+          "percentile": 79.1
         },
         {
           "date": "2021-08",
@@ -33966,7 +33966,7 @@
           "low": 101.98,
           "volume": 1998312900,
           "peTtm": 53.23,
-          "percentile": 80.7
+          "percentile": 80.3
         },
         {
           "date": "2021-09",
@@ -33976,7 +33976,7 @@
           "low": 99.51,
           "volume": 867104200,
           "peTtm": 42.88,
-          "percentile": 75.3
+          "percentile": 74.9
         },
         {
           "date": "2021-10",
@@ -33986,7 +33986,7 @@
           "low": 99.82,
           "volume": 930236100,
           "peTtm": 50.1,
-          "percentile": 78.7
+          "percentile": 78.3
         },
         {
           "date": "2021-11",
@@ -33996,7 +33996,7 @@
           "low": 118.13,
           "volume": 1373609400,
           "peTtm": 65.99,
-          "percentile": 84.2
+          "percentile": 84.0
         },
         {
           "date": "2021-12",
@@ -34006,7 +34006,7 @@
           "low": 130.6,
           "volume": 1175493900,
           "peTtm": 51.39,
-          "percentile": 79.5
+          "percentile": 79.1
         },
         {
           "date": "2022-01",
@@ -34016,7 +34016,7 @@
           "low": 99.35,
           "volume": 1638612600,
           "peTtm": 40.8,
-          "percentile": 73.1
+          "percentile": 72.7
         },
         {
           "date": "2022-02",
@@ -34026,7 +34026,7 @@
           "low": 104.26,
           "volume": 2293656000,
           "peTtm": 44.05,
-          "percentile": 74.3
+          "percentile": 73.9
         },
         {
           "date": "2022-03",
@@ -34036,7 +34036,7 @@
           "low": 100.08,
           "volume": 2460278900,
           "peTtm": 32.06,
-          "percentile": 69.7
+          "percentile": 69.2
         },
         {
           "date": "2022-04",
@@ -34046,7 +34046,7 @@
           "low": 84.02,
           "volume": 1719017900,
           "peTtm": 25.08,
-          "percentile": 65.1
+          "percentile": 64.5
         },
         {
           "date": "2022-05",
@@ -34056,7 +34056,7 @@
           "low": 83.27,
           "volume": 2898334400,
           "peTtm": 29.87,
-          "percentile": 67.9
+          "percentile": 67.4
         },
         {
           "date": "2022-06",
@@ -34066,7 +34066,7 @@
           "low": 75.48,
           "volume": 2030987200,
           "peTtm": 19.97,
-          "percentile": 62.3
+          "percentile": 61.7
         },
         {
           "date": "2022-07",
@@ -34076,7 +34076,7 @@
           "low": 71.6,
           "volume": 1633255900,
           "peTtm": 24.67,
-          "percentile": 64.6
+          "percentile": 64.0
         },
         {
           "date": "2022-08",
@@ -34086,7 +34086,7 @@
           "low": 83.72,
           "volume": 1801038400,
           "peTtm": 22.16,
-          "percentile": 64.2
+          "percentile": 63.7
         },
         {
           "date": "2022-09",
@@ -34096,7 +34096,7 @@
           "low": 62.83,
           "volume": 1677508600,
           "peTtm": 16.81,
-          "percentile": 56.2
+          "percentile": 55.5
         },
         {
           "date": "2022-10",
@@ -34106,7 +34106,7 @@
           "low": 54.57,
           "volume": 1961500500,
           "peTtm": 15.93,
-          "percentile": 54.9
+          "percentile": 54.2
         },
         {
           "date": "2022-11",
@@ -34116,7 +34116,7 @@
           "low": 58.03,
           "volume": 1681532600,
           "peTtm": 20.59,
-          "percentile": 63.3
+          "percentile": 62.7
         },
         {
           "date": "2022-12",
@@ -34126,7 +34126,7 @@
           "low": 61.96,
           "volume": 1149724900,
           "peTtm": 18.3,
-          "percentile": 58.9
+          "percentile": 58.2
         },
         {
           "date": "2023-01",
@@ -34136,7 +34136,7 @@
           "low": 60.05,
           "volume": 1081467000,
           "peTtm": 21.23,
-          "percentile": 63.6
+          "percentile": 63.1
         },
         {
           "date": "2023-02",
@@ -34146,7 +34146,7 @@
           "low": 75.92,
           "volume": 1145820100,
           "peTtm": 22.2,
-          "percentile": 65.3
+          "percentile": 64.8
         },
         {
           "date": "2023-03",
@@ -34156,7 +34156,7 @@
           "low": 76.65,
           "volume": 1656082900,
           "peTtm": 32.56,
-          "percentile": 72.0
+          "percentile": 71.6
         },
         {
           "date": "2023-04",
@@ -34166,7 +34166,7 @@
           "low": 83.76,
           "volume": 895535200,
           "peTtm": 29.69,
-          "percentile": 68.2
+          "percentile": 67.7
         },
         {
           "date": "2023-05",
@@ -34176,7 +34176,7 @@
           "low": 81.02,
           "volume": 1763329300,
           "peTtm": 39.27,
-          "percentile": 73.3
+          "percentile": 72.9
         },
         {
           "date": "2023-06",
@@ -34186,7 +34186,7 @@
           "low": 107.08,
           "volume": 1542596400,
           "peTtm": 44.85,
-          "percentile": 76.8
+          "percentile": 76.5
         },
         {
           "date": "2023-07",
@@ -34196,7 +34196,7 @@
           "low": 108.55,
           "volume": 1141783400,
           "peTtm": 45.04,
-          "percentile": 77.0
+          "percentile": 76.6
         },
         {
           "date": "2023-08",
@@ -34206,7 +34206,7 @@
           "low": 99.58,
           "volume": 1571310500,
           "peTtm": 41.62,
-          "percentile": 74.1
+          "percentile": 73.8
         },
         {
           "date": "2023-09",
@@ -34216,7 +34216,7 @@
           "low": 94.46,
           "volume": 1044230400,
           "peTtm": 40.01,
-          "percentile": 72.8
+          "percentile": 72.4
         },
         {
           "date": "2023-10",
@@ -34226,7 +34226,7 @@
           "low": 93.12,
           "volume": 1160901200,
           "peTtm": 38.33,
-          "percentile": 71.5
+          "percentile": 71.1
         },
         {
           "date": "2023-11",
@@ -34236,7 +34236,7 @@
           "low": 98.5,
           "volume": 1116292100,
           "peTtm": 47.14,
-          "percentile": 78.4
+          "percentile": 78.0
         },
         {
           "date": "2023-12",
@@ -34246,7 +34246,7 @@
           "low": 116.37,
           "volume": 1279987600,
           "peTtm": 55.63,
-          "percentile": 82.8
+          "percentile": 82.5
         },
         {
           "date": "2024-01",
@@ -34256,7 +34256,7 @@
           "low": 133.74,
           "volume": 1955862700,
           "peTtm": 63.28,
-          "percentile": 84.8
+          "percentile": 84.5
         },
         {
           "date": "2024-02",
@@ -34266,7 +34266,7 @@
           "low": 161.81,
           "volume": 1271727700,
           "peTtm": 72.65,
-          "percentile": 91.5
+          "percentile": 91.3
         },
         {
           "date": "2024-03",
@@ -34276,7 +34276,7 @@
           "low": 172.0,
           "volume": 1527526500,
           "peTtm": 67.6,
-          "percentile": 87.7
+          "percentile": 87.6
         },
         {
           "date": "2024-04",
@@ -34286,7 +34286,7 @@
           "low": 145.29,
           "volume": 1242532400,
           "peTtm": 59.32,
-          "percentile": 82.2
+          "percentile": 81.9
         },
         {
           "date": "2024-05",
@@ -34296,7 +34296,7 @@
           "low": 141.16,
           "volume": 1119450800,
           "peTtm": 62.51,
-          "percentile": 83.6
+          "percentile": 83.4
         },
         {
           "date": "2024-06",
@@ -34306,7 +34306,7 @@
           "low": 153.34,
           "volume": 959732700,
           "peTtm": 58.35,
-          "percentile": 80.9
+          "percentile": 80.7
         },
         {
           "date": "2024-07",
@@ -34316,7 +34316,7 @@
           "low": 134.05,
           "volume": 1243397700,
           "peTtm": 51.97,
-          "percentile": 79.2
+          "percentile": 78.9
         },
         {
           "date": "2024-08",
@@ -34326,7 +34326,7 @@
           "low": 121.83,
           "volume": 1101975100,
           "peTtm": 53.44,
-          "percentile": 80.2
+          "percentile": 79.9
         },
         {
           "date": "2024-09",
@@ -34336,7 +34336,7 @@
           "low": 132.11,
           "volume": 660001200,
           "peTtm": 54.69,
-          "percentile": 80.3
+          "percentile": 80.0
         },
         {
           "date": "2024-10",
@@ -34346,7 +34346,7 @@
           "low": 143.33,
           "volume": 900788500,
           "peTtm": 48.02,
-          "percentile": 74.9
+          "percentile": 74.5
         },
         {
           "date": "2024-11",
@@ -34356,7 +34356,7 @@
           "low": 132.96,
           "volume": 611613700,
           "peTtm": 45.73,
-          "percentile": 73.6
+          "percentile": 73.3
         },
         {
           "date": "2024-12",
@@ -34366,7 +34366,7 @@
           "low": 117.9,
           "volume": 814343000,
           "peTtm": 36.38,
-          "percentile": 67.0
+          "percentile": 66.5
         },
         {
           "date": "2025-01",
@@ -34376,7 +34376,7 @@
           "low": 112.8,
           "volume": 779158600,
           "peTtm": 34.92,
-          "percentile": 66.2
+          "percentile": 65.8
         },
         {
           "date": "2025-02",
@@ -34386,7 +34386,7 @@
           "low": 98.69,
           "volume": 798519600,
           "peTtm": 30.08,
-          "percentile": 63.2
+          "percentile": 62.7
         },
         {
           "date": "2025-03",
@@ -34396,7 +34396,7 @@
           "low": 94.73,
           "volume": 721274200,
           "peTtm": 28.07,
-          "percentile": 60.7
+          "percentile": 60.2
         },
         {
           "date": "2025-04",
@@ -34406,7 +34406,7 @@
           "low": 76.48,
           "volume": 936254700,
           "peTtm": 26.6,
-          "percentile": 60.0
+          "percentile": 59.5
         },
         {
           "date": "2025-05",
@@ -34416,7 +34416,7 @@
           "low": 96.45,
           "volume": 910142900,
           "peTtm": 30.25,
-          "percentile": 63.7
+          "percentile": 63.2
         },
         {
           "date": "2025-06",
@@ -34426,7 +34426,7 @@
           "low": 111.01,
           "volume": 1075783700,
           "peTtm": 41.13,
-          "percentile": 70.5
+          "percentile": 70.1
         },
         {
           "date": "2025-07",
@@ -34436,7 +34436,7 @@
           "low": 133.5,
           "volume": 1186301600,
           "peTtm": 51.1,
-          "percentile": 78.1
+          "percentile": 77.8
         },
         {
           "date": "2025-08",
@@ -34446,7 +34446,7 @@
           "low": 157.8,
           "volume": 1305775000,
           "peTtm": 47.14,
-          "percentile": 74.9
+          "percentile": 74.6
         },
         {
           "date": "2025-09",
@@ -34456,7 +34456,7 @@
           "low": 149.22,
           "volume": 915555100,
           "peTtm": 43.38,
-          "percentile": 71.3
+          "percentile": 70.9
         },
         {
           "date": "2025-10",
@@ -34466,7 +34466,7 @@
           "low": 160.49,
           "volume": 1759727400,
           "peTtm": 68.66,
-          "percentile": 88.7
+          "percentile": 88.6
         },
         {
           "date": "2025-11",
@@ -34476,7 +34476,7 @@
           "low": 194.28,
           "volume": 1050767500,
           "peTtm": 58.32,
-          "percentile": 81.5
+          "percentile": 81.2
         },
         {
           "date": "2025-12",
@@ -34486,7 +34486,7 @@
           "low": 197.53,
           "volume": 599995500,
           "peTtm": 51.36,
-          "percentile": 78.1
+          "percentile": 77.8
         },
         {
           "date": "2026-01",
@@ -34496,7 +34496,7 @@
           "low": 199.8,
           "volume": 759653200,
           "peTtm": 56.77,
-          "percentile": 81.2
+          "percentile": 81.0
         },
         {
           "date": "2026-02",
@@ -34506,7 +34506,7 @@
           "low": 190.72,
           "volume": 821118200,
           "peTtm": 48.01,
-          "percentile": 74.0
+          "percentile": 73.7
         },
         {
           "date": "2026-03",
@@ -34516,7 +34516,7 @@
           "low": 188.22,
           "volume": 750845500,
           "peTtm": 44.42,
-          "percentile": 70.8
+          "percentile": 70.4
         },
         {
           "date": "2026-04",
@@ -34526,7 +34526,7 @@
           "low": 200.62,
           "volume": 839732300,
           "peTtm": 77.4,
-          "percentile": 93.7
+          "percentile": 93.6
         },
         {
           "date": "2026-05",
@@ -34536,7 +34536,7 @@
           "low": 338.7,
           "volume": 795803100,
           "peTtm": 112.69,
-          "percentile": 97.5
+          "percentile": 97.4
         },
         {
           "date": "2026-06",
@@ -48091,8 +48091,8 @@
           "high": 58.45,
           "low": 53.66,
           "volume": 217958300,
-          "peTtm": 14.3,
-          "percentile": 38.8
+          "peTtm": 14.31,
+          "percentile": 39.1
         },
         {
           "date": "2020-09",
@@ -63793,7 +63793,7 @@
           "high": 16.48,
           "low": 15.16,
           "volume": 1167958000,
-          "peTtm": 203.87,
+          "peTtm": 203.88,
           "percentile": 83.8
         },
         {
@@ -64073,7 +64073,7 @@
           "high": 30.16,
           "low": 25.23,
           "volume": 1754113000,
-          "peTtm": 83.62,
+          "peTtm": 83.63,
           "percentile": 57.6
         },
         {
@@ -64813,7 +64813,7 @@
           "high": 116.73,
           "low": 103.32,
           "volume": 725971100,
-          "peTtm": 44.83,
+          "peTtm": 44.82,
           "percentile": 42.7
         },
         {
@@ -64969,7 +64969,7 @@
           "high": 4.77,
           "low": 4.33,
           "volume": 736408000,
-          "peTtm": 11.17,
+          "peTtm": 11.18,
           "percentile": 0.0
         },
         {
@@ -65410,7 +65410,7 @@
           "low": 3.68,
           "volume": 613201000,
           "peTtm": 11.17,
-          "percentile": 53.9
+          "percentile": 52.9
         },
         {
           "date": "2010-11",
@@ -68505,8 +68505,8 @@
           "high": 14.7,
           "low": 12.45,
           "volume": 1701679800,
-          "peTtm": 12.08,
-          "percentile": 42.1
+          "peTtm": 12.07,
+          "percentile": 41.2
         },
         {
           "date": "2016-08",
@@ -69666,7 +69666,7 @@
           "low": 46.12,
           "volume": 973417900,
           "peTtm": 12.07,
-          "percentile": 40.0
+          "percentile": 40.3
         },
         {
           "date": "2026-04",
@@ -75473,7 +75473,7 @@
           "high": 23.22,
           "low": 19.97,
           "volume": 297899500,
-          "peTtm": 25.62,
+          "peTtm": 25.63,
           "percentile": 76.8
         },
         {
@@ -88609,7 +88609,7 @@
           "high": 167.94,
           "low": 161.51,
           "volume": 71346000,
-          "peTtm": 23.02,
+          "peTtm": 23.03,
           "percentile": 85.2
         },
         {
@@ -88619,7 +88619,7 @@
           "high": 180.67,
           "low": 160.53,
           "volume": 103227500,
-          "peTtm": 24.97,
+          "peTtm": 24.98,
           "percentile": 98.5
         },
         {
@@ -89540,7 +89540,7 @@
           "low": 352.46,
           "volume": 72300300,
           "peTtm": 24.97,
-          "percentile": 91.9
+          "percentile": 91.7
         },
         {
           "date": "2025-08",
@@ -113577,8 +113577,8 @@
           "high": 3.75,
           "low": 3.13,
           "volume": 710996000,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 6.521212260432478e+16,
+          "percentile": 100.0
         },
         {
           "date": "2010-01",
@@ -113587,8 +113587,8 @@
           "high": 3.74,
           "low": 2.78,
           "volume": 859962000,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 5.080060379673919e+16,
+          "percentile": 97.6
         },
         {
           "date": "2010-02",
@@ -113597,8 +113597,8 @@
           "high": 3.1,
           "low": 2.8,
           "volume": 837235000,
-          "peTtm": null,
-          "percentile": null
+          "peTtm": 5.242189966259258e+16,
+          "percentile": 97.7
         },
         {
           "date": "2010-03",
@@ -113608,7 +113608,7 @@
           "low": 2.77,
           "volume": 851071000,
           "peTtm": 4.12,
-          "percentile": 92.7
+          "percentile": 86.4
         },
         {
           "date": "2010-04",
@@ -113618,7 +113618,7 @@
           "low": 3.07,
           "volume": 776981000,
           "peTtm": 4.55,
-          "percentile": 95.2
+          "percentile": 88.9
         },
         {
           "date": "2010-05",
@@ -113628,7 +113628,7 @@
           "low": 2.84,
           "volume": 863590000,
           "peTtm": 4.11,
-          "percentile": 88.4
+          "percentile": 82.6
         },
         {
           "date": "2010-06",
@@ -113638,7 +113638,7 @@
           "low": 2.77,
           "volume": 1051846000,
           "peTtm": 1.81,
-          "percentile": 56.8
+          "percentile": 53.2
         },
         {
           "date": "2010-07",
@@ -113648,7 +113648,7 @@
           "low": 2.67,
           "volume": 1014115000,
           "peTtm": 2.06,
-          "percentile": 77.8
+          "percentile": 72.9
         },
         {
           "date": "2010-08",
@@ -113658,7 +113658,7 @@
           "low": 2.77,
           "volume": 689681000,
           "peTtm": 1.82,
-          "percentile": 56.5
+          "percentile": 53.1
         },
         {
           "date": "2010-09",
@@ -113668,7 +113668,7 @@
           "low": 2.79,
           "volume": 825511000,
           "peTtm": 1.48,
-          "percentile": 41.5
+          "percentile": 39.0
         },
         {
           "date": "2010-10",
@@ -113678,7 +113678,7 @@
           "low": 3.3,
           "volume": 755010000,
           "peTtm": 1.5,
-          "percentile": 44.8
+          "percentile": 42.2
         },
         {
           "date": "2010-11",
@@ -113688,7 +113688,7 @@
           "low": 3.52,
           "volume": 450597000,
           "peTtm": 1.54,
-          "percentile": 49.0
+          "percentile": 46.2
         },
         {
           "date": "2010-12",
@@ -113698,7 +113698,7 @@
           "low": 3.73,
           "volume": 369912000,
           "peTtm": 1.21,
-          "percentile": 20.0
+          "percentile": 18.9
         },
         {
           "date": "2011-01",
@@ -113708,7 +113708,7 @@
           "low": 3.69,
           "volume": 599133000,
           "peTtm": 1.38,
-          "percentile": 33.3
+          "percentile": 31.5
         },
         {
           "date": "2011-02",
@@ -113718,7 +113718,7 @@
           "low": 4.43,
           "volume": 451589000,
           "peTtm": 1.52,
-          "percentile": 50.0
+          "percentile": 47.3
         },
         {
           "date": "2011-03",
@@ -113728,7 +113728,7 @@
           "low": 4.4,
           "volume": 567538000,
           "peTtm": 1.15,
-          "percentile": 15.1
+          "percentile": 14.3
         },
         {
           "date": "2011-04",
@@ -113738,7 +113738,7 @@
           "low": 4.14,
           "volume": 540015000,
           "peTtm": 1.07,
-          "percentile": 14.8
+          "percentile": 14.0
         },
         {
           "date": "2011-05",
@@ -113748,7 +113748,7 @@
           "low": 4.01,
           "volume": 518531000,
           "peTtm": 1.05,
-          "percentile": 14.5
+          "percentile": 13.8
         },
         {
           "date": "2011-06",
@@ -113758,7 +113758,7 @@
           "low": 3.79,
           "volume": 472852000,
           "peTtm": 0.83,
-          "percentile": 12.5
+          "percentile": 11.9
         },
         {
           "date": "2011-07",
@@ -113768,7 +113768,7 @@
           "low": 3.94,
           "volume": 662242000,
           "peTtm": 0.81,
-          "percentile": 12.3
+          "percentile": 11.7
         },
         {
           "date": "2011-08",
@@ -113778,7 +113778,7 @@
           "low": 3.36,
           "volume": 869240000,
           "peTtm": 0.75,
-          "percentile": 10.3
+          "percentile": 9.8
         },
         {
           "date": "2011-09",
@@ -113788,7 +113788,7 @@
           "low": 3.32,
           "volume": 793976000,
           "peTtm": 0.75,
-          "percentile": 11.0
+          "percentile": 10.5
         },
         {
           "date": "2011-10",
@@ -113798,7 +113798,7 @@
           "low": 3.66,
           "volume": 793169000,
           "peTtm": 0.93,
-          "percentile": 18.3
+          "percentile": 17.5
         },
         {
           "date": "2011-11",
@@ -113808,7 +113808,7 @@
           "low": 4.21,
           "volume": 613147000,
           "peTtm": 0.91,
-          "percentile": 18.0
+          "percentile": 17.2
         },
         {
           "date": "2011-12",
@@ -113818,7 +113818,7 @@
           "low": 4.51,
           "volume": 552611000,
           "peTtm": 1.03,
-          "percentile": 22.6
+          "percentile": 21.5
         },
         {
           "date": "2012-01",
@@ -113828,7 +113828,7 @@
           "low": 4.67,
           "volume": 697954000,
           "peTtm": 1.09,
-          "percentile": 27.0
+          "percentile": 25.8
         },
         {
           "date": "2012-02",
@@ -113838,7 +113838,7 @@
           "low": 4.73,
           "volume": 503804000,
           "peTtm": 1.03,
-          "percentile": 22.7
+          "percentile": 21.6
         },
         {
           "date": "2012-03",
@@ -113848,7 +113848,7 @@
           "low": 4.66,
           "volume": 580234000,
           "peTtm": 1.17,
-          "percentile": 30.8
+          "percentile": 29.4
         },
         {
           "date": "2012-04",
@@ -113858,7 +113858,7 @@
           "low": 5.12,
           "volume": 425147000,
           "peTtm": 1.12,
-          "percentile": 28.8
+          "percentile": 27.5
         },
         {
           "date": "2012-05",
@@ -113868,7 +113868,7 @@
           "low": 4.48,
           "volume": 565982000,
           "peTtm": 0.98,
-          "percentile": 19.4
+          "percentile": 18.6
         },
         {
           "date": "2012-06",
@@ -113878,7 +113878,7 @@
           "low": 4.41,
           "volume": 452232000,
           "peTtm": 1.06,
-          "percentile": 26.5
+          "percentile": 25.4
         },
         {
           "date": "2012-07",
@@ -113888,7 +113888,7 @@
           "low": 4.48,
           "volume": 511797000,
           "peTtm": 1.09,
-          "percentile": 29.7
+          "percentile": 28.5
         },
         {
           "date": "2012-08",
@@ -113898,7 +113898,7 @@
           "low": 5.04,
           "volume": 404961000,
           "peTtm": 1.1,
-          "percentile": 31.4
+          "percentile": 30.1
         },
         {
           "date": "2012-09",
@@ -113908,7 +113908,7 @@
           "low": 4.64,
           "volume": 493794000,
           "peTtm": 1.1,
-          "percentile": 31.7
+          "percentile": 30.4
         },
         {
           "date": "2012-10",
@@ -113918,7 +113918,7 @@
           "low": 4.47,
           "volume": 545682000,
           "peTtm": 1.08,
-          "percentile": 27.8
+          "percentile": 26.7
         },
         {
           "date": "2012-11",
@@ -113928,7 +113928,7 @@
           "low": 4.32,
           "volume": 503956000,
           "peTtm": 1.05,
-          "percentile": 24.0
+          "percentile": 23.0
         },
         {
           "date": "2012-12",
@@ -113938,7 +113938,7 @@
           "low": 4.51,
           "volume": 294937000,
           "peTtm": 1.13,
-          "percentile": 36.5
+          "percentile": 35.1
         },
         {
           "date": "2013-01",
@@ -113948,7 +113948,7 @@
           "low": 4.74,
           "volume": 508932000,
           "peTtm": 1.3,
-          "percentile": 46.7
+          "percentile": 44.9
         },
         {
           "date": "2013-02",
@@ -113958,7 +113958,7 @@
           "low": 5.3,
           "volume": 395396000,
           "peTtm": 1.3,
-          "percentile": 46.7
+          "percentile": 44.9
         },
         {
           "date": "2013-03",
@@ -113968,7 +113968,7 @@
           "low": 5.08,
           "volume": 374407000,
           "peTtm": 1.33,
-          "percentile": 48.7
+          "percentile": 46.9
         },
         {
           "date": "2013-04",
@@ -113978,7 +113978,7 @@
           "low": 5.02,
           "volume": 492161000,
           "peTtm": 1.37,
-          "percentile": 53.8
+          "percentile": 51.9
         },
         {
           "date": "2013-05",
@@ -113988,7 +113988,7 @@
           "low": 5.34,
           "volume": 452299000,
           "peTtm": 1.42,
-          "percentile": 56.3
+          "percentile": 54.3
         },
         {
           "date": "2013-06",
@@ -113998,7 +113998,7 @@
           "low": 5.34,
           "volume": 325818000,
           "peTtm": 1.69,
-          "percentile": 70.0
+          "percentile": 67.5
         },
         {
           "date": "2013-07",
@@ -114008,7 +114008,7 @@
           "low": 5.43,
           "volume": 398320000,
           "peTtm": 1.78,
-          "percentile": 72.2
+          "percentile": 69.6
         },
         {
           "date": "2013-08",
@@ -114018,7 +114018,7 @@
           "low": 5.46,
           "volume": 259280000,
           "peTtm": 1.67,
-          "percentile": 68.3
+          "percentile": 65.9
         },
         {
           "date": "2013-09",
@@ -114028,7 +114028,7 @@
           "low": 5.51,
           "volume": 288257000,
           "peTtm": 1.94,
-          "percentile": 80.1
+          "percentile": 77.3
         },
         {
           "date": "2013-10",
@@ -114038,7 +114038,7 @@
           "low": 5.88,
           "volume": 325630000,
           "peTtm": 2.09,
-          "percentile": 89.3
+          "percentile": 86.2
         },
         {
           "date": "2013-11",
@@ -114048,7 +114048,7 @@
           "low": 6.16,
           "volume": 227424000,
           "peTtm": 2.04,
-          "percentile": 85.3
+          "percentile": 82.4
         },
         {
           "date": "2013-12",
@@ -114058,7 +114058,7 @@
           "low": 6.05,
           "volume": 226824000,
           "peTtm": 1.92,
-          "percentile": 76.7
+          "percentile": 74.2
         },
         {
           "date": "2014-01",
@@ -114068,7 +114068,7 @@
           "low": 6.06,
           "volume": 311458000,
           "peTtm": 1.83,
-          "percentile": 73.0
+          "percentile": 70.6
         },
         {
           "date": "2014-02",
@@ -114078,7 +114078,7 @@
           "low": 5.94,
           "volume": 242284000,
           "peTtm": 1.94,
-          "percentile": 78.4
+          "percentile": 75.8
         },
         {
           "date": "2014-03",
@@ -114088,7 +114088,7 @@
           "low": 6.39,
           "volume": 286159000,
           "peTtm": 1.93,
-          "percentile": 76.4
+          "percentile": 73.9
         },
         {
           "date": "2014-04",
@@ -114098,7 +114098,7 @@
           "low": 6.22,
           "volume": 398028000,
           "peTtm": 1.79,
-          "percentile": 67.8
+          "percentile": 65.6
         },
         {
           "date": "2014-05",
@@ -114108,7 +114108,7 @@
           "low": 6.14,
           "volume": 246522000,
           "peTtm": 1.83,
-          "percentile": 71.4
+          "percentile": 69.1
         },
         {
           "date": "2014-06",
@@ -114118,7 +114118,7 @@
           "low": 6.52,
           "volume": 260074000,
           "peTtm": 2.04,
-          "percentile": 85.9
+          "percentile": 83.2
         },
         {
           "date": "2014-07",
@@ -114128,7 +114128,7 @@
           "low": 7.01,
           "volume": 443195000,
           "peTtm": 2.01,
-          "percentile": 82.8
+          "percentile": 80.2
         },
         {
           "date": "2014-08",
@@ -114138,7 +114138,7 @@
           "low": 7.09,
           "volume": 220030000,
           "peTtm": 2.15,
-          "percentile": 92.0
+          "percentile": 89.2
         },
         {
           "date": "2014-09",
@@ -114148,7 +114148,7 @@
           "low": 7.65,
           "volume": 329219000,
           "peTtm": 2.35,
-          "percentile": 93.7
+          "percentile": 90.8
         },
         {
           "date": "2014-10",
@@ -114158,7 +114158,7 @@
           "low": 6.53,
           "volume": 590936000,
           "peTtm": 2.36,
-          "percentile": 93.8
+          "percentile": 90.9
         },
         {
           "date": "2014-11",
@@ -114168,7 +114168,7 @@
           "low": 6.67,
           "volume": 320409000,
           "peTtm": 2.07,
-          "percentile": 85.6
+          "percentile": 83.0
         },
         {
           "date": "2014-12",
@@ -114178,7 +114178,7 @@
           "low": 6.62,
           "volume": 335503000,
           "peTtm": 2.21,
-          "percentile": 90.8
+          "percentile": 88.1
         },
         {
           "date": "2015-01",
@@ -114188,7 +114188,7 @@
           "low": 6.13,
           "volume": 377024000,
           "peTtm": 1.93,
-          "percentile": 71.2
+          "percentile": 69.1
         },
         {
           "date": "2015-02",
@@ -114198,7 +114198,7 @@
           "low": 6.02,
           "volume": 220340000,
           "peTtm": 2.04,
-          "percentile": 81.5
+          "percentile": 79.1
         },
         {
           "date": "2015-03",
@@ -114208,7 +114208,7 @@
           "low": 5.75,
           "volume": 309745000,
           "peTtm": 2.09,
-          "percentile": 86.6
+          "percentile": 84.1
         },
         {
           "date": "2015-04",
@@ -114218,7 +114218,7 @@
           "low": 5.71,
           "volume": 336822000,
           "peTtm": 2.11,
-          "percentile": 87.3
+          "percentile": 84.8
         },
         {
           "date": "2015-05",
@@ -114228,7 +114228,7 @@
           "low": 5.78,
           "volume": 223542000,
           "peTtm": 2.14,
-          "percentile": 88.3
+          "percentile": 85.8
         },
         {
           "date": "2015-06",
@@ -114238,7 +114238,7 @@
           "low": 5.52,
           "volume": 283542000,
           "peTtm": 1.89,
-          "percentile": 66.3
+          "percentile": 64.5
         },
         {
           "date": "2015-07",
@@ -114248,7 +114248,7 @@
           "low": 5.04,
           "volume": 333639000,
           "peTtm": 1.78,
-          "percentile": 57.1
+          "percentile": 55.6
         },
         {
           "date": "2015-08",
@@ -114258,7 +114258,7 @@
           "low": 4.5,
           "volume": 307850000,
           "peTtm": 1.68,
-          "percentile": 53.8
+          "percentile": 52.3
         },
         {
           "date": "2015-09",
@@ -114268,7 +114268,7 @@
           "low": 4.68,
           "volume": 404775000,
           "peTtm": 1.55,
-          "percentile": 51.4
+          "percentile": 50.0
         },
         {
           "date": "2015-10",
@@ -114278,7 +114278,7 @@
           "low": 4.87,
           "volume": 824247000,
           "peTtm": 2.08,
-          "percentile": 83.8
+          "percentile": 81.5
         },
         {
           "date": "2015-11",
@@ -114288,7 +114288,7 @@
           "low": 6.53,
           "volume": 337537000,
           "peTtm": 2.07,
-          "percentile": 82.1
+          "percentile": 79.9
         },
         {
           "date": "2015-12",
@@ -114298,7 +114298,7 @@
           "low": 6.66,
           "volume": 286015000,
           "peTtm": 1.94,
-          "percentile": 70.5
+          "percentile": 68.6
         },
         {
           "date": "2016-01",
@@ -114308,7 +114308,7 @@
           "low": 6.36,
           "volume": 301756000,
           "peTtm": 1.87,
-          "percentile": 64.0
+          "percentile": 62.3
         },
         {
           "date": "2016-02",
@@ -114318,7 +114318,7 @@
           "low": 6.23,
           "volume": 469240000,
           "peTtm": 1.89,
-          "percentile": 65.6
+          "percentile": 63.9
         },
         {
           "date": "2016-03",
@@ -114328,7 +114328,7 @@
           "low": 6.77,
           "volume": 260364000,
           "peTtm": 1.87,
-          "percentile": 63.3
+          "percentile": 61.6
         },
         {
           "date": "2016-04",
@@ -114338,7 +114338,7 @@
           "low": 6.95,
           "volume": 193392000,
           "peTtm": 1.8,
-          "percentile": 57.0
+          "percentile": 55.6
         },
         {
           "date": "2016-05",
@@ -114348,7 +114348,7 @@
           "low": 6.73,
           "volume": 182901000,
           "peTtm": 1.87,
-          "percentile": 63.5
+          "percentile": 61.9
         },
         {
           "date": "2016-06",
@@ -114358,7 +114358,7 @@
           "low": 7.1,
           "volume": 246291000,
           "peTtm": 1.57,
-          "percentile": 48.3
+          "percentile": 47.1
         },
         {
           "date": "2016-07",
@@ -114368,7 +114368,7 @@
           "low": 7.15,
           "volume": 189743000,
           "peTtm": 1.62,
-          "percentile": 48.7
+          "percentile": 47.5
         },
         {
           "date": "2016-08",
@@ -114378,7 +114378,7 @@
           "low": 6.69,
           "volume": 379370000,
           "peTtm": 1.48,
-          "percentile": 41.5
+          "percentile": 40.5
         },
         {
           "date": "2016-09",
@@ -114388,7 +114388,7 @@
           "low": 6.84,
           "volume": 291545000,
           "peTtm": 1.36,
-          "percentile": 34.9
+          "percentile": 34.0
         },
         {
           "date": "2016-10",
@@ -114398,7 +114398,7 @@
           "low": 6.97,
           "volume": 733493000,
           "peTtm": 1.47,
-          "percentile": 40.4
+          "percentile": 39.4
         },
         {
           "date": "2016-11",
@@ -114408,7 +114408,7 @@
           "low": 7.33,
           "volume": 376169000,
           "peTtm": 1.56,
-          "percentile": 48.8
+          "percentile": 47.6
         },
         {
           "date": "2016-12",
@@ -114418,7 +114418,7 @@
           "low": 7.47,
           "volume": 368858000,
           "peTtm": 1.41,
-          "percentile": 36.9
+          "percentile": 36.0
         },
         {
           "date": "2017-01",
@@ -114428,7 +114428,7 @@
           "low": 7.79,
           "volume": 272581000,
           "peTtm": 1.52,
-          "percentile": 46.7
+          "percentile": 45.6
         },
         {
           "date": "2017-02",
@@ -114438,7 +114438,7 @@
           "low": 8.49,
           "volume": 213480000,
           "peTtm": 1.61,
-          "percentile": 50.8
+          "percentile": 49.6
         },
         {
           "date": "2017-03",
@@ -114448,7 +114448,7 @@
           "low": 8.95,
           "volume": 213374000,
           "peTtm": 1.57,
-          "percentile": 50.0
+          "percentile": 48.8
         },
         {
           "date": "2017-04",
@@ -114458,7 +114458,7 @@
           "low": 9.36,
           "volume": 255504000,
           "peTtm": 1.62,
-          "percentile": 52.0
+          "percentile": 50.8
         },
         {
           "date": "2017-05",
@@ -114468,7 +114468,7 @@
           "low": 9.75,
           "volume": 241079000,
           "peTtm": 1.71,
-          "percentile": 55.9
+          "percentile": 54.6
         },
         {
           "date": "2017-06",
@@ -114478,7 +114478,7 @@
           "low": 9.11,
           "volume": 317552000,
           "peTtm": 1.54,
-          "percentile": 46.5
+          "percentile": 45.4
         },
         {
           "date": "2017-07",
@@ -114488,7 +114488,7 @@
           "low": 9.07,
           "volume": 211346000,
           "peTtm": 1.56,
-          "percentile": 48.4
+          "percentile": 47.3
         },
         {
           "date": "2017-08",
@@ -114498,7 +114498,7 @@
           "low": 8.79,
           "volume": 245784000,
           "peTtm": 1.58,
-          "percentile": 50.8
+          "percentile": 49.6
         },
         {
           "date": "2017-09",
@@ -114508,7 +114508,7 @@
           "low": 9.25,
           "volume": 255490000,
           "peTtm": 1.61,
-          "percentile": 51.5
+          "percentile": 50.4
         },
         {
           "date": "2017-10",
@@ -114518,7 +114518,7 @@
           "low": 10.1,
           "volume": 296392000,
           "peTtm": 1.66,
-          "percentile": 54.5
+          "percentile": 53.3
         },
         {
           "date": "2017-11",
@@ -114528,7 +114528,7 @@
           "low": 9.89,
           "volume": 383993000,
           "peTtm": 1.55,
-          "percentile": 46.2
+          "percentile": 45.2
         },
         {
           "date": "2017-12",
@@ -114538,7 +114538,7 @@
           "low": 9.97,
           "volume": 263457000,
           "peTtm": 1.5,
-          "percentile": 41.0
+          "percentile": 40.1
         },
         {
           "date": "2018-01",
@@ -114548,7 +114548,7 @@
           "low": 10.47,
           "volume": 306798000,
           "peTtm": 1.56,
-          "percentile": 48.1
+          "percentile": 47.1
         },
         {
           "date": "2018-02",
@@ -114558,7 +114558,7 @@
           "low": 9.61,
           "volume": 330834000,
           "peTtm": 1.61,
-          "percentile": 52.2
+          "percentile": 51.1
         },
         {
           "date": "2018-03",
@@ -114568,7 +114568,7 @@
           "low": 10.51,
           "volume": 319112000,
           "peTtm": 1.47,
-          "percentile": 36.5
+          "percentile": 35.7
         },
         {
           "date": "2018-04",
@@ -114578,7 +114578,7 @@
           "low": 9.79,
           "volume": 316877000,
           "peTtm": 1.37,
-          "percentile": 31.5
+          "percentile": 30.9
         },
         {
           "date": "2018-05",
@@ -114588,7 +114588,7 @@
           "low": 10.04,
           "volume": 268064000,
           "peTtm": 1.52,
-          "percentile": 43.9
+          "percentile": 43.0
         },
         {
           "date": "2018-06",
@@ -114598,7 +114598,7 @@
           "low": 9.98,
           "volume": 308161000,
           "peTtm": 1.28,
-          "percentile": 24.6
+          "percentile": 24.1
         },
         {
           "date": "2018-07",
@@ -114608,7 +114608,7 @@
           "low": 10.04,
           "volume": 297437000,
           "peTtm": 1.47,
-          "percentile": 37.2
+          "percentile": 36.5
         },
         {
           "date": "2018-08",
@@ -114618,7 +114618,7 @@
           "low": 10.84,
           "volume": 309518000,
           "peTtm": 1.45,
-          "percentile": 35.2
+          "percentile": 34.5
         },
         {
           "date": "2018-09",
@@ -114628,7 +114628,7 @@
           "low": 9.96,
           "volume": 356401000,
           "peTtm": 1.17,
-          "percentile": 20.6
+          "percentile": 20.2
         },
         {
           "date": "2018-10",
@@ -114638,7 +114638,7 @@
           "low": 8.46,
           "volume": 446061000,
           "peTtm": 1.06,
-          "percentile": 13.5
+          "percentile": 13.3
         },
         {
           "date": "2018-11",
@@ -114648,7 +114648,7 @@
           "low": 9.03,
           "volume": 378878000,
           "peTtm": 1.14,
-          "percentile": 20.0
+          "percentile": 19.6
         },
         {
           "date": "2018-12",
@@ -114658,7 +114658,7 @@
           "low": 8.06,
           "volume": 368031000,
           "peTtm": 0.98,
-          "percentile": 9.2
+          "percentile": 9.1
         },
         {
           "date": "2019-01",
@@ -114668,7 +114668,7 @@
           "low": 8.57,
           "volume": 323595000,
           "peTtm": 1.17,
-          "percentile": 22.4
+          "percentile": 22.0
         },
         {
           "date": "2019-02",
@@ -114678,7 +114678,7 @@
           "low": 10.35,
           "volume": 362817000,
           "peTtm": 1.26,
-          "percentile": 25.7
+          "percentile": 25.2
         },
         {
           "date": "2019-03",
@@ -114688,7 +114688,7 @@
           "low": 11.24,
           "volume": 306556000,
           "peTtm": 1.34,
-          "percentile": 30.9
+          "percentile": 30.3
         },
         {
           "date": "2019-04",
@@ -114698,7 +114698,7 @@
           "low": 11.94,
           "volume": 257532000,
           "peTtm": 1.43,
-          "percentile": 38.0
+          "percentile": 37.3
         },
         {
           "date": "2019-05",
@@ -114708,7 +114708,7 @@
           "low": 10.19,
           "volume": 421322000,
           "peTtm": 1.16,
-          "percentile": 21.2
+          "percentile": 20.8
         },
         {
           "date": "2019-06",
@@ -114718,7 +114718,7 @@
           "low": 10.13,
           "volume": 305841000,
           "peTtm": 1.39,
-          "percentile": 36.2
+          "percentile": 35.5
         },
         {
           "date": "2019-07",
@@ -114728,7 +114728,7 @@
           "low": 11.59,
           "volume": 284993000,
           "peTtm": 1.61,
-          "percentile": 57.2
+          "percentile": 56.1
         },
         {
           "date": "2019-08",
@@ -114738,7 +114738,7 @@
           "low": 12.52,
           "volume": 352201000,
           "peTtm": 1.74,
-          "percentile": 63.6
+          "percentile": 62.4
         },
         {
           "date": "2019-09",
@@ -114748,7 +114748,7 @@
           "low": 14.61,
           "volume": 381612000,
           "peTtm": 1.88,
-          "percentile": 73.9
+          "percentile": 72.5
         },
         {
           "date": "2019-10",
@@ -114758,7 +114758,7 @@
           "low": 15.36,
           "volume": 310164000,
           "peTtm": 1.99,
-          "percentile": 81.7
+          "percentile": 80.2
         },
         {
           "date": "2019-11",
@@ -114768,7 +114768,7 @@
           "low": 15.78,
           "volume": 273096000,
           "peTtm": 1.93,
-          "percentile": 76.4
+          "percentile": 75.0
         },
         {
           "date": "2019-12",
@@ -114778,7 +114778,7 @@
           "low": 15.56,
           "volume": 242242000,
           "peTtm": 2.04,
-          "percentile": 84.8
+          "percentile": 83.2
         },
         {
           "date": "2020-01",
@@ -114788,7 +114788,7 @@
           "low": 16.52,
           "volume": 238228000,
           "peTtm": 1.9,
-          "percentile": 74.2
+          "percentile": 72.8
         },
         {
           "date": "2020-02",
@@ -114798,7 +114798,7 @@
           "low": 14.21,
           "volume": 351059000,
           "peTtm": 1.76,
-          "percentile": 62.5
+          "percentile": 61.3
         },
         {
           "date": "2020-03",
@@ -114808,7 +114808,7 @@
           "low": 11.02,
           "volume": 520779000,
           "peTtm": 1.53,
-          "percentile": 47.2
+          "percentile": 46.3
         },
         {
           "date": "2020-04",
@@ -114818,7 +114818,7 @@
           "low": 12.56,
           "volume": 271008000,
           "peTtm": 1.75,
-          "percentile": 62.0
+          "percentile": 60.9
         },
         {
           "date": "2020-05",
@@ -114828,7 +114828,7 @@
           "low": 14.75,
           "volume": 338870000,
           "peTtm": 1.87,
-          "percentile": 70.9
+          "percentile": 69.6
         },
         {
           "date": "2020-06",
@@ -114838,7 +114838,7 @@
           "low": 17.29,
           "volume": 280936000,
           "peTtm": 1.88,
-          "percentile": 72.6
+          "percentile": 71.3
         },
         {
           "date": "2020-07",
@@ -114848,7 +114848,7 @@
           "low": 18.71,
           "volume": 271110000,
           "peTtm": 1.93,
-          "percentile": 76.7
+          "percentile": 75.3
         },
         {
           "date": "2020-08",
@@ -114858,7 +114858,7 @@
           "low": 19.82,
           "volume": 219081000,
           "peTtm": 1.98,
-          "percentile": 81.3
+          "percentile": 79.9
         },
         {
           "date": "2020-09",
@@ -114868,7 +114868,7 @@
           "low": 17.13,
           "volume": 305104000,
           "peTtm": 1.78,
-          "percentile": 62.6
+          "percentile": 61.5
         },
         {
           "date": "2020-10",
@@ -114878,7 +114878,7 @@
           "low": 19.02,
           "volume": 231775000,
           "peTtm": 1.81,
-          "percentile": 65.2
+          "percentile": 64.0
         },
         {
           "date": "2020-11",
@@ -114888,7 +114888,7 @@
           "low": 19.88,
           "volume": 181111000,
           "peTtm": 2.31,
-          "percentile": 95.3
+          "percentile": 93.6
         },
         {
           "date": "2020-12",
@@ -114898,7 +114898,7 @@
           "low": 25.2,
           "volume": 191116000,
           "peTtm": 2.26,
-          "percentile": 94.4
+          "percentile": 92.8
         },
         {
           "date": "2021-01",
@@ -114908,7 +114908,7 @@
           "low": 25.77,
           "volume": 226740000,
           "peTtm": 2.44,
-          "percentile": 96.5
+          "percentile": 94.8
         },
         {
           "date": "2021-02",
@@ -114918,7 +114918,7 @@
           "low": 28.25,
           "volume": 236803000,
           "peTtm": 2.71,
-          "percentile": 96.5
+          "percentile": 94.9
         },
         {
           "date": "2021-03",
@@ -114928,7 +114928,7 @@
           "low": 27.32,
           "volume": 380266000,
           "peTtm": 2.57,
-          "percentile": 96.0
+          "percentile": 94.3
         },
         {
           "date": "2021-04",
@@ -114938,7 +114938,7 @@
           "low": 31.29,
           "volume": 266867000,
           "peTtm": 2.45,
-          "percentile": 95.4
+          "percentile": 93.8
         },
         {
           "date": "2021-05",
@@ -114948,7 +114948,7 @@
           "low": 28.59,
           "volume": 248184000,
           "peTtm": 2.47,
-          "percentile": 95.4
+          "percentile": 93.8
         },
         {
           "date": "2021-06",
@@ -114958,7 +114958,7 @@
           "low": 30.25,
           "volume": 219923000,
           "peTtm": 2.23,
-          "percentile": 90.9
+          "percentile": 89.4
         },
         {
           "date": "2021-07",
@@ -114968,7 +114968,7 @@
           "low": 28.74,
           "volume": 228696000,
           "peTtm": 2.39,
-          "percentile": 93.8
+          "percentile": 92.2
         },
         {
           "date": "2021-08",
@@ -114978,7 +114978,7 @@
           "low": 31.35,
           "volume": 202791000,
           "peTtm": 2.34,
-          "percentile": 92.1
+          "percentile": 90.6
         },
         {
           "date": "2021-09",
@@ -114988,7 +114988,7 @@
           "low": 33.39,
           "volume": 226763000,
           "peTtm": 2.07,
-          "percentile": 83.2
+          "percentile": 81.9
         },
         {
           "date": "2021-10",
@@ -114998,7 +114998,7 @@
           "low": 31.8,
           "volume": 216126000,
           "peTtm": 2.31,
-          "percentile": 91.4
+          "percentile": 89.9
         },
         {
           "date": "2021-11",
@@ -115008,7 +115008,7 @@
           "low": 36.92,
           "volume": 241362000,
           "peTtm": 2.53,
-          "percentile": 95.6
+          "percentile": 94.0
         },
         {
           "date": "2021-12",
@@ -115018,7 +115018,7 @@
           "low": 38.16,
           "volume": 294977000,
           "peTtm": 2.32,
-          "percentile": 91.2
+          "percentile": 89.7
         },
         {
           "date": "2022-01",
@@ -115028,7 +115028,7 @@
           "low": 34.4,
           "volume": 345071000,
           "peTtm": 2.1,
-          "percentile": 84.7
+          "percentile": 83.3
         },
         {
           "date": "2022-02",
@@ -115038,7 +115038,7 @@
           "low": 32.93,
           "volume": 292435000,
           "peTtm": 1.88,
-          "percentile": 66.0
+          "percentile": 65.0
         },
         {
           "date": "2022-03",
@@ -115048,7 +115048,7 @@
           "low": 31.05,
           "volume": 311879000,
           "peTtm": 1.85,
-          "percentile": 62.2
+          "percentile": 61.2
         },
         {
           "date": "2022-04",
@@ -115058,7 +115058,7 @@
           "low": 31.2,
           "volume": 278932000,
           "peTtm": 1.61,
-          "percentile": 47.8
+          "percentile": 47.1
         },
         {
           "date": "2022-05",
@@ -115068,7 +115068,7 @@
           "low": 30.64,
           "volume": 310094000,
           "peTtm": 1.84,
-          "percentile": 62.0
+          "percentile": 61.1
         },
         {
           "date": "2022-06",
@@ -115078,7 +115078,7 @@
           "low": 30.5,
           "volume": 278131000,
           "peTtm": 1.51,
-          "percentile": 38.6
+          "percentile": 38.0
         },
         {
           "date": "2022-07",
@@ -115088,7 +115088,7 @@
           "low": 28.28,
           "volume": 304382000,
           "peTtm": 1.81,
-          "percentile": 59.3
+          "percentile": 58.3
         },
         {
           "date": "2022-08",
@@ -115098,7 +115098,7 @@
           "low": 33.98,
           "volume": 310499000,
           "peTtm": 1.63,
-          "percentile": 50.0
+          "percentile": 49.2
         },
         {
           "date": "2022-09",
@@ -115108,7 +115108,7 @@
           "low": 30.22,
           "volume": 376311000,
           "peTtm": 1.28,
-          "percentile": 22.0
+          "percentile": 21.6
         },
         {
           "date": "2022-10",
@@ -115118,7 +115118,7 @@
           "low": 25.02,
           "volume": 452679000,
           "peTtm": 1.34,
-          "percentile": 25.3
+          "percentile": 24.9
         },
         {
           "date": "2022-11",
@@ -115128,7 +115128,7 @@
           "low": 30.73,
           "volume": 334934000,
           "peTtm": 1.67,
-          "percentile": 52.1
+          "percentile": 51.3
         },
         {
           "date": "2022-12",
@@ -115138,7 +115138,7 @@
           "low": 36.63,
           "volume": 274670000,
           "peTtm": 1.49,
-          "percentile": 36.6
+          "percentile": 36.0
         },
         {
           "date": "2023-01",
@@ -115148,7 +115148,7 @@
           "low": 37.26,
           "volume": 263284000,
           "peTtm": 1.55,
-          "percentile": 43.1
+          "percentile": 42.4
         },
         {
           "date": "2023-02",
@@ -115158,7 +115158,7 @@
           "low": 37.38,
           "volume": 212313000,
           "peTtm": 1.49,
-          "percentile": 36.5
+          "percentile": 35.9
         },
         {
           "date": "2023-03",
@@ -115168,7 +115168,7 @@
           "low": 35.98,
           "volume": 250624000,
           "peTtm": 1.55,
-          "percentile": 43.4
+          "percentile": 42.8
         },
         {
           "date": "2023-04",
@@ -115178,7 +115178,7 @@
           "low": 35.59,
           "volume": 201242000,
           "peTtm": 1.5,
-          "percentile": 37.6
+          "percentile": 37.1
         },
         {
           "date": "2023-05",
@@ -115188,7 +115188,7 @@
           "low": 36.97,
           "volume": 226674000,
           "peTtm": 1.72,
-          "percentile": 55.3
+          "percentile": 54.5
         },
         {
           "date": "2023-06",
@@ -115198,7 +115198,7 @@
           "low": 43.72,
           "volume": 206128000,
           "peTtm": 1.91,
-          "percentile": 71.0
+          "percentile": 70.0
         },
         {
           "date": "2023-07",
@@ -115208,7 +115208,7 @@
           "low": 44.9,
           "volume": 225226000,
           "peTtm": 2.03,
-          "percentile": 79.1
+          "percentile": 77.9
         },
         {
           "date": "2023-08",
@@ -115218,7 +115218,7 @@
           "low": 46.81,
           "volume": 202109000,
           "peTtm": 1.98,
-          "percentile": 76.5
+          "percentile": 75.4
         },
         {
           "date": "2023-09",
@@ -115228,7 +115228,7 @@
           "low": 44.01,
           "volume": 193392000,
           "peTtm": 1.91,
-          "percentile": 70.2
+          "percentile": 69.2
         },
         {
           "date": "2023-10",
@@ -115238,7 +115238,7 @@
           "low": 44.83,
           "volume": 209474000,
           "peTtm": 1.96,
-          "percentile": 75.7
+          "percentile": 74.6
         },
         {
           "date": "2023-11",
@@ -115248,7 +115248,7 @@
           "low": 46.58,
           "volume": 210026000,
           "peTtm": 2.27,
-          "percentile": 90.7
+          "percentile": 89.4
         },
         {
           "date": "2023-12",
@@ -115258,7 +115258,7 @@
           "low": 52.71,
           "volume": 164105000,
           "peTtm": 2.55,
-          "percentile": 96.1
+          "percentile": 94.7
         },
         {
           "date": "2024-01",
@@ -115268,7 +115268,7 @@
           "low": 54.24,
           "volume": 220743000,
           "peTtm": 2.61,
-          "percentile": 96.6
+          "percentile": 95.2
         },
         {
           "date": "2024-02",
@@ -115278,7 +115278,7 @@
           "low": 59.3,
           "volume": 191784000,
           "peTtm": 2.99,
-          "percentile": 97.1
+          "percentile": 95.7
         },
         {
           "date": "2024-03",
@@ -115288,7 +115288,7 @@
           "low": 66.87,
           "volume": 190775000,
           "peTtm": 3.1,
-          "percentile": 97.1
+          "percentile": 95.8
         },
         {
           "date": "2024-04",
@@ -115298,7 +115298,7 @@
           "low": 62.32,
           "volume": 194571000,
           "peTtm": 3.06,
-          "percentile": 96.7
+          "percentile": 95.3
         },
         {
           "date": "2024-05",
@@ -115308,7 +115308,7 @@
           "low": 66.25,
           "volume": 176147000,
           "peTtm": 3.37,
-          "percentile": 97.2
+          "percentile": 95.8
         },
         {
           "date": "2024-06",
@@ -115318,7 +115318,7 @@
           "low": 73.56,
           "volume": 151774000,
           "peTtm": 3.47,
-          "percentile": 97.2
+          "percentile": 95.8
         },
         {
           "date": "2024-07",
@@ -115328,7 +115328,7 @@
           "low": 74.94,
           "volume": 205332000,
           "peTtm": 3.46,
-          "percentile": 96.7
+          "percentile": 95.4
         },
         {
           "date": "2024-08",
@@ -115338,7 +115338,7 @@
           "low": 64.8,
           "volume": 223369000,
           "peTtm": 3.45,
-          "percentile": 96.3
+          "percentile": 94.9
         },
         {
           "date": "2024-09",
@@ -115348,7 +115348,7 @@
           "low": 69.64,
           "volume": 189061000,
           "peTtm": 3.09,
-          "percentile": 94.9
+          "percentile": 93.6
         },
         {
           "date": "2024-10",
@@ -115358,7 +115358,7 @@
           "low": 65.47,
           "volume": 254910000,
           "peTtm": 2.66,
-          "percentile": 93.1
+          "percentile": 91.8
         },
         {
           "date": "2024-11",
@@ -115368,7 +115368,7 @@
           "low": 60.94,
           "volume": 244971000,
           "peTtm": 2.58,
-          "percentile": 92.2
+          "percentile": 90.9
         },
         {
           "date": "2024-12",
@@ -115378,7 +115378,7 @@
           "low": 61.34,
           "volume": 226236000,
           "peTtm": 2.33,
-          "percentile": 87.2
+          "percentile": 86.0
         },
         {
           "date": "2025-01",
@@ -115388,7 +115388,7 @@
           "low": 63.19,
           "volume": 261675000,
           "peTtm": 2.73,
-          "percentile": 93.6
+          "percentile": 92.3
         },
         {
           "date": "2025-02",
@@ -115398,7 +115398,7 @@
           "low": 69.19,
           "volume": 185212000,
           "peTtm": 2.62,
-          "percentile": 92.3
+          "percentile": 91.0
         },
         {
           "date": "2025-03",
@@ -115408,7 +115408,7 @@
           "low": 65.37,
           "volume": 216493000,
           "peTtm": 2.25,
-          "percentile": 83.3
+          "percentile": 82.1
         },
         {
           "date": "2025-04",
@@ -115418,7 +115418,7 @@
           "low": 55.13,
           "volume": 315162000,
           "peTtm": 2.33,
-          "percentile": 86.3
+          "percentile": 85.1
         },
         {
           "date": "2025-05",
@@ -115428,7 +115428,7 @@
           "low": 67.48,
           "volume": 240061000,
           "peTtm": 2.5,
-          "percentile": 89.7
+          "percentile": 88.5
         },
         {
           "date": "2025-06",
@@ -115438,7 +115438,7 @@
           "low": 75.2,
           "volume": 257865000,
           "peTtm": 2.71,
-          "percentile": 93.1
+          "percentile": 91.9
         },
         {
           "date": "2025-07",
@@ -115448,7 +115448,7 @@
           "low": 86.0,
           "volume": 207792000,
           "peTtm": 2.66,
-          "percentile": 92.2
+          "percentile": 91.0
         },
         {
           "date": "2025-08",
@@ -115458,7 +115458,7 @@
           "low": 85.53,
           "volume": 201259000,
           "peTtm": 2.64,
-          "percentile": 91.6
+          "percentile": 90.4
         },
         {
           "date": "2025-09",
@@ -115468,7 +115468,7 @@
           "low": 83.22,
           "volume": 193746000,
           "peTtm": 3.1,
-          "percentile": 95.4
+          "percentile": 94.1
         },
         {
           "date": "2025-10",
@@ -115478,7 +115478,7 @@
           "low": 98.1,
           "volume": 256769000,
           "peTtm": 3.47,
-          "percentile": 97.1
+          "percentile": 95.9
         },
         {
           "date": "2025-11",
@@ -115488,7 +115488,7 @@
           "low": 107.2,
           "volume": 207483000,
           "peTtm": 3.38,
-          "percentile": 95.6
+          "percentile": 94.4
         },
         {
           "date": "2025-12",
@@ -115498,7 +115498,7 @@
           "low": 115.12,
           "volume": 176455000,
           "peTtm": 3.43,
-          "percentile": 95.7
+          "percentile": 94.4
         },
         {
           "date": "2026-01",
@@ -115508,7 +115508,7 @@
           "low": 125.06,
           "volume": 252770000,
           "peTtm": 4.03,
-          "percentile": 97.4
+          "percentile": 96.2
         },
         {
           "date": "2026-02",
@@ -115518,7 +115518,7 @@
           "low": 128.5,
           "volume": 210206000,
           "peTtm": 4.3,
-          "percentile": 98.3
+          "percentile": 97.0
         },
         {
           "date": "2026-03",
@@ -115528,7 +115528,7 @@
           "low": 132.1,
           "volume": 229978000,
           "peTtm": 4.04,
-          "percentile": 97.0
+          "percentile": 95.8
         },
         {
           "date": "2026-04",
@@ -115538,7 +115538,7 @@
           "low": 145.1,
           "volume": 190464000,
           "peTtm": 4.8,
-          "percentile": 99.1
+          "percentile": 97.9
         },
         {
           "date": "2026-05",
@@ -115548,7 +115548,7 @@
           "low": 167.68,
           "volume": 202568000,
           "peTtm": 5.27,
-          "percentile": 99.1
+          "percentile": 97.9
         },
         {
           "date": "2026-06",
@@ -115558,7 +115558,7 @@
           "low": 188.6,
           "volume": 273931300,
           "peTtm": 6.82,
-          "percentile": 100.0
+          "percentile": 98.7
         }
       ],
       "splits": [],
@@ -142705,7 +142705,7 @@
           "high": 37.58,
           "low": 32.8,
           "volume": 82881350,
-          "peTtm": 22.37,
+          "peTtm": 22.38,
           "percentile": 51.2
         },
         {
@@ -143756,7 +143756,7 @@
           "low": 79.23,
           "volume": 125702900,
           "peTtm": 22.37,
-          "percentile": 48.3
+          "percentile": 47.9
         },
         {
           "date": "2020-03",
@@ -147747,7 +147747,7 @@
           "high": 41.72,
           "low": 38.56,
           "volume": 124829400,
-          "peTtm": 47.12,
+          "peTtm": 47.13,
           "percentile": 5.6
         },
         {
@@ -152199,7 +152199,7 @@
           "high": 129.8,
           "low": 124.87,
           "volume": 111367700,
-          "peTtm": 24.32,
+          "peTtm": 24.33,
           "percentile": 99.1
         },
         {
@@ -158347,7 +158347,7 @@
           "high": 16.63,
           "low": 15.45,
           "volume": 171898000,
-          "peTtm": 19.97,
+          "peTtm": 19.98,
           "percentile": 90.0
         },
         {
@@ -159258,7 +159258,7 @@
           "low": 24.89,
           "volume": 196656800,
           "peTtm": 19.98,
-          "percentile": 97.0
+          "percentile": 96.5
         },
         {
           "date": "2015-01",
@@ -164789,7 +164789,7 @@
           "high": 183.4,
           "low": 148.34,
           "volume": 316805800,
-          "peTtm": 226.48,
+          "peTtm": 226.47,
           "percentile": 100.0
         },
         {
@@ -171237,7 +171237,7 @@
           "high": 26.55,
           "low": 22.28,
           "volume": 150987600,
-          "peTtm": 26.62,
+          "peTtm": 26.63,
           "percentile": 34.5
         },
         {
