@@ -15,6 +15,7 @@ import time
 import os
 import sys
 import requests
+import argparse
 from datetime import datetime
 from typing import Optional, Dict, List
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -39,16 +40,17 @@ ENV = load_env()
 TWELVEDATA_KEY = ENV.get('TWELVE_DATA_API_KEY', '')
 
 TICKERS = [
-    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'TSM', 'TSLA', 'META', 'WMT',
-    'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML', 'JNJ',
+    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'SPCX', 'TSM', 'TSLA', 'META',
+    'WMT', 'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML',
+    'JNJ',
     'ORCL', 'COST', 'CSCO', 'MA', 'CAT', 'CVX', 'ABBV', 'NFLX', 'LRCX', 'BAC',
     'KO', 'UNH', 'AMAT', 'PG', 'PLTR', 'HSBC', 'GE', 'MS', 'HD', 'BABA',
     'GS', 'PM', 'AZN', 'NVS', 'MRK', 'TXN', 'GEV', 'ARM', 'RY', 'SHEL',
     'TM', 'KLAC', 'RTX', 'LIN', 'WFC', 'MUFG', 'QCOM', 'C', 'IBM', 'AXP',
     'BHP', 'SAP', 'SNDK', 'TTE', 'TMUS', 'PEP', 'PANW', 'VZ', 'MCD', 'NVO',
     'ADI', 'NEE', 'TD', 'DIS', 'AMGN', 'SAN', 'ANET', 'TJX', 'RIO', 'BA',
-    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'ISRG',
-    'WDC', 'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'UBER', 'DE', 'APH',
+    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'WDC',
+    'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'ETN', 'DE', 'APH',
 ]
 
 INDICES = [
@@ -157,6 +159,10 @@ def fetch_history_single(ticker):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Fetch monthly history cache.')
+    parser.add_argument('--tickers', help='Comma-separated ticker override, for example SPCX,ETN')
+    args = parser.parse_args()
+
     start_time = time.time()
     print(f"📈 开始抓取历史数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
 
@@ -164,9 +170,10 @@ def main():
         print("❌ TWELVE_DATA_API_KEY 未配置")
         return 1
 
-    all_tickers = TICKERS + INDICES
-    print(f"   共 {len(all_tickers)} 个标的 ({len(TICKERS)} 公司 + {len(INDICES)} 指数)")
-    est_min = len(all_tickers) / TD_RPM
+    active_tickers = set(TICKERS + INDICES)
+    fetch_tickers = [t.strip().upper() for t in args.tickers.split(',') if t.strip()] if args.tickers else TICKERS + INDICES
+    print(f"   本次抓取 {len(fetch_tickers)} 个标的")
+    est_min = len(fetch_tickers) / TD_RPM
     print(f"   预计耗时: ~{est_min:.0f} 分钟 ({TD_RPM}次/分钟)")
 
     # 加载已有数据
@@ -179,23 +186,22 @@ def main():
     success = 0
     fail = 0
 
-    for i, ticker in enumerate(all_tickers, 1):
+    for i, ticker in enumerate(fetch_tickers, 1):
         ticker_data, result, msg = fetch_history_single(ticker)
         if result:
             new_data[ticker] = result
             success += 1
-            print(f"  [{i}/{len(all_tickers)}] {ticker}: ✅ {msg}")
+            print(f"  [{i}/{len(fetch_tickers)}] {ticker}: ✅ {msg}")
         else:
             fail += 1
-            print(f"  [{i}/{len(all_tickers)}] {ticker}: ❌ {msg}")
+            print(f"  [{i}/{len(fetch_tickers)}] {ticker}: ❌ {msg}")
         
         # 每获取40个打印一次进度
         if i % 40 == 0:
             elapsed = time.time() - start_time
-            print(f"  --- 进度 {i}/{len(all_tickers)} | 成功 {success} | 耗时 {elapsed:.0f}s ---")
+            print(f"  --- 进度 {i}/{len(fetch_tickers)} | 成功 {success} | 耗时 {elapsed:.0f}s ---")
 
     # 合并时只保留当前跟踪名单，避免换榜后旧公司继续混入缓存。
-    active_tickers = set(all_tickers)
     merged = {}
     for ticker, val in old_data.items():
         if ticker in active_tickers:
@@ -207,7 +213,7 @@ def main():
     save_data(merged, CACHE_FILE)
     elapsed = time.time() - start_time
 
-    missing = [t for t in all_tickers if t not in merged or not merged[t].get('history')]
+    missing = [t for t in active_tickers if t not in merged or not merged[t].get('history')]
     print(f"\n✅ 完成！总计 {len(merged)} 个标的 | 新增/更新 {success} | 失败 {fail} | 耗时 {elapsed:.1f}s ({elapsed/60:.1f}min)")
     if missing:
         print(f"   缺失 {len(missing)}: {missing[:15]}{'...' if len(missing)>15 else ''}")

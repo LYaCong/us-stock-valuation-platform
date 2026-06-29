@@ -14,6 +14,7 @@ import time
 import os
 import sys
 import requests
+import argparse
 from datetime import datetime
 from typing import Optional, Dict, List
 
@@ -36,16 +37,17 @@ ENV = load_env()
 ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
 
 TICKERS = [
-    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'TSM', 'TSLA', 'META', 'WMT',
-    'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML', 'JNJ',
+    'NVDA', 'GOOGL', 'AAPL', 'MSFT', 'AMZN', 'AVGO', 'SPCX', 'TSM', 'TSLA', 'META',
+    'WMT', 'BRK-B', 'LLY', 'MU', 'JPM', 'AMD', 'XOM', 'V', 'INTC', 'ASML',
+    'JNJ',
     'ORCL', 'COST', 'CSCO', 'MA', 'CAT', 'CVX', 'ABBV', 'NFLX', 'LRCX', 'BAC',
     'KO', 'UNH', 'AMAT', 'PG', 'PLTR', 'HSBC', 'GE', 'MS', 'HD', 'BABA',
     'GS', 'PM', 'AZN', 'NVS', 'MRK', 'TXN', 'GEV', 'ARM', 'RY', 'SHEL',
     'TM', 'KLAC', 'RTX', 'LIN', 'WFC', 'MUFG', 'QCOM', 'C', 'IBM', 'AXP',
     'BHP', 'SAP', 'SNDK', 'TTE', 'TMUS', 'PEP', 'PANW', 'VZ', 'MCD', 'NVO',
     'ADI', 'NEE', 'TD', 'DIS', 'AMGN', 'SAN', 'ANET', 'TJX', 'RIO', 'BA',
-    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'ISRG',
-    'WDC', 'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'UBER', 'DE', 'APH',
+    'T', 'BLK', 'STX', 'TMO', 'CRWD', 'MRVL', 'GILD', 'APP', 'BUD', 'WDC',
+    'UNP', 'DELL', 'SCHW', 'GLW', 'WELL', 'ABT', 'ETN', 'DE', 'APH',
 ]
 
 DAILY_LIMIT = 25  # 免费版25次/天
@@ -123,6 +125,10 @@ def fetch_earnings(ticker):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Fetch historical EPS cache.')
+    parser.add_argument('--tickers', help='Comma-separated ticker override, for example SPCX,ETN')
+    args = parser.parse_args()
+
     start_time = time.time()
     print(f"📈 开始抓取历史EPS... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
 
@@ -130,13 +136,14 @@ def main():
         print("❌ ALPHA_VANTAGE_API_KEY 未配置")
         return 1
 
+    selected_tickers = [t.strip().upper() for t in args.tickers.split(',') if t.strip()] if args.tickers else TICKERS
     existing = {
         ticker: data
         for ticker, data in load_existing().items()
         if ticker in TICKERS
     }
-    already = [t for t in TICKERS if t in existing]
-    remaining = [t for t in TICKERS if t not in existing]
+    already = [t for t in selected_tickers if t in existing]
+    remaining = [t for t in selected_tickers if t not in existing]
 
     print(f"   已有: {len(already)} 个 | 待抓取: {len(remaining)} 个")
     print(f"   今日限额: {DAILY_LIMIT} 次\n")

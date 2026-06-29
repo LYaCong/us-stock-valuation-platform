@@ -72,7 +72,7 @@ This release refreshes the company universe to the latest top 100 US-listed comp
 
 - **Top 100 refresh**: `DEFAULT_TICKERS` and all data scripts now use the refreshed U.S.-listed 100-company list, adding SPCX and ETN while removing ISRG and UBER from the default universe.
 - **Dropped company cleanup**: daily quote merging and historical/EPS cache loading now retain only the active tracking universe, preventing old top-100 constituents from reappearing after a refresh.
-- **Current data refresh**: Twelve Data historical prices and daily quote caches have been refreshed for 100 companies + 26 indices. New constituents SPCX and ETN require the next data refresh before their local caches are fully populated.
+- **Current data refresh**: Daily quotes, monthly history, and EPS caches have been refreshed for the new 100-company universe. SPCX has market and 1-month history data, but no usable EPS history yet, so PE percentile remains unavailable until filings/data coverage improves.
 - **Secret-safe logs**: Alpha Vantage and other API keys are redacted from future script limit/error messages.
 - **Company overview fixes**: BRK-B and INTC now get PE(TTM) from the latest price divided by the latest rolling 4-quarter EPS, so their PE and 10-year PE percentile are no longer blank when supplier PE fields are missing.
 - **BRK-B market cap fallback**: Finnhub `marketCapitalization` is now used to fill missing market cap values, with million-USD values converted to display-ready dollars.
@@ -209,8 +209,8 @@ All data updates are automated via OpenClaw cron jobs:
 | Job | Schedule | Script | Description |
 |-----|----------|--------|-------------|
 | **Daily Quotes + PE** | Every day 05:00 CST | `fetch_quotes.py` → `calculate_pe_history.py` | Sina (price) + Finnhub (PE/PB/ROE) → PE percentile → git push → Vercel deploy |
-| **Monthly History** | 1st of month 05:30 CST | `fetch_history.py` | Twelve Data monthly K-line (20 years, 240 pts) |
-| **Historical EPS** | Every day 02:00 CST | `fetch_earnings.py` | Alpha Vantage quarterly/annual EPS (25 tickers/day) |
+| **Monthly History** | 1st of month 05:30 CST | `fetch_history.py` | Twelve Data monthly K-line (20 years, 240 pts). Use `--tickers SPCX,ETN` for targeted additions. |
+| **Historical EPS** | Every day 02:00 CST | `fetch_earnings.py` | Alpha Vantage quarterly/annual EPS (25 tickers/day). Use `--tickers SPCX,ETN` for targeted additions. |
 | **DCF supplemental fallback** | After SEC DCF refresh, as needed | `enrich_dcf_alpha_vantage.py` | Fill only SEC-missing DCF fields and mark `supplementalSources` |
 
 ### Daily Pipeline Flow
@@ -377,7 +377,7 @@ MIT
 
 - **市值前100刷新**：`DEFAULT_TICKERS` 和所有数据脚本已同步到新的美股上市公司市值前 100 名单，新增 SPCX、ETN，并从默认股票池移除 ISRG、UBER。
 - **旧公司清理**：每日行情合并、历史缓存和 EPS 缓存现在只保留当前跟踪名单，避免旧的前100成分在刷新后混回页面。
-- **当前数据刷新**：已刷新 100 家公司 + 26 个指数的 Twelve Data 历史月线和每日行情缓存。新增成分 SPCX、ETN 需要在下一次数据刷新后补齐本地缓存。
+- **当前数据刷新**：已刷新新 100 家公司股票池的每日行情、历史月线和 EPS 缓存。SPCX 已有行情和 1 个月历史数据，但暂无可用 EPS 历史，因此 PE 百分位暂不可用。
 - **日志脱敏**：后续脚本遇到限额或错误提示时，会隐藏 API key。
 - **公司总览修复**：BRK-B、INTC 在供应商 PE 字段缺失时，会用“最新股价 ÷ 最新滚动 4 季度 EPS”计算 PE(TTM)，因此市盈率和 10 年 PE 百分位不再空白。
 - **BRK-B 市值补齐**：当缓存市值缺失时，使用 Finnhub `marketCapitalization` 补齐，并按百万美元口径转换成展示用美元市值。
@@ -427,8 +427,8 @@ EODHD API（ETF/指数）       → ETF/指数供应商直给估值、股息率�
 | 任务 | 时间 | 脚本 | 说明 |
 |------|------|------|------|
 | **每日行情+PE** | 每天 05:00 | `fetch_quotes.py` → `calculate_pe_history.py` | 行情 + PE百分位 → 自动部署 |
-| **历史月线** | 每月1号 05:30 | `fetch_history.py` | Twelve Data 20年月线 |
-| **历史EPS** | 每天 02:00 | `fetch_earnings.py` | Alpha Vantage 季度EPS（每天25只）|
+| **历史月线** | 每月1号 05:30 | `fetch_history.py` | Twelve Data 20年月线；新增公司可用 `--tickers SPCX,ETN` 定向补齐 |
+| **历史EPS** | 每天 02:00 | `fetch_earnings.py` | Alpha Vantage 季度EPS（每天25只）；新增公司可用 `--tickers SPCX,ETN` 定向补齐 |
 | **DCF 补缺** | SEC DCF 刷新后按需运行 | `enrich_dcf_alpha_vantage.py` | 只补 SEC 缺失字段，并标记 `supplementalSources` |
 
 ### 快速开始
