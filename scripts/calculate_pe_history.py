@@ -7,7 +7,7 @@
 
 输出：
   - 更新 historical.json 中每个月度数据，新增 peTtm / percentile 字段
-  - 更新 daily_quotes.json 中每个 company，新增自算PE和百分位统计字段
+  - 更新 daily_quotes.json 中每个 company，新增自算PE和基于行情源PE的百分位统计字段
 """
 
 import json
@@ -218,14 +218,16 @@ def main():
             else:
                 month_data['percentile'] = None if pe_val is None else 100.0
 
-        # 计算当前PE的10年百分位等统计
+        # 计算当前PE的10年百分位等统计：展示和百分位都使用行情源当前PE。
+        # peTtmComputed 只作为 reported EPS 口径的参考字段保留。
         company = company_map.get(ticker)
         current_pe = None
         current_price = None
         if company:
             current_price = company.get('price')
-            current_pe = compute_current_pe(q_eps, current_price, now)
-            company['peTtmComputed'] = current_pe
+            computed_pe = compute_current_pe(q_eps, current_price, now)
+            company['peTtmComputed'] = computed_pe
+            current_pe = company.get('peTtm')
 
         stats = compute_stats(pe_values_10y, current_pe)
         all_history_stats = compute_stats(pe_values_all, current_pe)
@@ -294,7 +296,7 @@ def main():
     for ticker in ['NVDA', 'AAPL', 'MSFT', 'GOOGL', 'AMZN']:
         c = company_map.get(ticker)
         if c:
-            print(f"   {ticker}: computed PE={c.get('peTtmComputed')}, "
+            print(f"   {ticker}: PE={c.get('peTtm')}, computed PE={c.get('peTtmComputed')}, "
                   f"百分位={c.get('pePercentile')}%, "
                   f"10年范围=[{c.get('pe10yMin')}, {c.get('pe10yMax')}], "
                   f"中位数={c.get('pe10yMedian')}, "
