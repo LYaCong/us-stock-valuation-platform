@@ -23,7 +23,7 @@ import requests
 import subprocess
 from datetime import datetime
 from typing import Optional, Dict, List
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 import threading
 
 # --- 配置 ---
@@ -273,7 +273,7 @@ def _fetch_finnhub_single(ticker: str) -> tuple:
     try:
         resp = requests.get(
             f'https://finnhub.io/api/v1/stock/metric?symbol={ft}&metric=all&token={FINNHUB_KEY}',
-            timeout=15
+            timeout=(5, 10)
         )
         data = resp.json()
         m = data.get('metric', {})
@@ -294,8 +294,8 @@ def _fetch_finnhub_single(ticker: str) -> tuple:
     return (ticker, result)
 
 
-def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 2) -> Dict[str, Dict]:
-    """限速并发从 Finnhub 获取补充指标。2线程 + 每请求间隔1.1秒 ≈ 每分钟约55次"""
+def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 4) -> Dict[str, Dict]:
+    """限速并发从 Finnhub 获取补充指标；上游持续失败时快速返回，避免整次任务超时。"""
     if not FINNHUB_KEY:
         print("    ⚠️ FINNHUB_API_KEY 未配置，跳过")
         return {}
@@ -303,15 +303,58 @@ def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 2) -> Dict[s
     results = {}
     total = len(tickers)
     done = 0
+    next_index = 0
+    failures = 0
+    successes = 0
+    failure_limit = 12
+    # 预留当前在途请求，避免在接近失败阈值时继续补发新请求。
+    submission_cutoff = max(1, failure_limit - max_workers + 1)
+    pool = ThreadPoolExecutor(max_workers=max_workers)
+    futures = {}
 
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futures = {pool.submit(_fetch_finnhub_single, t): t for t in tickers}
-        for future in as_completed(futures):
-            ticker, data = future.result()
-            results[ticker] = data
-            done += 1
-            if done % 25 == 0 or done == total:
-                print(f"    Finnhub 进度: {done}/{total}")
+    def submit_next():
+        nonlocal next_index
+        if next_index < total:
+            ticker = tickers[next_index]
+            next_index += 1
+            futures[pool.submit(_fetch_finnhub_single, ticker)] = ticker
+
+    try:
+        for _ in range(min(max_workers, total)):
+            submit_next()
+
+        while futures:
+            completed, _ = wait(futures, return_when=FIRST_COMPLETED)
+            for future in completed:
+                submitted_ticker = futures.pop(future, 'unknown')
+                ticker = submitted_ticker
+                try:
+                    ticker, data = future.result()
+                except Exception as exc:
+                    data = {}
+                    print(f"    ⚠️ Finnhub worker 失败: {exc}")
+
+                results[ticker] = data
+                done += 1
+                if data:
+                    successes += 1
+                    failures = 0
+                else:
+                    failures += 1
+
+                if failures >= 12 and successes == 0:
+                    print(f"    ⚠️ Finnhub 连续 {failures} 次无有效响应，停止剩余补充，保留可用主数据")
+                    return results
+
+                if done % 25 == 0 or done == total:
+                    print(f"    Finnhub 进度: {done}/{total}")
+            if not (successes == 0 and failures >= submission_cutoff):
+                for _ in range(len(completed)):
+                    submit_next()
+    finally:
+        # 只保持最多 max_workers 个请求在途；失败早停时不再排队新请求。
+        # requests 的连接仍受单请求 timeout 约束，避免主流程无限等待。
+        pool.shutdown(wait=False, cancel_futures=True)
 
     return results
 
@@ -325,7 +368,7 @@ def fetch_finnhub_quote(ticker: str) -> Optional[Dict]:
     try:
         resp = requests.get(
             f'https://finnhub.io/api/v1/quote?symbol={ft}&token={FINNHUB_KEY}',
-            timeout=15
+            timeout=(5, 10)
         )
         data = resp.json()
         if data and data.get('c') and data['c'] > 0:
@@ -626,9 +669,14 @@ def main():
     # ============================
     # 第 1.5 步：Finnhub 补价格（新浪不支持的 ticker）
     # ============================
-    if FINNHUB_KEY and no_price_tickers:
-        print(f"\n📡 [1.5/3] Finnhub quote — 补 {len(no_price_tickers)} 个新浪缺失 ticker 的价格...")
-        for t in no_price_tickers:
+    # Finnhub quote 只负责新浪明确不支持的 ticker；新浪瞬时失败的 ticker
+    # 应保留旧缓存，不能再逐个请求 Finnhub 把整次任务拖到超时。
+    quote_fallback_tickers = [t for t in no_price_tickers if t in SINA_SKIP_TICKERS]
+    if no_price_tickers and not quote_fallback_tickers:
+        print(f"  ⚠️ 新浪缺失 {len(no_price_tickers)} 个 ticker，跳过批量 Finnhub 补价，避免网络故障放大")
+    if FINNHUB_KEY and quote_fallback_tickers:
+        print(f"\n📡 [1.5/3] Finnhub quote — 补 {len(quote_fallback_tickers)} 个新浪不支持 ticker 的价格...")
+        for t in quote_fallback_tickers:
             q = fetch_finnhub_quote(t)
             if q and q.get('price'):
                 entry = all_entries.get(t)
@@ -654,9 +702,9 @@ def main():
     # ============================
     finnhub_hit = 0
     if FINNHUB_KEY and ok_tickers:
-        est_time = len(ok_tickers) * FINNHUB_MIN_INTERVAL / 2  # 2 threads
-        print(f"\n📡 [2/3] Finnhub — 限速并发补充 {len(ok_tickers)} 个 ticker (2线程, 预计{est_time:.0f}s)...")
-        fh_data = fetch_finnhub_concurrent(ok_tickers, max_workers=2)
+        est_time = len(ok_tickers) * FINNHUB_MIN_INTERVAL / 4  # 4 threads
+        print(f"\n📡 [2/3] Finnhub — 限速并发补充 {len(ok_tickers)} 个 ticker (4线程, 预计{est_time:.0f}s)...")
+        fh_data = fetch_finnhub_concurrent(ok_tickers, max_workers=4)
         for ticker, fh in fh_data.items():
             entry = all_entries.get(ticker)
             if not entry or not fh: continue
