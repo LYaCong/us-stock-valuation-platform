@@ -273,12 +273,15 @@ def _fetch_finnhub_single(ticker: str) -> tuple:
     try:
         resp = requests.get(
             f'https://finnhub.io/api/v1/stock/metric?symbol={ft}&metric=all&token={FINNHUB_KEY}',
-            timeout=(5, 10)
+            timeout=(3, 5)
         )
+        resp.raise_for_status()
         data = resp.json()
-        m = data.get('metric', {})
+        m = data.get('metric', {}) if isinstance(data, dict) else {}
+        if not isinstance(m, dict):
+            m = {}
         market_cap_millions = safe_float(m.get('marketCapitalization'))
-        result = {
+        result = {key: value for key, value in {
             'forwardPE': safe_round(m.get('forwardPE')),
             'pb': safe_round(m.get('pbAnnual')),
             'roe': safe_round(m.get('roeTTM')),
@@ -288,7 +291,7 @@ def _fetch_finnhub_single(ticker: str) -> tuple:
             '52weekLow': safe_float(m.get('52WeekLow')),
             'beta': safe_round(m.get('beta'), 3),
             'dividendYield': safe_round(m.get('currentDividendYieldTTM'), 4),
-        }
+        }.items() if value is not None}
     except Exception as e:
         print(f"    ⚠️ {ticker} Finnhub metric 失败: {e}")
     return (ticker, result)
@@ -305,10 +308,7 @@ def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 4) -> Dict[s
     done = 0
     next_index = 0
     failures = 0
-    successes = 0
-    failure_limit = 12
-    # 预留当前在途请求，避免在接近失败阈值时继续补发新请求。
-    submission_cutoff = max(1, failure_limit - max_workers + 1)
+    failure_limit = 6
     pool = ThreadPoolExecutor(max_workers=max_workers)
     futures = {}
 
@@ -337,24 +337,24 @@ def fetch_finnhub_concurrent(tickers: List[str], max_workers: int = 4) -> Dict[s
                 results[ticker] = data
                 done += 1
                 if data:
-                    successes += 1
                     failures = 0
                 else:
                     failures += 1
 
-                if failures >= 12 and successes == 0:
+                if failures >= failure_limit:
                     print(f"    ⚠️ Finnhub 连续 {failures} 次无有效响应，停止剩余补充，保留可用主数据")
                     return results
 
                 if done % 25 == 0 or done == total:
                     print(f"    Finnhub 进度: {done}/{total}")
-            if not (successes == 0 and failures >= submission_cutoff):
-                for _ in range(len(completed)):
-                    submit_next()
+            for _ in range(len(completed)):
+                submit_next()
     finally:
         # 只保持最多 max_workers 个请求在途；失败早停时不再排队新请求。
         # requests 的连接仍受单请求 timeout 约束，避免主流程无限等待。
-        pool.shutdown(wait=False, cancel_futures=True)
+        for future in futures:
+            future.cancel()
+        pool.shutdown(wait=True, cancel_futures=True)
 
     return results
 
@@ -368,13 +368,15 @@ def fetch_finnhub_quote(ticker: str) -> Optional[Dict]:
     try:
         resp = requests.get(
             f'https://finnhub.io/api/v1/quote?symbol={ft}&token={FINNHUB_KEY}',
-            timeout=(5, 10)
+            timeout=(3, 5)
         )
+        resp.raise_for_status()
         data = resp.json()
-        if data and data.get('c') and data['c'] > 0:
+        price = safe_float(data.get('c')) if isinstance(data, dict) else None
+        if price is not None and price > 0:
             return {
-                'price': data['c'],
-                'change_pct': safe_round(((data['c'] - data.get('pc', data['c'])) / data.get('pc', data['c'])) * 100) if data.get('pc') else None,
+                'price': price,
+                'change_pct': safe_round(((price - data.get('pc', price)) / data.get('pc', price)) * 100) if data.get('pc') else None,
                 'change_amount': safe_round(data.get('d')),
                 'open': safe_float(data.get('o')),
                 'high': safe_float(data.get('h')),
