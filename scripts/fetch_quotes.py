@@ -45,6 +45,7 @@ def load_env():
 ENV = load_env()
 SINA_ENABLED = ENV.get('SINA_ENABLED', 'true').lower() == 'true'
 FINNHUB_KEY = ENV.get('FINNHUB_API_KEY', '')
+FINNHUB_METRICS_ENABLED = ENV.get('FINNHUB_METRICS_ENABLED', 'false').lower() == 'true'
 ALPHAVANTAGE_KEY = ENV.get('ALPHA_VANTAGE_API_KEY', '')
 TWELVEDATA_KEY = ENV.get('TWELVE_DATA_API_KEY', '')
 EODHD_KEY = ENV.get('EODHD_API_TOKEN', '')
@@ -388,6 +389,23 @@ def fetch_finnhub_quote(ticker: str) -> Optional[Dict]:
     return None
 
 
+def finnhub_preflight() -> bool:
+    """快速探测 Finnhub；网络异常时跳过整批基本面请求，避免阻塞主行情。"""
+    if not FINNHUB_KEY:
+        return False
+    try:
+        resp = requests.get(
+            f'https://finnhub.io/api/v1/quote?symbol=AAPL&token={FINNHUB_KEY}',
+            timeout=(2, 3),
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return isinstance(data, dict) and safe_float(data.get('c')) is not None
+    except Exception as e:
+        print(f"    ⚠️ Finnhub 探活失败，跳过本轮基本面补充: {e}")
+        return False
+
+
 # ========== Alpha Vantage API（补充数据源）==========
 
 def fetch_alphavantage_batch(tickers: List[str]) -> Dict[str, Dict]:
@@ -590,6 +608,29 @@ def append_valuation_history(companies, indices, cache_dir):
     dates = sorted(hist.keys())
     print(f"  💾 估值历史已更新: {today} ({len(snapshot)} tickers) | 总计 {len(dates)} 天数据")
 
+
+def restore_cached_fundamentals(companies, indices):
+    """上游补充源不可用时保留上一份基本面，避免网络故障冲空字段。"""
+    old = load_cache(CACHE_FILE)
+    old_by_ticker = {
+        item.get('ticker'): item
+        for item in old.get('companies', []) + old.get('indices', [])
+        if item.get('ticker')
+    }
+    fields = (
+        'peFwd', 'pb', 'roe', '52weekHigh', '52weekLow', 'beta',
+        'dividendYield', 'analystTargetPrice', 'analystRating',
+    )
+    restored = 0
+    for entry in companies + indices:
+        previous = old_by_ticker.get(entry.get('ticker'), {})
+        for field in fields:
+            if entry.get(field) is None and previous.get(field) is not None:
+                entry[field] = previous[field]
+                restored += 1
+    if restored:
+        print(f"  ⚠️ 已从旧缓存保留 {restored} 个基本面字段")
+
 def main():
     start_time = time.time()
     print(f"📈 开始抓取数据... ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
@@ -703,7 +744,7 @@ def main():
     # 第 2 步：Finnhub（限速并发补充 Forward PE, PB, ROE）
     # ============================
     finnhub_hit = 0
-    if FINNHUB_KEY and ok_tickers:
+    if FINNHUB_KEY and FINNHUB_METRICS_ENABLED and ok_tickers and finnhub_preflight():
         est_time = len(ok_tickers) * FINNHUB_MIN_INTERVAL / 4  # 4 threads
         print(f"\n📡 [2/3] Finnhub — 限速并发补充 {len(ok_tickers)} 个 ticker (4线程, 预计{est_time:.0f}s)...")
         fh_data = fetch_finnhub_concurrent(ok_tickers, max_workers=4)
@@ -737,12 +778,14 @@ def main():
             if updated:
                 finnhub_hit += 1
         print(f"  Finnhub: {finnhub_hit}/{len(ok_tickers)} 补充成功")
+    elif FINNHUB_KEY and ok_tickers:
+        print("  Finnhub 基本面补充已关闭，继续使用新浪主数据和旧缓存")
 
     # ============================
     # 第 3 步：Alpha Vantage（补充分析师评级、二次补充）
     # ============================
     av_hit = 0
-    if ALPHAVANTAGE_KEY and ok_tickers:
+    if ALPHAVANTAGE_KEY and FINNHUB_METRICS_ENABLED and ok_tickers:
         missing = [t for t in TICKERS
                    if all_entries.get(t, {}).get('peFwd') is None
                    or all_entries.get(t, {}).get('pb') is None
@@ -782,6 +825,8 @@ def main():
             print(f"  Alpha Vantage: {av_hit}/{len(av_tickers)} 补充成功")
         else:
             print(f"\n📡 [3/3] Alpha Vantage — 所有个股字段已有数据，跳过")
+
+    restore_cached_fundamentals(companies, indices)
 
     # ============================
     # 第 4 步：EODHD（指数/ETF估值直给字段，不使用 Yahoo）
