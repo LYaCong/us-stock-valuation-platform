@@ -98932,5 +98932,1037 @@
       "peTtm": null,
       "marketCap": 28181931525.0
     }
+  },
+  "2026-11-11": {
+    "NVDA": {
+      "price": 168.825,
+      "peTtm": 25.7,
+      "peTtmComputed": 35.32,
+      "peFwd": 14.47,
+      "pb": 28.81,
+      "roe": 110.11,
+      "marketCap": 4068682499999.0
+    },
+    "GOOGL": {
+      "price": 287.48,
+      "peTtm": 21.7,
+      "peTtmComputed": 21.93,
+      "peFwd": 17.66,
+      "pb": 9.1,
+      "roe": 42.62,
+      "marketCap": 3534279120000.0
+    },
+    "AAPL": {
+      "price": 348.64,
+      "peTtm": 42.0,
+      "peTtmComputed": 42.16,
+      "peFwd": 35.76,
+      "pb": 50.98,
+      "roe": 137.18,
+      "marketCap": 5066499932828.0
+    },
+    "MSFT": {
+      "price": 533.0,
+      "peTtm": 31.63,
+      "peTtmComputed": 31.73,
+      "peFwd": 24.59,
+      "pb": 6.26,
+      "roe": 33.21,
+      "marketCap": 3961457290115.0
+    },
+    "AMZN": {
+      "price": 270.86,
+      "peTtm": 31.9,
+      "peTtmComputed": 32.4,
+      "peFwd": 21.68,
+      "pb": 6.0,
+      "roe": 26.71,
+      "marketCap": 2928846641563.0
+    },
+    "AVGO": {
+      "price": 332.01,
+      "peTtm": 53.64,
+      "peTtmComputed": 45.67,
+      "peFwd": 16.99,
+      "pb": 21.06,
+      "roe": 43.91,
+      "marketCap": 1584892851478.0
+    },
+    "SPCX": {
+      "price": 143.1,
+      "peTtm": null,
+      "peTtmComputed": null,
+      "peFwd": 45.56,
+      "pb": null,
+      "roe": null,
+      "marketCap": 1943154900000.0
+    },
+    "TSM": {
+      "price": 396.39,
+      "peTtm": 32.95,
+      "peTtmComputed": 32.98,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 2055885851970.0
+    },
+    "TSLA": {
+      "price": 379.61,
+      "peTtm": 316.33,
+      "peTtmComputed": 244.91,
+      "peFwd": 196.34,
+      "pb": 18.21,
+      "roe": 3.76,
+      "marketCap": 1500495893000.0
+    },
+    "META": {
+      "price": 641.56,
+      "peTtm": 22.97,
+      "peTtmComputed": 20.98,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 1669873561293.0
+    },
+    "WMT": {
+      "price": 125.54,
+      "peTtm": 44.05,
+      "peTtmComputed": 45.82,
+      "peFwd": 39.4,
+      "pb": 9.93,
+      "roe": 22.74,
+      "marketCap": 996002503471.0
+    },
+    "BRK-B": {
+      "price": 583.56,
+      "peTtm": null,
+      "peTtmComputed": 23.49,
+      "peFwd": 24.34,
+      "pb": 1.51,
+      "roe": 11.87,
+      "marketCap": null
+    },
+    "LLY": {
+      "price": 1432.76,
+      "peTtm": 51.51,
+      "peTtmComputed": 48.7,
+      "peFwd": 30.62,
+      "pb": 38.29,
+      "roe": 83.65,
+      "marketCap": 1354508031679.0
+    },
+    "MU": {
+      "price": 724.64,
+      "peTtm": 16.18,
+      "peTtmComputed": 33.06,
+      "peFwd": 4.95,
+      "pb": 7.82,
+      "roe": 91.77,
+      "marketCap": 819874516343.0
+    },
+    "JPM": {
+      "price": 341.98,
+      "peTtm": 16.35,
+      "peTtmComputed": 16.6,
+      "peFwd": 13.27,
+      "pb": 2.42,
+      "roe": 17.91,
+      "marketCap": 909046514966.0
+    },
+    "AMD": {
+      "price": 514.66,
+      "peTtm": 167.11,
+      "peTtmComputed": 112.37,
+      "peFwd": 39.76,
+      "pb": 5.57,
+      "roe": 10.07,
+      "marketCap": 844087304599.0
+    },
+    "XOM": {
+      "price": 164.5,
+      "peTtm": 27.74,
+      "peTtmComputed": 27.74,
+      "peFwd": 15.06,
+      "pb": 1.96,
+      "roe": 15.64,
+      "marketCap": 670995500000.0
+    },
+    "V": {
+      "price": 422.87,
+      "peTtm": 36.77,
+      "peTtmComputed": 33.99,
+      "peFwd": 27.17,
+      "pb": 18.58,
+      "roe": 61.26,
+      "marketCap": 788990867989.0
+    },
+    "INTC": {
+      "price": 58.085,
+      "peTtm": null,
+      "peTtmComputed": 101.9,
+      "peFwd": 36.93,
+      "pb": 1.53,
+      "roe": -11.24,
+      "marketCap": 308431350000.0
+    },
+    "ASML": {
+      "price": 1507.315,
+      "peTtm": 50.21,
+      "peTtmComputed": 58.26,
+      "peFwd": 30.59,
+      "pb": 14.51,
+      "roe": 41.52,
+      "marketCap": 580945943782.0
+    },
+    "JNJ": {
+      "price": 280.65,
+      "peTtm": 32.12,
+      "peTtmComputed": 26.16,
+      "peFwd": 23.73,
+      "pb": 6.13,
+      "roe": 25.74,
+      "marketCap": 675611626152.0
+    },
+    "ORCL": {
+      "price": 117.94,
+      "peTtm": 19.89,
+      "peTtmComputed": 16.34,
+      "peFwd": 14.01,
+      "pb": 16.79,
+      "roe": 42.58,
+      "marketCap": 367702481520.0
+    },
+    "COST": {
+      "price": 1066.52,
+      "peTtm": 53.57,
+      "peTtmComputed": 55.46,
+      "peFwd": 43.7,
+      "pb": 11.69,
+      "roe": 28.02,
+      "marketCap": 472606268501.0
+    },
+    "CSCO": {
+      "price": 98.14,
+      "peTtm": 31.76,
+      "peTtmComputed": 24.0,
+      "peFwd": 19.97,
+      "pb": 8.98,
+      "roe": 27.39,
+      "marketCap": 387760420412.0
+    },
+    "MA": {
+      "price": 658.895,
+      "peTtm": 38.07,
+      "peTtmComputed": 36.83,
+      "peFwd": 28.19,
+      "pb": 66.26,
+      "roe": 232.48,
+      "marketCap": 574013585634.0
+    },
+    "CAT": {
+      "price": 584.765,
+      "peTtm": 28.95,
+      "peTtmComputed": 28.95,
+      "peFwd": 19.72,
+      "pb": 12.58,
+      "roe": 58.53,
+      "marketCap": 267585057159.0
+    },
+    "CVX": {
+      "price": 211.265,
+      "peTtm": 36.54,
+      "peTtmComputed": 32.4,
+      "peFwd": 14.62,
+      "pb": 1.65,
+      "roe": 10.98,
+      "marketCap": 413323766573.0
+    },
+    "ABBV": {
+      "price": 293.86,
+      "peTtm": 144.76,
+      "peTtmComputed": 28.84,
+      "peFwd": 18.68,
+      "pb": 94.44,
+      "roe": 95.59,
+      "marketCap": 519431727681.0
+    },
+    "NFLX": {
+      "price": 63.27,
+      "peTtm": 20.02,
+      "peTtmComputed": 20.41,
+      "peFwd": 16.61,
+      "pb": 16.1,
+      "roe": 50.41,
+      "marketCap": 259807239376.0
+    },
+    "LRCX": {
+      "price": 222.33,
+      "peTtm": 41.8,
+      "peTtmComputed": 41.71,
+      "peFwd": 22.61,
+      "pb": 41.21,
+      "roe": 71.75,
+      "marketCap": 277639256430.0
+    },
+    "BAC": {
+      "price": 50.705,
+      "peTtm": 12.4,
+      "peTtmComputed": 12.55,
+      "peFwd": 10.09,
+      "pb": 1.32,
+      "roe": 10.69,
+      "marketCap": 349875097649.0
+    },
+    "KO": {
+      "price": 96.95,
+      "peTtm": 30.49,
+      "peTtmComputed": 30.49,
+      "peFwd": 26.91,
+      "pb": 9.35,
+      "roe": 42.0,
+      "marketCap": 417040977522.0
+    },
+    "UNH": {
+      "price": 404.88,
+      "peTtm": 30.51,
+      "peTtmComputed": 24.78,
+      "peFwd": 17.74,
+      "pb": 3.18,
+      "roe": 16.1,
+      "marketCap": 362921230482.0
+    },
+    "AMAT": {
+      "price": 372.26,
+      "peTtm": 34.76,
+      "peTtmComputed": 35.32,
+      "peFwd": 20.82,
+      "pb": 9.03,
+      "roe": 40.44,
+      "marketCap": 295424584503.0
+    },
+    "PG": {
+      "price": 168.63,
+      "peTtm": 24.16,
+      "peTtmComputed": 24.3,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 391172874361.0
+    },
+    "PLTR": {
+      "price": 168.93,
+      "peTtm": 175.98,
+      "peTtmComputed": 179.71,
+      "peFwd": 83.73,
+      "pb": 57.35,
+      "roe": 37.47,
+      "marketCap": 407036408620.0
+    },
+    "HSBC": {
+      "price": 89.89,
+      "peTtm": 14.69,
+      "peTtmComputed": 13.3,
+      "peFwd": 11.0,
+      "pb": 1.36,
+      "roe": 20.51,
+      "marketCap": 307972863311.0
+    },
+    "GE": {
+      "price": 338.4,
+      "peTtm": 41.37,
+      "peTtmComputed": 50.13,
+      "peFwd": 33.03,
+      "pb": 17.4,
+      "roe": 50.63,
+      "marketCap": 351111154737.0
+    },
+    "MS": {
+      "price": 187.595,
+      "peTtm": 16.79,
+      "peTtmComputed": 16.99,
+      "peFwd": 13.65,
+      "pb": 2.53,
+      "roe": 17.83,
+      "marketCap": 293219213854.0
+    },
+    "HD": {
+      "price": 351.12,
+      "peTtm": 24.88,
+      "peTtmComputed": 24.23,
+      "peFwd": 20.96,
+      "pb": 29.38,
+      "roe": 102.68,
+      "marketCap": 350308781481.0
+    },
+    "BABA": {
+      "price": 102.655,
+      "peTtm": 16.01,
+      "peTtmComputed": 3.83,
+      "peFwd": 11.76,
+      "pb": 1.88,
+      "roe": 7.01,
+      "marketCap": 255379457021.0
+    },
+    "GS": {
+      "price": 910.23,
+      "peTtm": 16.37,
+      "peTtmComputed": 16.63,
+      "peFwd": 12.12,
+      "pb": 2.11,
+      "roe": 17.9,
+      "marketCap": 262541810484.0
+    },
+    "PM": {
+      "price": 194.305,
+      "peTtm": 27.33,
+      "peTtmComputed": 24.88,
+      "peFwd": 23.4,
+      "pb": 592.31,
+      "roe": 575.44,
+      "marketCap": 302846383876.0
+    },
+    "AZN": {
+      "price": 186.765,
+      "peTtm": 27.88,
+      "peTtmComputed": 38.83,
+      "peFwd": 15.14,
+      "pb": 5.87,
+      "roe": 22.28,
+      "marketCap": 289672515000.0
+    },
+    "NVS": {
+      "price": 163.31,
+      "peTtm": 23.13,
+      "peTtmComputed": 19.56,
+      "peFwd": 15.12,
+      "pb": 5.48,
+      "roe": 24.55,
+      "marketCap": 308431116033.0
+    },
+    "MRK": {
+      "price": 147.95,
+      "peTtm": 41.57,
+      "peTtmComputed": 27.05,
+      "peFwd": 18.66,
+      "pb": 4.97,
+      "roe": 6.6,
+      "marketCap": 364733099983.0
+    },
+    "TXN": {
+      "price": 300.5375,
+      "peTtm": 51.12,
+      "peTtmComputed": 50.43,
+      "peFwd": 26.96,
+      "pb": 9.69,
+      "roe": 40.51,
+      "marketCap": 274765713630.0
+    },
+    "GEV": {
+      "price": 796.35,
+      "peTtm": 22.91,
+      "peTtmComputed": 23.41,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 210775581509.0
+    },
+    "ARM": {
+      "price": 181.41,
+      "peTtm": 213.34,
+      "peTtmComputed": 124.25,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 194108700000.0
+    },
+    "RY": {
+      "price": 202.6,
+      "peTtm": 18.14,
+      "peTtmComputed": 13.69,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 280485477277.0
+    },
+    "SHEL": {
+      "price": 97.33,
+      "peTtm": 15.02,
+      "peTtmComputed": 14.15,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 275509516090.0
+    },
+    "TM": {
+      "price": 214.49,
+      "peTtm": 10.97,
+      "peTtmComputed": 11.17,
+      "peFwd": 9.29,
+      "pb": 1.24,
+      "roe": 11.67,
+      "marketCap": 252669220000.0
+    },
+    "KLAC": {
+      "price": 152.86,
+      "peTtm": 43.06,
+      "peTtmComputed": 4.19,
+      "peFwd": 25.6,
+      "pb": 62.07,
+      "roe": 87.02,
+      "marketCap": 199170837814.0
+    },
+    "RTX": {
+      "price": 200.35,
+      "peTtm": 37.11,
+      "peTtmComputed": 34.02,
+      "peFwd": 24.91,
+      "pb": 3.77,
+      "roe": 12.58,
+      "marketCap": 270360413791.0
+    },
+    "LIN": {
+      "price": 521.92,
+      "peTtm": 34.45,
+      "peTtmComputed": 31.01,
+      "peFwd": 26.68,
+      "pb": 5.21,
+      "roe": 18.05,
+      "marketCap": 239605006457.0
+    },
+    "WFC": {
+      "price": 85.79,
+      "peTtm": 13.08,
+      "peTtmComputed": 13.3,
+      "peFwd": 10.53,
+      "pb": 1.62,
+      "roe": 12.84,
+      "marketCap": 259003001926.0
+    },
+    "MUFG": {
+      "price": 21.655,
+      "peTtm": 15.25,
+      "peTtmComputed": 15.67,
+      "peFwd": 13.8,
+      "pb": 1.38,
+      "roe": 12.34,
+      "marketCap": 243743585834.0
+    },
+    "QCOM": {
+      "price": 173.515,
+      "peTtm": 18.72,
+      "peTtmComputed": 14.56,
+      "peFwd": 16.38,
+      "pb": 8.37,
+      "roe": 37.33,
+      "marketCap": 185661050000.0
+    },
+    "C": {
+      "price": 122.28,
+      "peTtm": 14.89,
+      "peTtmComputed": 14.22,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 202398408461.0
+    },
+    "IBM": {
+      "price": 244.57,
+      "peTtm": 21.27,
+      "peTtmComputed": 20.59,
+      "peFwd": 19.63,
+      "pb": 8.48,
+      "roe": 32.94,
+      "marketCap": 231148195278.0
+    },
+    "AXP": {
+      "price": 323.645,
+      "peTtm": 20.16,
+      "peTtmComputed": 20.19,
+      "peFwd": 16.16,
+      "pb": 7.61,
+      "roe": 35.64,
+      "marketCap": 217020807865.0
+    },
+    "BHP": {
+      "price": 81.19,
+      "peTtm": null,
+      "peTtmComputed": 9.53,
+      "peFwd": 17.74,
+      "pb": 4.17,
+      "roe": 19.41,
+      "marketCap": 206342509592.0
+    },
+    "SAP": {
+      "price": 233.885,
+      "peTtm": 31.39,
+      "peTtmComputed": 30.69,
+      "peFwd": 23.12,
+      "pb": 5.45,
+      "roe": 17.85,
+      "marketCap": 269951057035.0
+    },
+    "SNDK": {
+      "price": 859.56,
+      "peTtm": 28.19,
+      "peTtmComputed": 27.62,
+      "peFwd": 4.87,
+      "pb": 16.42,
+      "roe": 134.27,
+      "marketCap": 122306246579.0
+    },
+    "TTE": {
+      "price": 87.86,
+      "peTtm": 10.69,
+      "peTtmComputed": 11.68,
+      "peFwd": 8.78,
+      "pb": 1.18,
+      "roe": 17.99,
+      "marketCap": 193615735369.0
+    },
+    "TMUS": {
+      "price": 169.1,
+      "peTtm": 17.95,
+      "peTtmComputed": 17.99,
+      "peFwd": 11.54,
+      "pb": 3.84,
+      "roe": 18.22,
+      "marketCap": 179122991248.0
+    },
+    "PEP": {
+      "price": 143.62,
+      "peTtm": 22.51,
+      "peTtmComputed": 17.35,
+      "peFwd": 16.06,
+      "pb": 9.67,
+      "roe": 50.57,
+      "marketCap": 195716875633.0
+    },
+    "PANW": {
+      "price": 326.5,
+      "peTtm": 259.13,
+      "peTtmComputed": 88.01,
+      "peFwd": 84.51,
+      "pb": 9.84,
+      "roe": 1.68,
+      "marketCap": 267221675741.0
+    },
+    "VZ": {
+      "price": 46.35,
+      "peTtm": 11.28,
+      "peTtmComputed": 9.9,
+      "peFwd": 8.49,
+      "pb": 1.64,
+      "roe": 15.73,
+      "marketCap": 192102132873.0
+    },
+    "MCD": {
+      "price": 282.25,
+      "peTtm": 23.18,
+      "peTtmComputed": 23.0,
+      "peFwd": 18.99,
+      "pb": 15.3,
+      "roe": 95.13,
+      "marketCap": 199731822124.0
+    },
+    "NVO": {
+      "price": 40.675,
+      "peTtm": 9.55,
+      "peTtmComputed": 1.76,
+      "peFwd": 11.5,
+      "pb": 7.44,
+      "roe": 59.09,
+      "marketCap": 180433423535.0
+    },
+    "ADI": {
+      "price": 393.09,
+      "peTtm": 58.07,
+      "peTtmComputed": 55.05,
+      "peFwd": 25.01,
+      "pb": 3.38,
+      "roe": 12.26,
+      "marketCap": 190477838636.0
+    },
+    "NEE": {
+      "price": 86.27,
+      "peTtm": 21.84,
+      "peTtmComputed": 22.64,
+      "peFwd": 19.35,
+      "pb": 3.06,
+      "roe": 20.37,
+      "marketCap": 180934592847.0
+    },
+    "TD": {
+      "price": 123.89,
+      "peTtm": 20.11,
+      "peTtmComputed": 14.09,
+      "peFwd": 15.73,
+      "pb": 1.53,
+      "roe": 12.83,
+      "marketCap": 202981004330.0
+    },
+    "DIS": {
+      "price": 119.215,
+      "peTtm": 19.01,
+      "peTtmComputed": 20.14,
+      "peFwd": 14.81,
+      "pb": 1.9,
+      "roe": 7.87,
+      "marketCap": 205846979260.0
+    },
+    "AMGN": {
+      "price": 465.34,
+      "peTtm": 32.14,
+      "peTtmComputed": 21.06,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 251610358955.0
+    },
+    "SAN": {
+      "price": 12.55,
+      "peTtm": 9.88,
+      "peTtmComputed": 11.64,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 180949795934.0
+    },
+    "ANET": {
+      "price": 185.08,
+      "peTtm": 62.53,
+      "peTtmComputed": 61.28,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 233830504161.0
+    },
+    "TJX": {
+      "price": 136.9,
+      "peTtm": 26.23,
+      "peTtmComputed": 28.05,
+      "peFwd": 24.99,
+      "pb": 16.36,
+      "roe": 59.77,
+      "marketCap": 150586448950.0
+    },
+    "RIO": {
+      "price": 84.565,
+      "peTtm": null,
+      "peTtmComputed": 13.07,
+      "peFwd": 11.39,
+      "pb": 2.21,
+      "roe": 18.96,
+      "marketCap": 137544746373.0
+    },
+    "BA": {
+      "price": 173.31,
+      "peTtm": 79.12,
+      "peTtmComputed": 131.3,
+      "peFwd": null,
+      "pb": 31.17,
+      "roe": 127.13,
+      "marketCap": 137339499448.0
+    },
+    "T": {
+      "price": 21.955,
+      "peTtm": 7.37,
+      "peTtmComputed": 10.12,
+      "peFwd": 8.35,
+      "pb": 1.59,
+      "roe": 12.01,
+      "marketCap": 147899274221.0
+    },
+    "BLK": {
+      "price": 1221.93,
+      "peTtm": 30.3,
+      "peTtmComputed": 26.47,
+      "peFwd": 17.97,
+      "pb": 3.12,
+      "roe": 11.65,
+      "marketCap": 188694610822.0
+    },
+    "STX": {
+      "price": 501.63,
+      "peTtm": 45.55,
+      "peTtmComputed": 41.59,
+      "peFwd": 13.41,
+      "pb": 84.87,
+      "roe": 245.11,
+      "marketCap": 115154739609.0
+    },
+    "TMO": {
+      "price": 719.28,
+      "peTtm": 39.5,
+      "peTtmComputed": 31.06,
+      "peFwd": 25.48,
+      "pb": 4.08,
+      "roe": 13.29,
+      "marketCap": 266504653535.0
+    },
+    "CRWD": {
+      "price": 225.8,
+      "peTtm": null,
+      "peTtmComputed": 90.32,
+      "peFwd": 165.83,
+      "pb": 24.98,
+      "roe": 1.29,
+      "marketCap": 231204487323.0
+    },
+    "MRVL": {
+      "price": 154.28,
+      "peTtm": 52.3,
+      "peTtmComputed": 35.96,
+      "peFwd": 30.07,
+      "pb": 4.8,
+      "roe": 16.22,
+      "marketCap": 135288132000.0
+    },
+    "GILD": {
+      "price": 170.94,
+      "peTtm": 23.04,
+      "peTtmComputed": 20.42,
+      "peFwd": 20.9,
+      "pb": 6.71,
+      "roe": -21.76,
+      "marketCap": 212081774755.0
+    },
+    "APP": {
+      "price": 395.64,
+      "peTtm": 34.68,
+      "peTtmComputed": 33.7,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 131084236080.0
+    },
+    "BUD": {
+      "price": 86.12,
+      "peTtm": 25.71,
+      "peTtmComputed": 22.14,
+      "peFwd": 15.95,
+      "pb": 1.39,
+      "roe": 6.32,
+      "marketCap": 169671467210.0
+    },
+    "WDC": {
+      "price": 289.265,
+      "peTtm": 15.5,
+      "peTtmComputed": 19.21,
+      "peFwd": null,
+      "pb": null,
+      "roe": null,
+      "marketCap": 108278620407.0
+    },
+    "UNP": {
+      "price": 300.76,
+      "peTtm": 24.73,
+      "peTtmComputed": 25.4,
+      "peFwd": 21.44,
+      "pb": 7.43,
+      "roe": 37.82,
+      "marketCap": 178445550230.0
+    },
+    "DELL": {
+      "price": 334.22,
+      "peTtm": 26.13,
+      "peTtmComputed": 32.29,
+      "peFwd": 14.61,
+      "pb": 18.52,
+      "roe": 130.7,
+      "marketCap": 212563920000.0
+    },
+    "SCHW": {
+      "price": 93.08,
+      "peTtm": 18.4,
+      "peTtmComputed": 18.04,
+      "peFwd": 11.62,
+      "pb": 3.59,
+      "roe": 20.38,
+      "marketCap": 160935320000.0
+    },
+    "GLW": {
+      "price": 112.185,
+      "peTtm": 52.91,
+      "peTtmComputed": 41.7,
+      "peFwd": 28.64,
+      "pb": 6.36,
+      "roe": 17.25,
+      "marketCap": 96591285000.0
+    },
+    "WELL": {
+      "price": 247.6,
+      "peTtm": null,
+      "peTtmComputed": 126.64,
+      "peFwd": 73.3,
+      "pb": 3.06,
+      "roe": 3.68,
+      "marketCap": 181369199678.0
+    },
+    "ABT": {
+      "price": 110.625,
+      "peTtm": 30.73,
+      "peTtmComputed": 22.3,
+      "peFwd": 18.13,
+      "pb": 4.18,
+      "roe": 10.52,
+      "marketCap": 192267032340.0
+    },
+    "ETN": {
+      "price": 354.32,
+      "peTtm": 34.54,
+      "peTtmComputed": 29.14,
+      "peFwd": 23.57,
+      "pb": 6.37,
+      "roe": 19.59,
+      "marketCap": 137653320000.0
+    },
+    "DE": {
+      "price": 687.71,
+      "peTtm": 38.88,
+      "peTtmComputed": 38.96,
+      "peFwd": 29.88,
+      "pb": 4.81,
+      "roe": 18.11,
+      "marketCap": 185988031479.0
+    },
+    "APH": {
+      "price": 80.005,
+      "peTtm": 21.92,
+      "peTtmComputed": 20.94,
+      "peFwd": 23.38,
+      "pb": 12.33,
+      "roe": 39.54,
+      "marketCap": 197459555490.0
+    },
+    "SPY": {
+      "price": 750.02,
+      "peTtm": null,
+      "marketCap": 795720305642.0
+    },
+    "QQQ": {
+      "price": 674.83,
+      "peTtm": null,
+      "marketCap": 455611474500.0
+    },
+    "DIA": {
+      "price": 521.84,
+      "peTtm": null,
+      "marketCap": 45892105715.0
+    },
+    "IWM": {
+      "price": 280.585,
+      "peTtm": null,
+      "marketCap": 0.0
+    },
+    "VTI": {
+      "price": 369.56,
+      "peTtm": null,
+      "marketCap": 0.0
+    },
+    "XLK": {
+      "price": 168.935,
+      "peTtm": null,
+      "marketCap": 112132598669.0
+    },
+    "XLF": {
+      "price": 58.275,
+      "peTtm": null,
+      "marketCap": 55206554758.0
+    },
+    "XLV": {
+      "price": 188.91,
+      "peTtm": null,
+      "marketCap": 0.0
+    },
+    "XLY": {
+      "price": 121.055,
+      "peTtm": null,
+      "marketCap": 23636776091.0
+    },
+    "XLP": {
+      "price": 91.055,
+      "peTtm": null,
+      "marketCap": 15071588318.0
+    },
+    "XLE": {
+      "price": 62.23,
+      "peTtm": null,
+      "marketCap": 40807222932.0
+    },
+    "XLI": {
+      "price": 168.78,
+      "peTtm": null,
+      "marketCap": 30941762280.0
+    },
+    "XLB": {
+      "price": 52.85,
+      "peTtm": null,
+      "marketCap": 8514000232.0
+    },
+    "XLRE": {
+      "price": 44.595,
+      "peTtm": null,
+      "marketCap": 8468590500.0
+    },
+    "XLU": {
+      "price": 43.735,
+      "peTtm": null,
+      "marketCap": 24146020025.0
+    },
+    "XLC": {
+      "price": 107.785,
+      "peTtm": null,
+      "marketCap": 22273770250.0
+    },
+    "SOXX": {
+      "price": 146.4,
+      "peTtm": null,
+      "marketCap": 41870400000.0
+    },
+    "KRE": {
+      "price": 73.085,
+      "peTtm": null,
+      "marketCap": 4743405424.0
+    },
+    "IBB": {
+      "price": 217.14,
+      "peTtm": null,
+      "marketCap": 11247852000.0
+    },
+    "XRT": {
+      "price": 92.425,
+      "peTtm": null,
+      "marketCap": 651617138.0
+    },
+    "VNQ": {
+      "price": 97.09,
+      "peTtm": null,
+      "marketCap": 38942404814.0
+    },
+    "VIG": {
+      "price": 249.9,
+      "peTtm": null,
+      "marketCap": 116983092788.0
+    },
+    "SCHD": {
+      "price": 35.835,
+      "peTtm": null,
+      "marketCap": 121932171000.0
+    },
+    "ARKK": {
+      "price": 77.115,
+      "peTtm": null,
+      "marketCap": 5960989500.0
+    },
+    "KWEB": {
+      "price": 24.065,
+      "peTtm": null,
+      "marketCap": 4492935500.0
+    },
+    "GDX": {
+      "price": 86.592,
+      "peTtm": null,
+      "marketCap": 26696530080.0
+    }
   }
 }
